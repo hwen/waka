@@ -1,0 +1,14 @@
+<nav>
+    <div style="background:yellowgreen;height: 300px;width: 100%;">
+        <form ng-submit="signup(reg)">
+            name: <input type="text" placeholder="name" ng-model="reg.username"/>
+            email: <input type="text" placeholder="email" ng-model="reg.email"/>
+            password: <input type="text" placeholder="password" ng-model="reg.password"/>
+        </form>
+
+        <form ng-submit="login()">
+            name or email: <input type="text" placeholder="name" ng-model="username"/>
+            password: <input type="text" placeholder="password" ng-model="password"/>
+        </form>
+    </div>
+</nav>
