@@ -12,6 +12,7 @@ var path = require('path');
 var session = require('express-session');
 var uuid = require('uuid');
 var config = require('./environment');
+var morgan = require('morgan');
 
 module.exports = function(app) {
     console.log("root is:"+config.root);
@@ -40,4 +41,9 @@ module.exports = function(app) {
         resave: false,
         saveUninitialized: true
     }));
+
+    // config environment
+    app.use(express.static(path.join(config.root, 'public')));
+    app.set('appPath', config.root + '/public');
+    app.use(morgan('dev'));
 };

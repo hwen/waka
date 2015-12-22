@@ -7,7 +7,7 @@ var path = require('path');
 
 var config = {
     //root path of server
-    root: path.normalize(__dirname + '/../../..'),
+    root: path.normalize(__dirname + '/../..'),
 
     //server port
     port: 2333,

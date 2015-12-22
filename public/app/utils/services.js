@@ -5,24 +5,24 @@
 (function(angular) {
     'use strict';
 
-    var URL = 'localhost:2333';
+    var URL = 'api';
 
     angular.module('waka')
 
+        .factory('URL', [function() {
+            return URL + '/';
+        }])
+
         .factory('User', ['$resource', function($resource) {
-            return $resource(URL + '/api/users', {}, {
+            return $resource(URL + '/user', {}, {
                 login: {
                     method: 'POST',
-                    url: URL + '/api/user/login'
+                    url: URL + '/user/login'
                 },
                 logout: {
                     method: 'GET',
-                    url: URL + '/api/user/logout'
-                },
-                signup: {
-                    method: 'POST',
-                    url: URL + '/api/user/'
+                    url: URL + '/user/logout'
                 }
-            })
+            });
         }])
 })(angular);

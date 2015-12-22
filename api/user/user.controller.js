@@ -4,7 +4,8 @@
 
 'use strict';
 var InvokeResult = require('../../components/invoke_result'),
-    Constant = require('../../config/constant');
+    Constant = require('../../config/constant'),
+    User = require('./user.model');
 
 
 
@@ -24,6 +25,7 @@ exports.index = function(req, res) {
 
 //create a user
 exports.create = function(req, res) {
+    console.log('what happen');
     User.find({
         $or : [{
             username: req.body.username
@@ -92,5 +94,10 @@ exports.logout = function(req, res) {
     req.session.name = '';
     req.session.email = '';
     return res.json(InvokeResult.success());
+};
+
+exports.hello = function(req, res) {
+    console.log('what tff');
+    res.send('POST request to the homepage');
 };
 

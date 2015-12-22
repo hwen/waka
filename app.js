@@ -6,11 +6,12 @@
 
 var express =require('express');
 var mongoose = require('mongoose');
-var config = require('./config/environment')
+var config = require('./config/environment');
+
 
 //Connect to database
 var uri = 'mongodb://localhost:27017/test';
-mongoose.connect(uri);
+mongoose.connect(uri, config.mongo.options);
 
 //set up server
 var app = express();

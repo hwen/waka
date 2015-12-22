@@ -10,8 +10,8 @@ var router = express.Router();
 
 router.post('/login', controller.login);
 router.get('/logout', controller.logout);
-router.post('/', controller.create);
-router.get('/hello', function(req, res) {
+router.post("/", controller.create);
+router.post("/hello", function(req, res) {
     res.send('hello world');
 });
 
