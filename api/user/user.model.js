@@ -17,17 +17,17 @@ var UserSchema = new Schema({
             type: String,
             index: true
         },
-        password: String
-        //profile: String,
-        //signature: String,
-        //avatar: String,
-        //
-        //answer_count: { type:Number, default:0 },
-        //question_count: { type:Number, default:0 },
-        //receive_support: { type:Number, default:0 },
-        //follower_count: { type:Number, default:0 },
-        //following_count: { type:Number, default:0 },
-        //collect_topic_count: { type:Number, default:0 }
+        password: String,
+        profile: String,
+        signature: String,
+        avatar: String,
+
+        answer_count: { type:Number, default:0 },
+        question_count: { type:Number, default:0 },
+        receive_support: { type:Number, default:0 },
+        follower_count: { type:Number, default:0 },
+        following_count: { type:Number, default:0 },
+        collect_topic_count: { type:Number, default:0 }
 });
 
 /*
@@ -52,7 +52,7 @@ UserSchema.methods = {
         if (!password) return '';
         //var salt = new Buffer('iwaka', 'base64');
         return crypto.pbkdf2Sync(password, 'iwaka', 10000, 64).toString('base64');
-    },
+    }
 };
 
 module.exports = mongoose.model('User', UserSchema);

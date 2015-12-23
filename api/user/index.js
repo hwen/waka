@@ -11,8 +11,6 @@ var router = express.Router();
 router.post('/login', controller.login);
 router.get('/logout', controller.logout);
 router.post("/", controller.create);
-router.post("/hello", function(req, res) {
-    res.send('hello world');
-});
+router.get("/hello", controller.index);
 
 module.exports = router;
