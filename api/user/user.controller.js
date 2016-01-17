@@ -25,7 +25,6 @@ exports.index = function(req, res) {
 
 //create a user
 exports.create = function(req, res) {
-    console.log('what happen');
     User.find({
         $or : [{
             username: req.body.username
@@ -64,6 +63,10 @@ exports.create = function(req, res) {
 };
 
 exports.login = function(req, res) {
+    // console.log('req--->');
+    // console.log(req);
+    var date = new Date();
+    console.log(date.toLocaleString()+'something');
     User.find({
         $or: [{
             username: req.body.username

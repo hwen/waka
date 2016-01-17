@@ -19,7 +19,7 @@ var QuestionSchema = new Schema({
     created_time: { type:Date, default: Date.now }
 });
 
-var QunFollowSchema = new Schema({
+var QtnFollow = new Schema({
     question_id: { type:ObjectId },
     follower_id: { type:ObjectId }
 });
@@ -27,5 +27,7 @@ var QunFollowSchema = new Schema({
 QuestionSchema.index({created_time: -1});
 QuestionSchema.index({author_id: 1, created_time: -1});
 
-module.exports = mongoose.model('Question', QuestionSchema);
-module.exports = mongoose.model('QunFollow', QunFollowSchema);
+exports.Question = mongoose.model('Question', QuestionSchema);
+exports.QtnFollow = mongoose.model('QtnFollow', QtnFollow);
+// module.exports = mongoose.model('Question', QuestionSchema);
+// module.exports = mongoose.model('QunFollow', QtnFollow);

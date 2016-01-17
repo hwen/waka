@@ -8,18 +8,18 @@
     angular.module('waka').directive('navBar', customNavbar);
 
     function customNavbar() {
-      var directive = {
-          restrict: 'E',
-          templateUrl: 'app/components/navbar/navbar.html',
-          scope: {
-              creationDate: '='
-          },
-          controller: NavbarController,
-          controllerAs: 'vm',       // controller as viewModel
-          bindToController: true
-      };
+        var directive = {
+            restrict: 'E',
+            templateUrl: 'app/components/navbar/navbar.html',
+            scope: {
+                creationDate: '='
+            },
+            controller: NavbarController,
+            controllerAs: 'vm', // controller as viewModel
+            bindToController: true
+        };
 
-      return directive;
+        return directive;
 
         function NavbarController($scope, User, $http, STATUS) {
             $scope.login = function(req) {
@@ -50,7 +50,7 @@
                         console.log('signup success');
                     }
                 });
-                };
+            };
 
 
             $scope.test = function() {
@@ -64,7 +64,7 @@
                     console.log(data);
                 });
             };
-            }
+        }
     }
 
 })(angular);
