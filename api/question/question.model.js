@@ -27,6 +27,10 @@ var QtnFollow = new Schema({
 QuestionSchema.index({created_time: -1});
 QuestionSchema.index({author_id: 1, created_time: -1});
 
+QuestionSchema.methods = {
+
+};
+
 exports.Question = mongoose.model('Question', QuestionSchema);
 exports.QtnFollow = mongoose.model('QtnFollow', QtnFollow);
 // module.exports = mongoose.model('Question', QuestionSchema);

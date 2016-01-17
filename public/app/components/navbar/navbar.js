@@ -45,10 +45,13 @@
                 console.log('signup for:');
                 console.log(params);
                 User.save(params).$promise.then(function(res) {
-                    console.log('what the fuck');
+                    console.log(res);
                     if (res.status === STATUS.SUCCESS) {
                         console.log('signup success');
                     }
+                }, function(err) {
+                    console.log('signup fail');
+                    console.log(err);
                 });
             };
 

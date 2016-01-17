@@ -26,7 +26,7 @@ exports.index = function(req, res) {
 //create a user
 exports.create = function(req, res) {
     User.find({
-        $or : [{
+        $or: [{
             username: req.body.username
         }, {
             email: req.body.email
@@ -35,8 +35,8 @@ exports.create = function(req, res) {
         if (err) {
             return res.json(InvokeResult.programException(err))
         }
-        if (users.length > 0) {  //user existed
-           var user = user[0];
+        if (users.length > 0) { //user existed
+            var user = users[0];
             if (user.username === req.body.username) {
                 return res.json(InvokeResult.userExists());
             }
@@ -65,8 +65,6 @@ exports.create = function(req, res) {
 exports.login = function(req, res) {
     // console.log('req--->');
     // console.log(req);
-    var date = new Date();
-    console.log(date.toLocaleString()+'something');
     User.find({
         $or: [{
             username: req.body.username
@@ -82,7 +80,7 @@ exports.login = function(req, res) {
             return res.json(InvokeResult.userNotFound());
         }
         var user = users[0];
-        if (user.authenticate(req.body.password))  {
+        if (user.authenticate(req.body.password)) {
             req.session.username = req.body.username;
             req.session.name = user.name;
             req.session.email = user.email;
@@ -103,4 +101,3 @@ exports.hello = function(req, res) {
     console.log('what tff');
     res.send('POST request to the homepage');
 };
-
