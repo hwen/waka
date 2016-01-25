@@ -14,7 +14,7 @@ module.exports = function(app) {
 
     // insert routes below
     app.use('/api/user', require('./api/user'));
-
+    app.use('/api/question', require('./api/question'));
 
     // all und
     //app.route('/:url(api|components|app)/*').get(erros[404]);

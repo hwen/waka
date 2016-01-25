@@ -98,6 +98,5 @@ exports.logout = function(req, res) {
 };
 
 exports.hello = function(req, res) {
-    console.log('what tff');
-    res.send('POST request to the homepage');
+    res.send('request get success: api/user/hello');
 };

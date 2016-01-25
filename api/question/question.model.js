@@ -28,7 +28,18 @@ QuestionSchema.index({created_time: -1});
 QuestionSchema.index({author_id: 1, created_time: -1});
 
 QuestionSchema.methods = {
-
+    support: function() {
+        this.support_count++;
+    },
+    unsupport: function() {
+        this.unsupport_count++;
+    },
+    follow: function() {
+        this.follow_count++;
+    },
+    addTopics: function() {
+        
+    }
 };
 
 exports.Question = mongoose.model('Question', QuestionSchema);
