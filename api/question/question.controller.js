@@ -14,7 +14,6 @@ var User = require('../user/user.model');
 
 //add a  question
 exports.create = function (req, res) {
-    console.log(req.body);
     if (filter.notNull(req.body.title)) {
         var newQuestion = new Question(req.body);
         newQuestion.save(function (err, question) {
@@ -55,7 +54,10 @@ exports.search = function (req, res) {
     })
 };
 
+// support, unsupport, follow,
+exports.opinion = function(req, res) {
 
+};
 
 
 
