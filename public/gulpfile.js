@@ -1,6 +1,46 @@
 var gulp = require('gulp'),
     $ = require('gulp-load-plugins')();
 
+/*
+* 前端测试用服务器
+* */
+
+gulp.task('webserver', function() {
+    $.connect.server({
+        port: 2333,
+        root: 'src',
+        livereload: true
+    });
+});
+
+gulp.task('html', function() {
+    gulp.src('src/app/**/*.html')
+        .pipe($.connect.reload());
+
+});
+
+gulp.task('css', function() {
+    gulp.src('dist/*.css')
+        .pipe($.connect.reload());
+});
+
+gulp.task('js', function() {
+    gulp.src('src/app/**/*.js')
+        .pipe($.connect.reload());
+});
+
+gulp.task('watch', function() {
+    gulp.watch(['src/app/**/*.less'], ['lessminicss']);
+    gulp.watch(['src/app/**/*.html'], ['html']);
+    gulp.watch(['dist/*.css'], ['css']);
+    gulp.watch(['src/app/**/*.js'], ['js']);
+});
+
+
+/*
+* css，js压缩合并
+* */
+
 gulp.task('lessminicss', function() {
     gulp.src('src/app/**/*.less')
         .pipe($.concat('app.less'))
@@ -24,10 +64,6 @@ gulp.task('minifyjs', function() {
         }))
         .pipe($.uglify())
         .pipe(gulp.dest('src/dist/'));
-});
-
-gulp.task('watchless', function() {
-    gulp.watch(['src/app/**/*.less'], ['less']);
 });
 
 gulp.task('inject', function() {
