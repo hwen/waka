@@ -8,10 +8,13 @@
     angular.module('waka').config(['$stateProvider', '$urlRouterProvider', routerConfig]);
 
     function routerConfig($stateProvider, $urlRouterProvider) {
-        //$stateProvider
-        //    .state('home', {
-        //        url: '/home',
-        //        templateUrl: 'app/a'
-        //    })
+        $stateProvider
+            .state('user-login', {
+                url: '/user-login',
+                templateUrl: 'app/routes/user-login/user-login.html',
+                controller: 'loginController'
+            })
+
+        $urlRouterProvider.otherwise('/user-login');
     }
 })(angular);

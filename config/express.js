@@ -16,7 +16,7 @@ var morgan = require('morgan');
 
 module.exports = function(app) {
     console.log("root is:"+config.root);
-    app.set('views', config.root + '/waka/views/src');
+    app.set('views', path.join(config.root , 'public/src'));
     app.engine('html', require('ejs').renderFile);
     app.set('view engine', 'html');
     //app.use(compression());
@@ -43,7 +43,7 @@ module.exports = function(app) {
     }));
 
     // config environment
-    app.use(express.static(path.join(config.root, 'public')));
-    app.set('appPath', config.root + '/public');
+    app.use(express.static(path.join(config.root, 'public/src')));   //控制静态资源加载根目录
+    app.set('appPath', config.root + 'public/src');
     app.use(morgan('dev'));
 };
