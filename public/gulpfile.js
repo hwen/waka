@@ -36,6 +36,9 @@ gulp.task('watch', function() {
     gulp.watch(['src/app/**/*.js'], ['js']);
 });
 
+gulp.task('watchless', function() {
+    gulp.watch(['src/app/**/*.less'], ['lessminicss']);
+});
 
 /*
 * css，js压缩合并

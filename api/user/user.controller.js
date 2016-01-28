@@ -5,7 +5,8 @@
 'use strict';
 var InvokeResult = require('../../components/invoke_result'),
     Constant = require('../../config/constant'),
-    User = require('./user.model');
+    User = require('./user.model'),
+    log = require('../../components/util/log');
 
 
 
@@ -38,12 +39,17 @@ exports.create = function(req, res) {
         if (users.length > 0) { //user existed
             var user = users[0];
             if (user.username === req.body.username) {
-                return res.json(InvokeResult.userExists());
+                return res.json({
+                    status:-1,
+                    error: 'username',
+                    mes: 'username already existing'
+                });
             }
             if (user.email === req.body.email) {
                 return res.json({
-                    status: 8,
-                    data: 'email has been registered'
+                    status: -1,
+                    error: 'email',
+                    mes: 'email has been registered'
                 });
             }
             return res.json(InvokeResult.userExists());
@@ -57,14 +63,13 @@ exports.create = function(req, res) {
             req.session.username = newUser.username;
             req.session.name = newUser.name;
             req.session.email = newUser.email;
-            return res.json(InvokeResult.success());
+            return res.json({status:0, data: newUser, mes:'signup success!'});
         });
     });
 };
 
 exports.login = function(req, res) {
-    // console.log('req--->');
-    // console.log(req);
+    log.out(req.body);
     User.find({
         $or: [{
             username: req.body.username
@@ -73,20 +78,20 @@ exports.login = function(req, res) {
         }]
     }).exec(function(err, users) {
         if (err) {
-            return res.json(InvokeResult.programException(err));
+            return res.json({status:-1, error:err, mes:'program error'});
         }
-
-        if (users.length === 0) {
-            return res.json(InvokeResult.userNotFound());
+        if (users.length == 0) {
+            return res.json({status:-1, error:'user', mes: 'user not found!'});
         }
         var user = users[0];
+        log.out(users);
         if (user.authenticate(req.body.password)) {
             req.session.username = req.body.username;
             req.session.name = user.name;
             req.session.email = user.email;
-            return res.json(InvokeResult.success());
+            return res.json({status: 0, error:'no', mes:'login success', data:user});
         }
-        return res.json(InvokeResult.userNotFound());
+        return res.json({status:-1, error:'password', mes:'password wrong!'});
     });
 };
 

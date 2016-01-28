@@ -12,7 +12,14 @@
             .state('user-login', {
                 url: '/user-login',
                 templateUrl: 'app/routes/user-login/user-login.html',
-                controller: 'loginController'
+                controller: 'loginController',
+                controllerAs: 'account'
+            })
+            .state('home-page', {
+                url: '/home-page',
+                templateUrl: 'app/routes/home-page/home-page.html',
+                controller: 'homeController',
+                controllerAs: 'result'
             })
 
         $urlRouterProvider.otherwise('/user-login');

@@ -1,5 +1,59 @@
 <div class="user-login-container">
-    <div class="user-login-box">
-        
-    </div>
+    <md-card>
+        <md-card-title class="md-primary">
+        </md-card-title>
+        <md-card-content>
+            <form name="signup" ng-if="!account.signin">
+                <span class="header md-primary">注册</span>
+                <md-input-container class="md-block">
+                    <label>用户名</label>
+                    <input type="text" ng-model="account.reg.username"/>
+                    <div ng-messages="reg.password2.$error" ng-if="account.auth.userExist">
+                        <div ng-message="">该用户已存在~</div>
+                    </div>
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <label>电子邮箱</label>
+                    <input type="email" ng-model="account.reg.email"/>
+                    <div ng-messages="reg.password2.$error" ng-if="account.auth.email">
+                        <div ng-message="">邮箱格式不正确，请重新输入~</div>
+                    </div>
+                    <div ng-messages="reg.password2.$error" ng-if="account.auth.emailExist">
+                        <div ng-message="">邮箱格式不正确，请重新输入~</div>
+                    </div>
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <label >密码</label>
+                    <input type="password" ng-model="account.reg.password"/>
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <label >确认密码</label>
+                    <input type="password" ng-model="account.reg.password2"/>
+                    <div ng-messages="reg.password2.$error" ng-if="account.auth.pass">
+                        <div ng-message="">两次输入的密码不一致</div>
+                    </div>
+                </md-input-container>
+            </form>
+            <form name="signup" ng-if="account.signin">
+                <span class="header">登陆</span>
+                <md-input-container class="md-block">
+                    <label>用户名/电子邮箱</label>
+                    <input type="text" ng-model="account.email"/>
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <label >密码</label>
+                    <input type="password" ng-model="account.password"/>
+                    <div ng-messages="reg.password2.$error" ng-if="account.auth.loginErr">
+                        <div ng-message="">用户名/邮箱或密码错误~</div>
+                    </div>
+                </md-input-container>
+            </form>
+        </md-card-content>
+        <md-card-action class="login-action">
+            <md-button class="md-raised md-primary signup" ng-click="account.signin=!account.signin" ng-if="account.signin">注册</md-button>
+            <md-button class="md-raised md-primary signin" ng-click="account.signin=!account.signin" ng-if="!account.signin">登陆</md-button>
+            <md-button class="confirm md-raised md-accent" ng-if="account.signin" ng-click="account.login()">确定</md-button>
+            <md-button class="confirm md-raised md-accent" ng-if="!account.signin" ng-click="account.signup()">确定</md-button>
+        </md-card-action>
+    </md-card>
 </div>
