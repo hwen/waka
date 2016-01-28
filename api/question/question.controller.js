@@ -12,8 +12,42 @@ var Question = qModel.Question;
 var QtnFollow = qModel.QtnFollow;
 var User = require('../user/user.model');
 
-//add a  question
-exports.create = function (req, res) {
+//add a question
+exports.add = add;
+
+//search a question : version 1
+exports.search = search;
+
+//edit a question
+exports.edit = function(){};
+
+//get questions that have no answer yet by topic list
+exports.getNoAnswer = function(){};
+
+//get new question by topic list
+exports.getNew = function(){};
+
+//get top question by topic list
+exports.getTop = function(){};
+
+//get question by user
+exports.user = function(){};
+
+//question attitude
+exports.attitude = function(){};
+
+//add question follow
+exports.follow = function(){};
+
+//get question followers list
+exports.getFollower = function(){};
+
+//get user following question list
+exports.getFollowList = function(){};
+
+
+
+function add(req, res) {
     if (filter.notNull(req.body.title)) {
         var newQuestion = new Question(req.body);
         newQuestion.save(function (err, question) {
@@ -27,10 +61,9 @@ exports.create = function (req, res) {
     } else {
         log.err('question qid and title cannot be null. ', 'question.controller->create');
     }
-};
+}
 
-// search a question : version 1
-exports.search = function (req, res) {
+function search(req, res) {
     var key = new RegExp(req.body.keyword, "i");
 
     Question.find({
@@ -52,15 +85,4 @@ exports.search = function (req, res) {
             res.status(200).json(result);
         })
     })
-};
-
-// support, unsupport, follow,
-exports.opinion = function(req, res) {
-
-};
-
-
-
-
-
-
+}

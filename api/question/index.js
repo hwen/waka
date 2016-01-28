@@ -6,7 +6,7 @@ var express = require('express'),
 
 var router = express.Router();
 
-router.post('/create', controller.create);
+router.post('/add', controller.add);
 router.post('/search', controller.search);
 
 

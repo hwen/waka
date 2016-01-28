@@ -10,7 +10,7 @@ var ObjectId = Schema.ObjectId;
 
 var TopicSchema = new Schema({
     name: { type:String },
-    parent_id: { type:ObjectId }
+    parent_id: [Schema.Types.ObjectId]
 });
 
 module.exports = mongoose.model('Topic', TopicSchema);
