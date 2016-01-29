@@ -46,6 +46,10 @@ exports.getFollower = function(){};
 exports.getFollowList = function(){};
 
 
+function edit(req, res) {
+    
+}
+
 
 function add(req, res) {
     if (filter.notNull(req.body.title)) {

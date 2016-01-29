@@ -4,42 +4,19 @@
 
 'use strict';
 
-var Constant = require('../config/constant');
-
-exports.success = function(data) {
+exports.success = function(data, mes) {
     return {
-        status: Constant.STATUS.SUCCESS,
-        data: data
+        status: 0,
+        data: data,
+        error: 'no',
+        mes: mes
     };
 };
 
-exports.failure = function(data) {
+exports.failure = function(error, mes) {
     return {
-        status: Constant.STATUS.FAILURE,
-        data: data
+        status: -1,
+        error: error,
+        mes: mes
     };
-};
-
-exports.userExists = function() {
-    var result = {
-        status: Constant.STATUS.USER_EXISTS,
-        data: 'user already existing'
-    };
-    return result;
-};
-
-exports.userNotFound = function() {
-    var result = {
-        status: Constant.STATUS.USER_NOT_FOUND,
-        data: 'cannot find this user'
-    };
-    return result;
-};
-
-exports.programException = function(err) {
-    var result = {
-        status: Constant.STATUS.PROGRAM_EXCEPTION,
-        data: err
-    }
-    return result;
 };

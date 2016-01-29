@@ -3,8 +3,7 @@
  */
 
 'use strict';
-var InvokeResult = require('../../components/invoke_result'),
-    Constant = require('../../config/constant'),
+var invokeResult = require('../../components/invoke_result'),
     User = require('./user.model'),
     log = require('../../components/util/log');
 
