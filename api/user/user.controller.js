@@ -19,7 +19,7 @@ exports.index = function(req, res) {
         if (err) {
             return res.send(500, err);
         }
-        res.json(200, users);
+        res.json(invokeResult.success(users));
     });
 };
 
@@ -33,25 +33,17 @@ exports.create = function(req, res) {
         }]
     }).exec(function(err, users) {
         if (err) {
-            return res.json(InvokeResult.programException(err))
+            return res.json(invokeResult.failure(err, 'create user error'))
         }
         if (users.length > 0) { //user existed
             var user = users[0];
             if (user.username === req.body.username) {
-                return res.json({
-                    status:-1,
-                    error: 'username',
-                    mes: 'username already existing'
-                });
+                return res.json(invokeResult.failure('username', 'username already existing'));
             }
             if (user.email === req.body.email) {
-                return res.json({
-                    status: -1,
-                    error: 'email',
-                    mes: 'email has been registered'
-                });
+                return res.json(invokeResult.failure('email', 'email has been registered'));
             }
-            return res.json(InvokeResult.userExists());
+            return res.json(invokeResult.failure('username', 'can not be created'));
         }
         var newUser = new User(req.body);
         newUser.password = newUser.encrytPassword(newUser.password);
@@ -62,7 +54,7 @@ exports.create = function(req, res) {
             req.session.username = newUser.username;
             req.session.name = newUser.name;
             req.session.email = newUser.email;
-            return res.json({status:0, data: newUser, mes:'signup success!'});
+            return res.json(invokeResult.success(newUser, 'signup success!'));
         });
     });
 };
@@ -77,10 +69,10 @@ exports.login = function(req, res) {
         }]
     }).exec(function(err, users) {
         if (err) {
-            return res.json({status:-1, error:err, mes:'program error'});
+            return res.json(invokeResult.failure(err, 'program error'));
         }
         if (users.length == 0) {
-            return res.json({status:-1, error:'user', mes: 'user not found!'});
+            return res.json(invokeResult.failure('user', 'user not found!'));
         }
         var user = users[0];
         log.out(users);
@@ -88,9 +80,9 @@ exports.login = function(req, res) {
             req.session.username = req.body.username;
             req.session.name = user.name;
             req.session.email = user.email;
-            return res.json({status: 0, error:'no', mes:'login success', data:user});
+            return res.json(invokeResult.success(user, 'login success'));
         }
-        return res.json({status:-1, error:'password', mes:'password wrong!'});
+        return res.json(invokeResult.failure('password', 'password wrong!'));
     });
 };
 
@@ -98,7 +90,7 @@ exports.logout = function(req, res) {
     req.session.username = '';
     req.session.name = '';
     req.session.email = '';
-    return res.json(InvokeResult.success());
+    return res.json(invokeResult.success('', 'logout success'));
 };
 
 exports.hello = function(req, res) {
