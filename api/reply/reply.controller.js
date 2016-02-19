@@ -6,7 +6,7 @@ var Reply = require('./reply/reply.model');
 
 exports.add = function() {};
 
-exports.edit = function() {};
+exports.update = function() {};
 
 //get reply list by answer
 exports.list = function() {};

@@ -14,6 +14,7 @@ var AnswerSchema = new Schema({
     support_count: { type:Number, default:0 },
     unsupport_count: { type:Number, default:0 },
     useless_count: { type:Number, default:0 },
+    score: { type:Number, default:0 },
     content: { type:String },
     created_time: { type:Date, default:Date.now }
 });
@@ -26,6 +27,22 @@ var AswCollectSchema = new Schema({
 
 AnswerSchema.index({created_time: -1});
 AnswerSchema.index({author_id:1, created_time:-1});
+AnswerSchema.index({score:-1, created_time:-1});
+
+AnswerSchema.methods = {
+    support: function() {
+        this.support_count++;
+        this.score++;
+    },
+    unsupport: function() {
+        this.unsupport_count++;
+        this.score -= 2;
+    },
+    useless: function() {
+        this.useless_count++;
+        this.score -= 3;
+    }
+};
 
 module.exports = mongoose.model('Answer', AnswerSchema);
 module.exports = mongoose.model('AnswerCollect', AswCollectSchema);

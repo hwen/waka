@@ -13,7 +13,7 @@ var ObjectId = Schema.ObjectId;
 var QuestionSchema = new Schema({
     title: { type:String },
     content: { type:String },
-    topics: [Schema.Types.ObjectId],
+    topics: [ObjectId],
     author_id: { type: ObjectId},
     follow_count: { type:Number, default:0 },
     support_count: { type:Number, default:0 },
@@ -30,6 +30,7 @@ var QtnFollow = new Schema({
 
 QuestionSchema.index({created_time: -1});
 QuestionSchema.index({author_id: 1, created_time: -1});
+QuestionSchema.index({topics: -1});
 QuestionSchema.index({score: -1, created_time: -1});
 
 QuestionSchema.methods = {

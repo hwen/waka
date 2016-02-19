@@ -11,6 +11,7 @@ var QtnFollow = qModel.QtnFollow;
 var User = require('../user/user.model');
 var filter = require('../../components/util/filters');
 var invokeResult = require('../../components/invoke_result');
+var sysError = invokeResult.sysError;
 var log = require('../../components/util/log');
 
 //add a question
@@ -20,7 +21,7 @@ exports.add = add;
 exports.search = search;
 
 //edit a question
-exports.edit = edit;
+exports.update = update;
 
 //get questions that have no answer yet by topic list
 exports.getNoAnswer = getNoAnswer;
@@ -51,7 +52,7 @@ function getFollowList(req, res) {
     if (!filter.notNull(req.body.follower_id)) { log.err('getFollowList f_id null');return res.json(invokeResult.failure('follower_id', 'null'));}
     QtnFollow.find({follower_id:req.body.follower_id}).exec(function(err, questions) {
         getAuthor(questions, function(err, results) {
-            if (err) { sysError(err, '', 'question getFollowList');}
+            if (err) { return sysError(res, err,'question getFollowList');}
             return res.json(invokeResult.success(results, 'getFollowList'));
         });
     });
@@ -63,11 +64,11 @@ function getFollower(req, res) {
     QtnFollow.find({question_id:req.body.question_id}).exec(function(err, results) {
         async.map(results, function(qFollow, cb) {
             User.findById(qFollow.follower_id).exec(function(err, user) {
-                if (err) { sysError(err, 'follower_id', 'question getFollower->find user:controller');}
+                if (err) { return sysError(res, err, 'question getFollower->find user:controller');}
                 cb(null, user);
             });
         }, function(err, users) {
-            if (err) { sysError(err, '', 'question map user: controller');}
+            if (err) { return sysError(res, err, 'question map user: controller');}
             res.json(invokeResult.success(users, 'getFollower'));
         });
     });
@@ -78,7 +79,7 @@ function follow(req, res) {
     if (filter.notNull(req.body.question_id)&&filter.notNull(req.body.follower_id)) {
         var newFollow = new QtnFollow(req.body);
         newFollow.save(function(err, follow) {
-            if (err) { sysError(err, 'QtnFollow', 'save QtnFollow');}
+            if (err) { return sysError(res, err, 'save QtnFollow');}
             res.json(invokeResult.success(follow, 'save follow'));
         });
     } else {
@@ -94,7 +95,7 @@ function attitude(req, res) {
             case '2': question.unsupport();break;
         }
         question.save(function(err, q) {
-            if (err) {sysError(err,'question', 'attitude->save question attitude');}
+            if (err) { return  sysError(res, err, 'attitude->save question attitude');}
             log.out('question attitude save :controller', question);
             return res.json(invokeResult.success({q:q}, 'attitude updated'));
         });
@@ -106,7 +107,7 @@ function getByUser(req, res) {
     async.waterfall([
         function(cb) {
             User.findById(req.body.author_id).exec(function(err, user) {
-                if (err) {sysError(err,'author_id', 'getByUser->findUser error');}
+                if (err) { return sysError(res, err, 'getByUser->findUser error');}
                 cb(null, user);
             });
         },
@@ -119,13 +120,13 @@ function getByUser(req, res) {
                     }
                     callback(null, data);
                 }, function(err, datas) {
-                    if (err) {sysError(err,'author_id', 'getByUser->map question error');}
+                    if (err) { return sysError(res, err, 'getByUser->map question error');}
                     cb(null, datas);
                 });
             });
         }
     ], function(err, result) {
-        if (err) {sysError(err,'author_id', 'getByUser->waterfall question error');}
+        if (err) {return sysError(res, err,'getByUser->waterfall question error');}
         return res.json(invokeResult.success(result, 'get question by user'));
     });
 }
@@ -134,11 +135,11 @@ function getHot(req, res) {
     log.out('get hot question by user following topics ID', req.body);
     var topicsList = req.body.topics ? req.body.topics : [];
     getQuestionByTopicList(topicsList, {noAnswer:false, sort:true}, function(err, data) {
-        if (err) { sysError(err, 'topics', 'getHot error');}
+        if (err) { return sysError(res, err, 'getHot error');}
         var results = _.uniqBy(data, "_id");
         log.out('get Hot question', results);
         getAuthor(results, function(err, data) {
-            if (err) { sysError(err, 'author_id', 'getAuthor error in getHot');}
+            if (err) { return sysError(res, err,'getAuthor error in getHot');}
             return res.json(invokeResult.success(data, 'getHot question'));
         });
     });
@@ -148,11 +149,11 @@ function getNew(req, res) {
     log.out('get new question by user following topics ID', req.body);
     var topicsList = req.body.topics ? req.body.topics : [];
     getQuestionByTopicList(topicsList, {}, function(err, data) {
-        if (err) { sysError(err, 'topics', 'getNew error');}
+        if (err) { return sysError(res, err,'getNew error');}
         var results = _.uniqBy(data, "_id");
         log.out('get new question', results);
         getAuthor(results, function(err, data) {
-            if (err) { sysError(err, 'author_id', 'getAuthor error in getNew');}
+            if (err) { return sysError(res, err,'getAuthor error in getNew');}
             return res.json(invokeResult.success(data, 'getNew question'));
         });
     });
@@ -163,18 +164,18 @@ function getNoAnswer(req, res) {
     log.out('get no answer question by user following topics ID', req.body);
     var topicsList = req.body.topics ? req.body.topics : [];
     getQuestionByTopicList(topicsList, {noAnswer:true, sort:false} ,function(err, data) {
-        if (err) { sysError(err, 'topics', 'getNoAnswer error');}
+        if (err) { return sysError(res, err, 'getNoAnswer error');}
         var results = _.uniqBy(data, "_id");
         log.out('no answer question', results);
         getAuthor(results, function(err, data) {
-            if (err) { sysError(err, 'topics', 'getNoAnswer error'); }
+            if (err) { return sysError(res, err,'getNoAnswer error'); }
             return res.json(invokeResult.success(data, 'get no answer questions success'));
         });
     });
 }
 
-function edit(req, res) {
-    Question.find({_id: req.body.id||''}).exec(function(err, question) {
+function update(req, res) {
+    Question.find({_id: req.body._id||''}).exec(function(err, question) {
         if (err) { res.send(500, err); }
         if (!question) { return res.status(404).json(invokeResult.success('', 'question not found!')); }
         if (question.author_id != req.body.author_id) { return res.json(invokeResult.failure('author_id', 'no permission')); }
@@ -227,7 +228,7 @@ function getQuestionByTopicList(topicsList, params ,callback) {
     };
     async.concat(topicsList, function(topic, cb) {
         Question.find({topics:topic}, query.noAnswer).sort(query.sort).exec(function(err, questions) {
-            if (err) { sysError(err, 'topics', 'get question by topicsList error'); }
+            if (err) { log.err(err); }
             else {
                 cb(null, questions);
             }
@@ -245,10 +246,6 @@ function getAuthor(questions, callback) {
             cb(null, data);
         })
     }, callback);
-}
-
-function sysError(err, errInfo ,mes) {
-    log.err(err); return res.send(500, invokeResult.failure(errInfo,mes));
 }
 
 //function findById(req, res) {

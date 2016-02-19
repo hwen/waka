@@ -3,8 +3,17 @@
  */
 
 'use strict';
+var log = require('./util/log');
 
-exports.success = function(data, mes) {
+exports.success = success;
+
+exports.failure = failure;
+
+exports.sysError = function(res, err, errInfo) {
+    log.err(err); return res.send(500, failure(errInfo,err));
+};
+
+function success(data, mes) {
     return {
         status: 0,
         data: data,
@@ -13,10 +22,10 @@ exports.success = function(data, mes) {
     };
 };
 
-exports.failure = function(error, mes) {
+function failure(error, mes) {
     return {
         status: -1,
         error: error,
         mes: mes
     };
-};
+}
