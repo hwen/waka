@@ -5,41 +5,81 @@ var AnswerModel = require('./answer.model'),
     Answer = AnswerModel.Answer,
     AnswerCollect = AnswerModel.AnswerCollect,
     User = require('../user/user.model'),
-    Question = require('./question.model').Question,
+    Question = require('../question/question.model').Question,
     _ = require('lodash'),
     async = require('async'),
     invokeResult = require('../../components/invoke_result'),
     sysError = invokeResult.sysError,
     log = require('../../components/util/log');
 
-//get good answers by topic(and also subtopics):sort by score
+/*
+*  params: topicList
+*  method: post
+*  get good answers by topic(and also subtopics):sort by score
+* */
 exports.getByTopic = getByTopic;
 
-//get good answer in user following topic list
+/*
+*  params: topicList
+*  method: post
+*  description: get good answer in user following topic list
+* */
 exports.getUserTopics = getByTopic;
 
-//get answers by question
-exports.list = list;
+/*
+*  params: question_id
+*  method: get
+*  description:
+* */
+exports.getByQuestion = getByQuestion;
 
-//get answer by user
+/*
+*  params: author_id
+*  method: get
+*  description: get answer by user
+* */
 exports.getByUser = getByUser;
 
-//get answers by user collection
+/*
+*  params: user_id
+*  method: get
+*  description: get answers by user collection
+* */
 exports.collection = collection;
 
-//add answer to collection
+/*
+*  params: user_id, answer_id
+*  method: post
+*  description:
+* */
 exports.addCollection = addCollection;
 
-//answer attitude
+/*
+*  params: _id, attitude(1,2,3 : sup, unsup, useless)
+*  method: post
+*  description:
+* */
 exports.attitude = attitude;
 
-//add answer
+/*
+*  params: question_id, author_id, content
+*  method: post
+*  description:
+* */
 exports.add = add;
 
-//modify answer
+/*
+*  params: _id, ....
+*  method: post
+*  description: update answer
+* */
 exports.update = update;
 
-//delete answer
+/*
+*  params: _id
+*  method: post
+*  description:
+* */
 exports.del = del;
 
 //TODO: get good answers by week, month
@@ -54,7 +94,7 @@ function addCollection(req, res) {
 }
 
 function collection(req, res) {
-    AnswerCollect.find(req.body.user_id).exec(function(err, results) {
+    AnswerCollect.find(req.params.user_id).exec(function(err, results) {
         async.concat(results, function(result, cb) {
             Answer.findById(result.answer_id).exec(function(err, answer) {
                cb(null, answer);
@@ -130,8 +170,8 @@ function add(req, res) {
 }
 
 function getByUser(req, res) {
-    log.out('answer getByUser', req.body);
-    Answer.find({author_id:req.body.author_id}).sort({created_time:-1})
+    log.out('answer getByUser', req.params);
+    Answer.find({author_id:req.params.author_id}).sort({created_time:-1})
         .exec(function(err, answers) {
             if (err) { return sysError(res, err, 'answer getByUser'); }
             getAuthor(answers, function(err, datas) {
@@ -176,16 +216,16 @@ function getByTopic(req, res) {
     });
 }
 
-function list(req, res) {
-    log.out('answer list', req.body);
-    Answer.find({question_id: req.body.question_id})
+function getByQuestion(req, res) {
+    log.out('answer getByQuestion', req.params);
+    Answer.find({question_id: req.params.question_id})
         .sort({score:-1, created_time:-1})
         .exec(function(err, results) {
-            if (err) { return sysError(res, err, 'answer list')}
+            if (err) { return sysError(res, err, 'answer getByQuestion')}
             getAuthor(results, function(err, data) {
-                if (err) { return sysError(res, err,'answer list')}
+                if (err) { return sysError(res, err,'answer getByQuestion')}
                 else {
-                    return res.json(invokeResult.success(data, 'answer list'));
+                    return res.json(invokeResult.success(data, 'answer getByQuestion'));
                 }
             });
         });

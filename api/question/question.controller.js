@@ -14,43 +14,74 @@ var invokeResult = require('../../components/invoke_result');
 var sysError = invokeResult.sysError;
 var log = require('../../components/util/log');
 
-//add a question
+/*
+*  params: title, content, author_id, topics
+*  method: post
+*  description:
+* */
 exports.add = add;
 
-//search a question : version 1
+/*
+*  params: keyword
+*  method: post
+*  description: search a question : version 1
+* */
 exports.search = search;
 
-//edit a question
 exports.update = update;
 
-//get questions that have no answer yet by topic list
+/*
+*  params: topics
+*  method: post
+*  description: get questions that have no answer yet by topic list
+* */
 exports.getNoAnswer = getNoAnswer;
 
-//get new question by topic list ID
+//params: topics, get new question by topic list ID
 exports.getNew = getNew;
 
-//get top question by topic list ID
+//params: topics, get top question by topic list ID
 exports.getHot = getHot;
 
-//get question by user ID (author)
+/*
+*  params: author_id
+*  method: get
+*  description:
+* */
 exports.getByUser = getByUser;
 
-//question attitude
+/*
+*  params: _id, attitude(1, 2 : sup, unsup)
+*  method: post
+*  description:
+* */
 exports.attitude = attitude;
 
-//add question follow
+/*
+*  params: question_id, follower_id
+*  method: post
+*  description:
+* */
 exports.follow = follow;
 
-//get question followers list
-exports.getFollower = getFollower;
+/*
+*  params: question_id
+*  method: get
+*  description: get question followers list
+* */
+exports.getFollowers = getFollowers;
 
-//get user following question list
+/*
+*  params: follower_id
+*  method: get
+*  description: get user following questions
+* */
 exports.getFollowList = getFollowList;
 
 function getFollowList(req, res) {
-    log.out('question getFollower: controller', req.body);
-    if (!filter.notNull(req.body.follower_id)) { log.err('getFollowList f_id null');return res.json(invokeResult.failure('follower_id', 'null'));}
-    QtnFollow.find({follower_id:req.body.follower_id}).exec(function(err, questions) {
+    log.out('question getFollower: controller', req.params);
+    if (!filter.notNull(req.params.follower_id)) { log.err('getFollowList f_id null');return res.json(invokeResult.failure('follower_id', 'null'));}
+    QtnFollow.find({follower_id:req.params.follower_id}).exec(function(err, questions) {
         getAuthor(questions, function(err, results) {
             if (err) { return sysError(res, err,'question getFollowList');}
             return res.json(invokeResult.success(results, 'getFollowList'));
@@ -58,10 +89,10 @@ function getFollowList(req, res) {
     });
 }
 
-function getFollower(req, res) {
-    log.out('question getFollower: controller', req.body);
-    if (!filter.notNull(req.body.question_id)) {log.err('getFollower question_id cannot be null'); return res.json(invokeResult.failure('question_id', 'question_id null'));}
-    QtnFollow.find({question_id:req.body.question_id}).exec(function(err, results) {
+function getFollowers(req, res) {
+    log.out('question getFollower: controller', req.params);
+    if (!filter.notNull(req.params.question_id)) {log.err('getFollower question_id cannot be null'); return res.json(invokeResult.failure('question_id', 'question_id null'));}
+    QtnFollow.find({question_id:req.params.question_id}).exec(function(err, results) {
         async.map(results, function(qFollow, cb) {
             User.findById(qFollow.follower_id).exec(function(err, user) {
                 if (err) { return sysError(res, err, 'question getFollower->find user:controller');}
@@ -89,7 +120,7 @@ function follow(req, res) {
 
 function attitude(req, res) {
     log.out('question attitude: controller', req.body);
-    Question.findById(req.body.id).exec(function(err, question) {
+    Question.findById(req.body._id).exec(function(err, question) {
         switch (req.body.attitude) {
             case '1': question.support();break;
             case '2': question.unsupport();break;
@@ -103,16 +134,16 @@ function attitude(req, res) {
 }
 
 function getByUser(req, res) {
-    log.out('question getByUser: author_id', req.body.author_id);
+    log.out('question getByUser: author_id', req.params.author_id);
     async.waterfall([
         function(cb) {
-            User.findById(req.body.author_id).exec(function(err, user) {
+            User.findById(req.params.author_id).exec(function(err, user) {
                 if (err) { return sysError(res, err, 'getByUser->findUser error');}
                 cb(null, user);
             });
         },
         function(user, cb) {
-            Question.find({author_id:req.body.author_id}).exec(function(err, questions) {
+            Question.find({author_id:req.params.author_id}).exec(function(err, questions) {
                 async.map(questions, function(question, callback) {
                     var data = {
                         q: question,

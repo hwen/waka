@@ -9,7 +9,7 @@ var express = require('express'),
 var router = express.Router();
 
 router.post('/add', controller.add);
-router.post('/sub', controller.sub);
+router.get('/sub/:name', controller.sub);
 router.post('/update', controller.update);
 
 module.exports = router;

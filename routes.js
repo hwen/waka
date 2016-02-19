@@ -15,6 +15,7 @@ module.exports = function(app) {
     // insert routes below
     app.use('/api/user', require('./api/user'));
     app.use('/api/question', require('./api/question'));
+    app.use('/api/answer', require('./api/answer'));
     app.use('/api/topic', require('./api/topic'));
 
     // all und

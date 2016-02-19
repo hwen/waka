@@ -8,11 +8,18 @@ var Topic = require('./topic.model'),
     sysError = invokeResult.sysError,
     log = require('../../components/util/log');
 
-
-//get all sub topics 
+/*
+*  params: name
+*  method: get
+*  description: get all sub topics
+* */
 exports.sub = sub;
 
-//if your add a child that already add in other parent, will point to same child
+/*
+*  params: name, parent(parent_name)
+*  method: post
+*  description:
+* */
 exports.add = add;
 
 exports.update = update;
@@ -56,9 +63,9 @@ function add(req, res) {
 }
 
 function sub(req, res) {
-	log.out(req.body);
-	if (req.body.name) {
-		Topic.findOne({name: req.body.name}).exec(function(err, result) {
+	log.out(req.params);
+	if (req.params.name) {
+		Topic.findOne({name: req.params.name}).exec(function(err, result) {
 			if (err) return sysError(res, err, 'sub findOne error');
 			if (!result) return res.send(404, 'topic not found');
 			result.getChildren(true, function(err, results) {
