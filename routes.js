@@ -17,6 +17,8 @@ module.exports = function(app) {
     app.use('/api/question', require('./api/question'));
     app.use('/api/answer', require('./api/answer'));
     app.use('/api/topic', require('./api/topic'));
+    app.use('/api/reply', require('./api/reply'));
+    app.use('/api/message', require('./api/message'));
 
     // all und
     //app.route('/:url(api|components|app)/*').get(erros[404]);

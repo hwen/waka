@@ -6,6 +6,7 @@ var AnswerModel = require('./answer.model'),
     AnswerCollect = AnswerModel.AnswerCollect,
     User = require('../user/user.model'),
     Question = require('../question/question.model').Question,
+    Message = require('../message/message.model'),
     _ = require('lodash'),
     async = require('async'),
     invokeResult = require('../../components/invoke_result'),
@@ -76,7 +77,7 @@ exports.add = add;
 exports.update = update;
 
 /*
-*  params: _id
+*  params: _id, author_id
 *  method: post
 *  description:
 * */
@@ -149,7 +150,7 @@ function update(req, res) {
     Answer.findById(req.body._id).exec(function(err, answer) {
         if (err) { return sysError(res, err, 'edit'); }
         if (req.body.author_id !== answer.author_id) {
-            return res.json(invokeResult.failure('author_id', 'permission deny'));
+            return res.status(401).json(invokeResult.failure('author_id', 'permission deny'));
         }
         var updated = _.merge(answer, req.body);
         updated.save(function(err) {
@@ -165,6 +166,17 @@ function add(req, res) {
     var newAnswer = new Answer(req.body);
     newAnswer.save(function(err, result) {
         if (err) { return sysError(res, err, 'add answer'); }
+        Question.findOne({_id: req.body.question_id}).exec(function(err, question) {
+            if (err) log.err(err);
+            var mes = {
+                type: "reply1",
+                master_id: question.author_id,
+                author_id: req.body.author_id,
+                question_id: req.body.question_id,
+                answer_id: result._id
+            };
+            Message.add(JSON.stringify(mes));
+        });
         return res.json(invokeResult.success(result, 'add answer'));
     });
 }

@@ -209,7 +209,7 @@ function update(req, res) {
     Question.find({_id: req.body._id||''}).exec(function(err, question) {
         if (err) { res.send(500, err); }
         if (!question) { return res.status(404).json(invokeResult.success('', 'question not found!')); }
-        if (question.author_id != req.body.author_id) { return res.json(invokeResult.failure('author_id', 'no permission')); }
+        if (question.author_id != req.body.author_id) { return res.status(401).json(invokeResult.failure('author_id', 'no permission')); }
         var updated = _.merge(question, req.body);
         updated.save(function(err) {
             if (err) { return res.send(500, err); }
@@ -217,7 +217,6 @@ function update(req, res) {
         });
     });
 }
-
 
 function add(req, res) {
     if (filter.notNull(req.body.title)&&filter.notNull(req.body.author_id)&&filter.notNull(req.body.topics)) {
