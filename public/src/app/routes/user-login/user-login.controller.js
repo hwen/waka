@@ -19,6 +19,12 @@
             emailExist:false
         };
 
+        User.getCurrentUser().$promise.then(function(res) {
+            if (res.data.uid) {
+                $state.go('home-page');
+            }
+        });
+
         vm.login = function() {
             var params = {
                 email: emRg.test(vm.email) ? vm.email: '',
@@ -34,7 +40,6 @@
                     }
                 }
                 if (res.status > -1) {
-                    setCookie(res.data);
                     console.log('login success');
                     $state.go('home-page');
                 }
@@ -67,14 +72,6 @@
                 console.log(err);
             });
         };
-
-        function setCookie(data) {
-            document.cookie = "name=" + data.username||'';
-            document.cookie = "password=" + data.password||'';
-            var date = new Date();
-            date.setTime(date.getTime() + 60* 60 * 1000);
-            document.cookie = "expires=" + date.toGMTString();
-        }
 
         function initAuth() {
             vm.auth = {

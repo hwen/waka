@@ -6,5 +6,11 @@
     function homeController($scope, $state, User, STATUS) {
         var vm = this;
 
+        vm.logout = function() {
+            User.logout().$promise.then(function(res) {
+                console.log(res);
+                $state.go('user-login');
+            });
+        };
     }
 })(angular);

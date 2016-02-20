@@ -10,6 +10,7 @@ var router = express.Router();
 
 router.post('/login', controller.login);
 router.get('/logout', controller.logout);
+router.get('/currentUser', controller.currentUser);
 router.post("/", controller.create);
 router.get("/hello", controller.hello);
 

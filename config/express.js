@@ -5,11 +5,12 @@
 'use strict';
 
 var express = require('express');
-//var favicon = require('server-favicon');
+var favicon = require('serve-favicon');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var path = require('path');
 var session = require('express-session');
+var sessionStore = require('sessionstore');
 var uuid = require('uuid');
 var config = require('./environment');
 var morgan = require('morgan');
@@ -31,18 +32,18 @@ module.exports = function(app) {
 
     app.use(cookieParser());
 
+    // config environment
+    app.use(favicon(config.root + '/public/src/assets/images/favicon.ico'));
+
     app.use(session({
         genid: function(req) {
-            return function() {
-                uuid.v1();
-            };
+            return uuid.v1();
         },
-        secret: 'iwaka',
+        cookie:{maxAge: 900000},
+        secret: 'i-waka',
         resave: false,
         saveUninitialized: true
     }));
-
-    // config environment
     app.use(express.static(path.join(config.root, 'public/src')));   //控制静态资源加载根目录
     app.set('appPath', config.root + 'public/src');
     app.use(morgan('dev'));

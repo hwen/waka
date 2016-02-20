@@ -22,6 +22,10 @@
                 logout: {
                     method: 'GET',
                     url: URL + '/user/logout'
+                },
+                getCurrentUser: {
+                    method: 'GET',
+                    url: URL + '/user/currentUser'
                 }
             });
         }])

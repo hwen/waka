@@ -19,7 +19,7 @@
                 url: '/home-page',
                 templateUrl: 'app/routes/home-page/home-page.html',
                 controller: 'homeController',
-                controllerAs: 'result'
+                controllerAs: 'homeController'
             })
 
         $urlRouterProvider.otherwise('/user-login');

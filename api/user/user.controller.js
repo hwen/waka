@@ -51,9 +51,7 @@ exports.create = function(req, res) {
             if (err) {
                 return validationError(res, err);
             }
-            req.session.username = newUser.username;
-            req.session.name = newUser.name;
-            req.session.email = newUser.email;
+            req.session.uid = user._id;
             return res.json(invokeResult.success(newUser, 'signup success!'));
         });
     });
@@ -77,9 +75,8 @@ exports.login = function(req, res) {
         var user = users[0];
         log.out(users);
         if (user.authenticate(req.body.password)) {
-            req.session.username = req.body.username;
+            req.session.uid = user._id;
             req.session.name = user.name;
-            req.session.email = user.email;
             return res.json(invokeResult.success(user, 'login success'));
         }
         return res.json(invokeResult.failure('password', 'password wrong!'));
@@ -87,10 +84,14 @@ exports.login = function(req, res) {
 };
 
 exports.logout = function(req, res) {
-    req.session.username = '';
-    req.session.name = '';
-    req.session.email = '';
+    req.session.uid = null;
     return res.json(invokeResult.success('', 'logout success'));
+};
+
+exports.currentUser = function(req, res) {
+    //console.log(req);
+    var data = { uid : req.session.uid };
+    return res.json(invokeResult.success(data, 'currentUser'));
 };
 
 exports.hello = function(req, res) {

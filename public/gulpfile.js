@@ -31,7 +31,6 @@ gulp.task('js', function() {
 
 gulp.task('watch', function() {
     gulp.watch(['src/app/**/*.less'], ['lessminicss']);
-    gulp.watch(['src/app/**/*.html'], ['html']);
     gulp.watch(['dist/*.css'], ['css']);
     gulp.watch(['src/app/**/*.js'], ['js']);
 });

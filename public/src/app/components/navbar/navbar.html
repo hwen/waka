@@ -1,24 +1,28 @@
-<nav>
-    <div style="background:yellowgreen;height: 300px;width: 100%;">
-        <form ng-submit="signup(reg)">
-            name: <input type="text" placeholder="name" ng-model="reg.username"/>
-            email: <input type="text" placeholder="email" ng-model="reg.email"/>
-            password: <input type="text" placeholder="password" ng-model="reg.password"/>
-            <div>
-                <button type="submit">signup</button>
-            </div>
-        </form>
-        <br/>
-        <hr/>
-        <form ng-submit="login()">
-            name or email: <input type="text" placeholder="name" ng-model="username"/>
-            password: <input type="text" placeholder="password" ng-model="password"/>
-            <div>
-                <button type="submit">login</button>
-            </div>
-        </form>
-        <div>
-            <button ng-click="test()">test</button>
-        </div>
+<md-toolbar class="toolbar-container">
+    <div class="md-toolbar-tools">
+        <h1>
+            <span>WAKA</span>
+        </h1>
+        <span flex></span>
+        <md-input-container flex="20" class="search-bar">
+            <md-icon md-svg-src="../assets/images/icons/ic_search_white_24px.svg"></md-icon>
+            <label ></label>
+            <input type="text" style="border-color:white;">
+        </md-input-container>
+        <a href="" md-button>
+            首页
+        </a>
+        <a href="" md-button>
+            发现
+        </a>
+        <a href="" md-button>
+            话题分类
+        </a>
+        <md-button class="md-raised" aria-label="Ask">
+            提问
+        </md-button>
+        <md-button class="md-fab md-mini" aria-label="Me">
+            <md-icon></md-icon>
+        </md-button>
     </div>
-</nav>
+</md-toolbar>
