@@ -4,9 +4,9 @@
 (function(angular) {
     'use strict';
 
-    angular.module('waka').controller('loginController', ['$scope', '$timeout','$state', 'User', 'STATUS',  loginController]);
+    angular.module('waka').controller('loginController', ['$scope', '$timeout','$state', 'User',  loginController]);
 
-    function loginController($scope, $timeout, $state, User, STATUS) {
+    function loginController($scope, $timeout, $state, User) {
         var vm = this;
         var emRg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
 

@@ -22,7 +22,7 @@
         return directive;
 
         function NavbarController($scope, User, $http, STATUS) {
-            
+
         }
     }
 

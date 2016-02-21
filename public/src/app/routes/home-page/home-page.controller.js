@@ -12,5 +12,9 @@
                 $state.go('user-login');
             });
         };
+
+        vm.user = function() {
+            $state.go('user-page');
+        };
     }
 })(angular);

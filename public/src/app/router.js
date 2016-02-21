@@ -19,8 +19,64 @@
                 url: '/home-page',
                 templateUrl: 'app/routes/home-page/home-page.html',
                 controller: 'homeController',
-                controllerAs: 'homeController'
+                controllerAs: 'home'
             })
+            .state('user-setting', {
+                url: '/user-setting',
+                templateUrl: 'app/routes/user-setting/user-setting.html' ,
+                controller: 'userSettingController',
+                controllerAs: 'vm'
+            })
+
+
+            .state('user-page', {
+                url: '/user-page',
+                templateUrl: 'app/routes/user-page/user-page.html',
+                controller: 'userPageController',
+                controllerAs: 'vm'
+            })
+            .state('user-page.answer', {
+                url:'/answer',
+                views: {
+                    "user-page": {
+                        templateUrl: 'app/routes/user-page-answer/user-page-answer.html',
+                        controller: 'userAnswerController',
+                        controllerAs: 'vm'
+                    }
+                }
+            })
+            .state('user-page.collection', {
+                url:'/collection',
+                views: {
+                    "user-page" : {
+                        templateUrl: 'app/routes/user-page-collection/user-page-collection.html',
+                        controller: 'userCollectionController',
+                        controllerAs: 'vm'
+                    }
+                }
+            })
+            .state('user-page.question', {
+                url:'/question',
+                views: {
+                    "user-page" : {
+                        templateUrl: 'app/routes/user-page-question/user-page-question.html',
+                        controller: 'userQuestionController',
+                        controllerAs: 'vm'
+                    }
+                }
+            })
+            .state('user-page.topic', {
+                url:'/topic',
+                views: {
+                    "user-page" : {
+                        templateUrl: 'app/routes/user-page-topic/user-page-topic.html',
+                        controller: 'userTopicController',
+                        controllerAs: 'vm'
+                    }
+                }
+            })
+
+
 
         $urlRouterProvider.otherwise('/user-login');
     }

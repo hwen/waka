@@ -21,7 +21,7 @@ var UserSchema = new Schema({
         },
         password: String,
         profile: String,
-        signature: String,
+        description: String,
         avatar: String,
 
         answer_count: { type:Number, default:0 },
