@@ -20,6 +20,7 @@
         };
 
         User.getCurrentUser().$promise.then(function(res) {
+            console.log(res);
             if (res.data.uid) {
                 $state.go('home-page');
             }

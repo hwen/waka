@@ -104,9 +104,8 @@ exports.imgUpload = function(req, res) {
         var fileStream = fs.createWriteStream(imgPath);
         file.pipe(fileStream);
         fileStream.on('close',function() {
-            console.log(req.busboy);
         });
-        return res.status(200).json('ok');
+        return res.status(200).json(invokeResult.success('', 'upload avatar success'));
     });
 };
 
