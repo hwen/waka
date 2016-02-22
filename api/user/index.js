@@ -13,5 +13,6 @@ router.get('/logout', controller.logout);
 router.get('/currentUser', controller.currentUser);
 router.post("/", controller.create);
 router.get("/hello", controller.hello);
+router.post("/imgUpload", controller.imgUpload);
 
 module.exports = router;

@@ -3,18 +3,84 @@
     <md-content>
         <md-tabs md-dynamic-height md-border-bottom>
             <md-tab label="个人资料">
-                <md-content class="md-padding info-setting">
-                    个人资料设置
+                <md-content class="md-padding info-setting" layout="row">
+                    <div flex="50" flex-offset="25" class="info-box">
+                        <md-card class="md-whiteframe-5dp">
+                            <md-card-title>
+                                <md-card-title-text layout="column">
+                                    <md-input-container>
+                                        <label>用户名</label>
+                                        <input type="text"/>
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>签名</label>
+                                        <input type="text"/>
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>个人简介</label>
+                                        <textarea name="description" id="description" cols="30" rows="10"></textarea> 
+                                    </md-input-container>
+                                </md-card-title-text>
+                            </md-card-title>
+                            <md-card-actions layout="row" layout-align="end center">
+                                <md-button class="md-raised md-primary">保存</md-button>
+                            </md-card-actions>
+                        </md-card>
+                    </div>
                 </md-content>
             </md-tab>
             <md-tab label="密码修改">
-                <md-content class="md-padding password-setting">
-                    密码修改设置
+                <md-content class="md-padding password-setting" layout="row">
+                    <div flex="40" flex-offset="30" class="password-box">
+                        <md-card class="md-whiteframe-5dp">
+                            <md-card-title>
+                                <md-card-title-text layout="column">
+                                    <md-input-container>
+                                        <label>旧密码</label>
+                                        <input type="text"/>
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>新密码</label>
+                                        <input type="text"/>
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>确认密码</label>
+                                        <input type="text"/>
+                                    </md-input-container>
+                                </md-card-title-text>
+                            </md-card-title>
+                            <md-card-actions layout="row" layout-align="end center">
+                                <md-button class="md-raised md-primary">保存</md-button>
+                            </md-card-actions>
+                        </md-card>
+                    </div>
                 </md-content>
             </md-tab>
-            <md-tab label="邮箱地址">
-                <md-content class="md-padding email-setting">
-                    邮箱地址设置
+            <md-tab label="修改头像">
+                <md-content layout="row" class="avatar-box">
+                    <div flex="20" flex-offset="20">
+                        <md-card class="md-whiteframe-5dp" layout="column">
+                            <img src="../assets/images/welcome_card.jpg" alt="" class="avatar"/>
+                            <md-card-actions flex="25" layout="row" layout-align="end center">
+                                <md-button class="md-raised md-accent" ng-model="vm.picFile" ngf-select accept="image/*">上传头像</md-button>
+                            </md-card-actions>
+                        </md-card>
+                    </div>
+                    <div flex="40">
+                        <md-card class="md-whiteframe-5dp" layout="column">
+                            <div class="crop-image" ngf-drop ng-model="vm.picFile" ngf-pattern="image/*">
+                                <img-crop image="vm.picFile  | ngfDataUrl"
+                                          result-image="vm.croppedDataUrl" ng-init="vm.croppedDataUrl=''">
+                                </img-crop>
+                            </div>
+                            <md-card-actions flex="25" layout="row" layout-align="end center">
+                                                                    <span class="vm.progress" ng-show="vm.progress >= 0">
+          <div style="width:{{vm.progress}}%" ng-bind="vm.progress + '%'"></div>
+        </span>
+                                <md-button class="md-raised md-primary" ng-click="vm.upload(vm.croppedDataUrl)">保存</md-button>
+                            </md-card-actions>
+                        </md-card>
+                    </div>
                 </md-content>
             </md-tab>
         </md-tabs>

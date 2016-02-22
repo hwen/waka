@@ -4,7 +4,8 @@
 (function(angular) {
     'use strict';
 
-    angular.module('waka',['ui.router', 'ngResource', 'ngMaterial']);
+    angular.module('waka',['ui.router', 'ngResource', 'ngMaterial', 'ngFileUpload',
+        'ngImgCrop']);
 
     angular.module('waka').config(['$mdThemingProvider', materialConfig]);
 

@@ -20,7 +20,7 @@ var UserSchema = new Schema({
             unique: true
         },
         password: String,
-        profile: String,
+        bio: String,
         description: String,
         avatar: String,
 

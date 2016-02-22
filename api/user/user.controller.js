@@ -5,8 +5,9 @@
 'use strict';
 var invokeResult = require('../../components/invoke_result'),
     User = require('./user.model'),
-    log = require('../../components/util/log');
-
+    log = require('../../components/util/log'),
+    config = require('../../config/environment'),
+    fs = require("fs");
 
 
 var validationError = function(res, err) {
@@ -92,6 +93,21 @@ exports.currentUser = function(req, res) {
     //console.log(req);
     var data = { uid : req.session.uid };
     return res.json(invokeResult.success(data, 'currentUser'));
+};
+
+exports.imgUpload = function(req, res) {
+    var imgPath;
+    req.pipe(req.busboy);
+    req.busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        log.out('what the fuck!!!', req.session.uid);
+        imgPath = config.root + '/public/src/assets/images/user/' + req.session.uid + '.png';
+        var fileStream = fs.createWriteStream(imgPath);
+        file.pipe(fileStream);
+        fileStream.on('close',function() {
+            console.log(req.busboy);
+        });
+        return res.status(200).json('ok');
+    });
 };
 
 exports.hello = function(req, res) {

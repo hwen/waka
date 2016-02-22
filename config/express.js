@@ -14,6 +14,7 @@ var sessionStore = require('sessionstore');
 var uuid = require('uuid');
 var config = require('./environment');
 var morgan = require('morgan');
+var busboy = require('connect-busboy');
 
 module.exports = function(app) {
     console.log("root is:"+config.root);
@@ -31,6 +32,7 @@ module.exports = function(app) {
     }));
 
     app.use(cookieParser());
+    app.use(busboy({ immediate: true }));
 
     // config environment
     app.use(favicon(config.root + '/public/src/assets/images/favicon.ico'));
@@ -41,7 +43,8 @@ module.exports = function(app) {
         },
         cookie:{maxAge: 900000},
         secret: 'i-waka',
-        resave: false,
+        rolling:true,
+        resave: true,
         saveUninitialized: true
     }));
     app.use(express.static(path.join(config.root, 'public/src')));   //控制静态资源加载根目录
