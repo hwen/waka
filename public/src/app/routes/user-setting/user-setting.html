@@ -61,11 +61,11 @@
           <div flex="20" flex-offset="20">
             <md-card class="md-whiteframe-5dp" layout="column">
               <img src="../assets/images/welcome_card.jpg" alt="" class="avatar" />
-              <md-card-actions flex="25" layout="row" layout-align="end center">
-                <md-button class="md-raised md-accent" ng-model="vm.picFile" ngf-select accept="image/*">上传头像</md-button>
-              </md-card-actions>
+              <div layout="row">
+                <section flex><h1>头像预览</h1></section>
+                <img flex style="width: 128px;height: 128px;" src="{{vm.croppedDataUrl}}" alt=""/>
+              </div>
             </md-card>
-            <md-card><img style="width: 128px;height: 128px;" src="{{vm.croppedDataUrl}}" alt=""/></md-card>
           </div>
           <div flex="40">
             <md-card class="md-whiteframe-5dp" layout="column">
@@ -74,9 +74,7 @@
                 </img-crop>
               </div>
               <md-card-actions flex="25" layout="row" layout-align="end center">
-                <span class="vm.progress" ng-show="vm.progress >= 0">
-                  <div style="width:{{vm.progress}}%;color:red;" ng-bind="vm.progress + '%'"></div>
-                </span>
+                <md-button class="md-raised md-accent" ng-model="vm.picFile" ngf-select accept="image/*">上传头像</md-button>
                 <md-button class="md-raised md-primary" ng-click="vm.upload(vm.croppedDataUrl)">保存</md-button>
               </md-card-actions>
             </md-card>
