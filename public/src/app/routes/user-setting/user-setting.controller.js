@@ -47,10 +47,10 @@
         };
 
         vm.upload = function (dataUrl) {
-            console.log(dataUrl);
+            //漏掉name属性，触发不了 req.busboy.on('file') 事件
             Upload.upload({
                 url: '/api/user/imgUpload',
-                file: dataUrl
+                file: Upload.dataUrltoBlob(dataUrl)
             }).then(function (response) {
                 console.log(response);
             });

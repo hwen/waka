@@ -130,16 +130,15 @@ exports.currentUser = function(req, res) {
 exports.imgUpload = function(req, res) {
     var imgPath;
     req.pipe(req.busboy);
-    console.log("fucccccccccccccccccccccccccccccccck");
     req.busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        log.out('what the fuck!!!', req.session.uid);
-        imgPath = config.root + '/public/src/assets/images/user/' + req.session.uid + '.png';
+        log.out('what the fuck!!!', req.cookies.uid);
+        imgPath = config.root + '/public/src/assets/images/user/' + req.cookies.uid + '.png';
         var fileStream = fs.createWriteStream(imgPath);
         file.pipe(fileStream);
         fileStream.on('close',function() {
             log.out("upload success!!!");
+            return res.status(200).json(invokeResult.success('', 'upload avatar success'));
         });
-        return res.status(200).json(invokeResult.success('', 'upload avatar success'));
     });
 };
 

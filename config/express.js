@@ -32,7 +32,8 @@ module.exports = function(app) {
     }));
 
     app.use(cookieParser());
-    app.use(busboy({ immediate: true }));
+    //app.use(busboy({ immediate: true }));  设置 immediate 回到导致图片保存不完整
+    app.use(busboy());
 
     // config environment
     app.use(favicon(config.root + '/public/src/assets/images/favicon.ico'));

@@ -185,6 +185,7 @@
 
             vm.isOpen = false;
             vm.tooltipVisible = false;
+            vm.avatar ="../assets/images/user/" +getCookie("uid") + ".png";
 
             $scope.$watch('vm.isOpen', function(isOpen) {
                 if (isOpen) {
@@ -229,6 +230,18 @@
                 cookies.forEach(function(item) {
                     document.cookie = item + ";max-age=0";
                 });
+            }
+
+            function getCookie(key) {
+                var str = document.cookie;
+                if (str) {
+                    str = str.substr(str.indexOf(key));
+                    var end = str.indexOf(';') >-1 ? str.indexOf(';') : str.length;
+                    var value = str.substring(str.indexOf("=")+1, end);
+                    return value;
+                } else {
+                    return null;
+                }
             }
         }
     }
@@ -506,20 +519,12 @@
         };
 
         vm.upload = function (dataUrl) {
-            console.log(dataUrl);
+            //漏掉name属性，触发不了 req.busboy.on('file') 事件
             Upload.upload({
                 url: '/api/user/imgUpload',
                 file: Upload.dataUrltoBlob(dataUrl)
             }).then(function (response) {
-                $timeout(function () {
-                    vm.result = response.data;
-                });
-            }, function (response) {
-                if (response.status > 0) vm.errorMsg = response.status
-                    + ': ' + response.data;
-            }, function (evt) {
-                vm.progress = parseInt(100.0 * evt.loaded / evt.total);
-                console.log('progress: ' + vm.progress + '% ');
+                console.log(response);
             });
         }
     }
