@@ -69,7 +69,7 @@ exports.update = function(req, res) {
       return res.status(404).json(invokeResult.success('', 'cannot find user'));
     }
     var updated = _.merge(user, req.body);
-    updated.save(funciton(err) {
+    updated.save(function(err) {
       if (err) return sysError(res, err);
       return res.json(invokeResult.success(updated, 'updated'));
     });
@@ -130,12 +130,14 @@ exports.currentUser = function(req, res) {
 exports.imgUpload = function(req, res) {
     var imgPath;
     req.pipe(req.busboy);
+    console.log("fucccccccccccccccccccccccccccccccck");
     req.busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         log.out('what the fuck!!!', req.session.uid);
         imgPath = config.root + '/public/src/assets/images/user/' + req.session.uid + '.png';
         var fileStream = fs.createWriteStream(imgPath);
         file.pipe(fileStream);
         fileStream.on('close',function() {
+            log.out("upload success!!!");
         });
         return res.status(200).json(invokeResult.success('', 'upload avatar success'));
     });

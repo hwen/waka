@@ -9,7 +9,7 @@
       <label></label>
       <input type="text" style="border-color:white;">
     </md-input-container>
-    <a href="/home-page" md-button>
+    <a href="/#/home-page" md-button>
             首页
         </a>
     <a href="" md-button>
@@ -21,20 +21,17 @@
     <md-button class="md-raised" aria-label="Ask">
       提问
     </md-button>
-    <md-button class="md-fab md-mini" aria-label="Me">
-      <md-icon></md-icon>
-    </md-button>
-    <md-fab-speed-dial md-direction="down" md-open="vm.isOpen" class="md-scale md-fab-top-right" ng-mouseenter="vm.isOpen=true" ng-mouseleave="vm.isOpen=false">
+    <span flex="10"></span>
+    <md-fab-speed-dial md-direction="down" md-open="vm.isOpen" class="md-scale md-fab-top-right avatar-box" ng-mouseenter="vm.isOpen=true" ng-mouseleave="vm.isOpen=false">
       <md-fab-trigger>
-        <md-button aria-label="menu" class="md-fab md-warn">
-          <md-tooltip md-direction="top" md-visible="vm.isOpen">Menu</md-tooltip>
-          <md-icon md-svg-src="img/icons/menu.svg" aria-label="menu"></md-icon>
+        <md-button aria-label="menu" class="md-fab md-accent">
+          <md-icon aria-label="menu"><img class="avatar" src="{{vm.avatar}}" alt=""/></md-icon>
         </md-button>
       </md-fab-trigger>
-      <md-fab-actions>
-        <div ng-repeat="item in vm.items">
-          <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini" ng-click="vm.{{item.action}}()">
-            <md-tooltip md-direction="{{item.direction}}" md-visible="vm.isOpen" md-autohide="false">
+      <md-fab-actions class="menu-action">
+        <div ng-repeat="item in vm.items" class="menu-item">
+          <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini" ng-click="vm.action(item.action)">
+            <md-tooltip md-direction="{{item.direction}}" md-visible="vm.tooltipVisible" md-autohide="false">
               {{item.name}}
             </md-tooltip>
             <md-icon md-svg-src="{{item.icon}}" aria-label="{{item.name}}"></md-icon>

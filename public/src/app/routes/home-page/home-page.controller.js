@@ -6,6 +6,5 @@
     function homeController($scope, $state, User, STATUS) {
         var vm = this;
 
-
     }
 })(angular);

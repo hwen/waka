@@ -74,7 +74,7 @@
               </div>
               <md-card-actions flex="25" layout="row" layout-align="end center">
                 <span class="vm.progress" ng-show="vm.progress >= 0">
-                  <div style="width:{{vm.progress}}%" ng-bind="vm.progress + '%'"></div>
+                  <div style="width:{{vm.progress}}%;color:red;" ng-bind="vm.progress + '%'"></div>
                 </span>
                 <md-button class="md-raised md-primary" ng-click="vm.upload(vm.croppedDataUrl)">保存</md-button>
               </md-card-actions>

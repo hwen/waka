@@ -19,12 +19,15 @@
             emailExist:false
         };
 
-        User.getCurrentUser().$promise.then(function(res) {
-            console.log(res);
-            if (res.data.uid) {
-                $state.go('home-page');
+        (function checkCurrentUser() {
+            if (getCookie("uid")) {
+                var params = {
+                    username: decrypt(getCookie("username")),
+                    password: decrypt(getCookie("password"))
+                };
+                userLogin(params);
             }
-        });
+        })();
 
         vm.login = function() {
             var params = {
@@ -32,20 +35,7 @@
                 username: emRg.test(vm.email)? '': vm.email,
                 password: vm.password
             };
-            User.login(params).$promise.then(function(res) {
-                console.log(res);
-                if (res.status === -1) {
-                    switch (res.error) {
-                        case 'user':
-                        case 'password': vm.auth.loginErr = true; $timeout(initAuth, 4000);return;
-                    }
-                }
-                if (res.status > -1) {
-                    console.log('login success');
-                    setCookie(res.data._id);
-                    $state.go('home-page');
-                }
-            });
+            userLogin(params);
         };
 
         vm.signup = function() {
@@ -75,6 +65,26 @@
             });
         };
 
+        function userLogin(params) {
+            User.login(params).$promise.then(function(res) {
+                console.log(res);
+                if (res.status === -1) {
+                    switch (res.error) {
+                        case 'user':
+                        case 'password': vm.auth.loginErr = true;
+                            $timeout(initAuth, 4000);return;
+                    }
+                }
+                if (res.status > -1) {
+                    if (!getCookie("uid")) {
+                        console.log('set cookie');
+                        setCookie(res.data._id, res.data.username, params.password);
+                    }
+                    $state.go('home-page');
+                }
+            });
+        }
+
         function initAuth() {
             vm.auth = {
                 email: false,
@@ -85,12 +95,34 @@
             };
         }
 
-        function setCookie(_id) {
-          document.cookie = "uid="+_id + ";max-age=" + 60*60*24*10;
+        function setCookie(_id, username, password) {
+            username = encrypt(username);
+            password = encrypt(password);
+            document.cookie = "uid="+_id + ";max-age=" + 60*60*24*10;
+            document.cookie = "username="+username +
+                ";max-age=" + 60*60*24*10;
+            document.cookie = "password=" + password +
+                ";max-age=" +  60*60*24*10;
         }
 
-        function cancelCookie(_id) {
-          document.cookie = "uid" + _id + ";max-age=" + 0;
+        function getCookie(key) {
+            var str = document.cookie;
+            if (str) {
+                str = str.substr(str.indexOf(key));
+                var end = str.indexOf(';') >-1 ? str.indexOf(';') : str.length;
+                var value = str.substring(str.indexOf("=")+1, end);
+                return value;
+            } else {
+                return null;
+            }
+        }
+
+        function encrypt(key) {
+            return CryptoJS.AES.encrypt(key, "iwaka");
+        }
+
+        function decrypt(encrypted) {
+            return CryptoJS.AES.decrypt(encrypted, "iwaka").toString(CryptoJS.enc.Utf8);
         }
     }
 })(angular);
