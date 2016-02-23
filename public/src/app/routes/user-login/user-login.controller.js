@@ -42,6 +42,7 @@
                 }
                 if (res.status > -1) {
                     console.log('login success');
+                    setCookie(res.data._id);
                     $state.go('home-page');
                 }
             });
@@ -82,6 +83,14 @@
                 loginErr: false,
                 emailExist:false
             };
+        }
+
+        function setCookie(_id) {
+          document.cookie = "uid="+_id + ";max-age=" + 60*60*24*10;
+        }
+
+        function cancelCookie(_id) {
+          document.cookie = "uid" + _id + ";max-age=" + 0;
         }
     }
 })(angular);

@@ -7,7 +7,10 @@ var invokeResult = require('../../components/invoke_result'),
     User = require('./user.model'),
     log = require('../../components/util/log'),
     config = require('../../config/environment'),
-    fs = require("fs");
+    fs = require("fs"),
+     _ = require('lodash'),
+    invokeResult = require('../../components/invoke_result'),
+    sysError = invokeResult.sysError;
 
 
 var validationError = function(res, err) {
@@ -56,6 +59,35 @@ exports.create = function(req, res) {
             return res.json(invokeResult.success(newUser, 'signup success!'));
         });
     });
+};
+
+exports.update = function(req, res) {
+  log.out(req.body);
+  Uesr.find({_id: req.session.uid}).exec(function(err, user) {
+    if (err) return sysError(res, err, 'update err');
+    if (!user) {
+      return res.status(404).json(invokeResult.success('', 'cannot find user'));
+    }
+    var updated = _.merge(user, req.body);
+    updated.save(funciton(err) {
+      if (err) return sysError(res, err);
+      return res.json(invokeResult.success(updated, 'updated'));
+    });
+  });
+};
+
+exports.updatePassword = function(req, res) {
+  log.out(req.body);
+  User.findOne({_id:req.session.uid}).exec(function(err, user) {
+    if (req.body.oldPassword !== user.password) {
+      return res.json(invokeResult.failure('password', 'incorrect password'));
+    }
+    user.password = req.body.newPassword;
+    user.save(function(err) {
+      if (err) return sysError(res, err, 'update password err');
+      return res.json(invokeResult.success(user, 'update password success'));
+    });
+  });
 };
 
 exports.login = function(req, res) {

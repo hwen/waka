@@ -26,6 +26,14 @@
                 getCurrentUser: {
                     method: 'GET',
                     url: URL + '/user/currentUser'
+                },
+                update: {
+                  method: 'POST',
+                  url: URL + '/user/update'
+                },
+                updatePassword: {
+                  method: 'POST',
+                  url: URL + '/user/password'
                 }
             });
         }])

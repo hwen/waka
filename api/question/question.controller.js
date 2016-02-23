@@ -207,7 +207,7 @@ function getNoAnswer(req, res) {
 
 function update(req, res) {
     Question.find({_id: req.body._id||''}).exec(function(err, question) {
-        if (err) { res.send(500, err); }
+        if (err) { return sysError(res, err, 'update err'); }
         if (!question) { return res.status(404).json(invokeResult.success('', 'question not found!')); }
         if (question.author_id != req.body.author_id) { return res.status(401).json(invokeResult.failure('author_id', 'no permission')); }
         var updated = _.merge(question, req.body);
@@ -223,7 +223,7 @@ function add(req, res) {
         var newQuestion = new Question(req.body);
         newQuestion.save(function (err, question) {
             if (err) {
-                return res.send(500, err);
+                return sysError(res, err, 'add err');
             } else {
                 log.out('add question', question);
                 res.json(invokeResult.success({q:question}, 'add question success'));
@@ -242,7 +242,7 @@ function search(req, res) {
         $or: [{title: key}, {content: key}]
     }).exec(function (err, questions) {
         if (err) {
-            return res.send(500, 'question not found')
+            return sysError(res, err, 'search err');
         }
         getAuthor(questions, function(err, result) {
             if (err) { log.err(err, 'question.controller->search func'); res.status(500).json('search question fail!');}

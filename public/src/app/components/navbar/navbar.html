@@ -1,28 +1,46 @@
 <md-toolbar class="toolbar-container">
-    <div class="md-toolbar-tools">
-        <h1>
+  <div class="md-toolbar-tools">
+    <h1>
             <span>WAKA</span>
         </h1>
-        <span flex></span>
-        <md-input-container flex="20" class="search-bar">
-            <md-icon md-svg-src="../assets/images/icons/ic_search_white_24px.svg"></md-icon>
-            <label ></label>
-            <input type="text" style="border-color:white;">
-        </md-input-container>
-        <a href="" md-button>
+    <span flex></span>
+    <md-input-container flex="20" class="search-bar">
+      <md-icon md-svg-src="../assets/images/icons/ic_search_white_24px.svg"></md-icon>
+      <label></label>
+      <input type="text" style="border-color:white;">
+    </md-input-container>
+    <a href="/home-page" md-button>
             首页
         </a>
-        <a href="" md-button>
+    <a href="" md-button>
             发现
         </a>
-        <a href="" md-button>
+    <a href="" md-button>
             话题分类
         </a>
-        <md-button class="md-raised" aria-label="Ask">
-            提问
+    <md-button class="md-raised" aria-label="Ask">
+      提问
+    </md-button>
+    <md-button class="md-fab md-mini" aria-label="Me">
+      <md-icon></md-icon>
+    </md-button>
+    <md-fab-speed-dial md-direction="down" md-open="vm.isOpen" class="md-scale md-fab-top-right" ng-mouseenter="vm.isOpen=true" ng-mouseleave="vm.isOpen=false">
+      <md-fab-trigger>
+        <md-button aria-label="menu" class="md-fab md-warn">
+          <md-tooltip md-direction="top" md-visible="vm.isOpen">Menu</md-tooltip>
+          <md-icon md-svg-src="img/icons/menu.svg" aria-label="menu"></md-icon>
         </md-button>
-        <md-button class="md-fab md-mini" aria-label="Me">
-            <md-icon></md-icon>
-        </md-button>
-    </div>
+      </md-fab-trigger>
+      <md-fab-actions>
+        <div ng-repeat="item in vm.items">
+          <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini">
+            <md-tooltip md-direction="{{item.direction}}" md-visible="vm.isOpen" md-autohide="false">
+              {{item.name}}
+            </md-tooltip>
+            <md-icon md-svg-src="{{item.icon}}" aria-label="{{item.name}}"></md-icon>
+          </md-button>
+        </div>
+      </md-fab-actions>
+    </md-fab-speed-dial>
+  </div>
 </md-toolbar>
