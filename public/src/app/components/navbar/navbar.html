@@ -33,7 +33,7 @@
       </md-fab-trigger>
       <md-fab-actions>
         <div ng-repeat="item in vm.items">
-          <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini">
+          <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini" ng-click="vm.{{item.action}}()">
             <md-tooltip md-direction="{{item.direction}}" md-visible="vm.isOpen" md-autohide="false">
               {{item.name}}
             </md-tooltip>

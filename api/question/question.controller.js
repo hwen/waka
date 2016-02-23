@@ -164,7 +164,7 @@ function getByUser(req, res) {
 
 function getHot(req, res) {
     log.out('get hot question by user following topics ID', req.body);
-    var topicsList = req.body.topics ? req.body.topics : [];
+    var topicsList = req.body.topics ? req.body.topics : ["root"];
     getQuestionByTopicList(topicsList, {noAnswer:false, sort:true}, function(err, data) {
         if (err) { return sysError(res, err, 'getHot error');}
         var results = _.uniqBy(data, "_id");
@@ -178,7 +178,7 @@ function getHot(req, res) {
 
 function getNew(req, res) {
     log.out('get new question by user following topics ID', req.body);
-    var topicsList = req.body.topics ? req.body.topics : [];
+    var topicsList = req.body.topics ? req.body.topics : ["root"];
     getQuestionByTopicList(topicsList, {}, function(err, data) {
         if (err) { return sysError(res, err,'getNew error');}
         var results = _.uniqBy(data, "_id");
@@ -193,7 +193,7 @@ function getNew(req, res) {
 //Note that: topic list already show all child topics "ID"
 function getNoAnswer(req, res) {
     log.out('get no answer question by user following topics ID', req.body);
-    var topicsList = req.body.topics ? req.body.topics : [];
+    var topicsList = req.body.topics ? req.body.topics : ["root"];
     getQuestionByTopicList(topicsList, {noAnswer:true, sort:false} ,function(err, data) {
         if (err) { return sysError(res, err, 'getNoAnswer error');}
         var results = _.uniqBy(data, "_id");
@@ -274,7 +274,7 @@ function getAuthor(questions, callback) {
                 author: user
             };
             cb(null, data);
-        })
+        });
     }, callback);
 }
 

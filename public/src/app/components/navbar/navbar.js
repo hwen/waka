@@ -21,7 +21,7 @@
 
         return directive;
 
-        function NavbarController($scope, $state, User, $http, STATUS) {
+        function NavbarController($scope, $state, $cookie, User, $http, STATUS) {
           var vm = this;
 
           vm.isOpen = false;
@@ -34,10 +34,23 @@
           });
 
           vm.items = [
-            {name:"我的主页", icon: "", direction: "left"},
-            {name:"修改信息", icon: "", direction: "left"},
-            {name:"退出", icon: "", direction: "left"}
+            {name:"我的主页", icon: "", direction: "left", action: "toHomePage"},
+            {name:"修改信息", icon: "", direction: "left", action: "toUpdateInfo"},
+            {name:"退出", icon: "", direction: "left", action: "logout"}
           ];
+
+          vm.toHomePage = function() {
+            $state.go("home-page");
+          };
+
+          vm.toUpdateInfo = function() {
+            $state.go("user-setting");
+          };
+
+          vm.logout = fucntion() {
+            $cookie.remove("uid");
+            $state.go("user-login");
+          };
         }
     }
 
