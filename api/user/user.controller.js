@@ -63,7 +63,7 @@ exports.create = function(req, res) {
 
 exports.update = function(req, res) {
     log.out(req.body);
-    User.findOne({_id: req.cookies.uid}).exec(function(err, user) {
+    User.findOne({_id: req.cookies.uid||''}).exec(function(err, user) {
         if (err) return sysError(res, err, 'update err');
         if (!user) {
             return res.status(404).json(invokeResult.success('', 'cannot find user'));
@@ -79,7 +79,7 @@ exports.update = function(req, res) {
 
 exports.updatePassword = function(req, res) {
     log.out(req.body);
-    User.findOne({_id:req.cookies.uid}).exec(function(err, user) {
+    User.findOne({_id:req.cookies.uid||''}).exec(function(err, user) {
         if (!user.authenticate(req.body.oldPassword)) {
             return res.json(invokeResult.failure('password', 'incorrect password'));
         }
@@ -123,7 +123,7 @@ exports.logout = function(req, res) {
 };
 
 exports.currentUser = function(req, res) {
-    User.findOne({_id: req.cookies.uid}).exec(function(err, user) {
+    User.findOne({_id: req.cookies.uid||''}).exec(function(err, user) {
         if (err) return sysError(res, err);
         return res.json(invokeResult.success(user, 'currentUser'));
     });

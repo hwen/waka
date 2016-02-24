@@ -95,7 +95,8 @@ function addCollection(req, res) {
 }
 
 function collection(req, res) {
-    AnswerCollect.find(req.params.user_id).exec(function(err, results) {
+    var user_id = req.params.user_id || '';
+    AnswerCollect.find(user_id).exec(function(err, results) {
         async.concat(results, function(result, cb) {
             Answer.findById(result.answer_id).exec(function(err, answer) {
                cb(null, answer);
@@ -117,7 +118,8 @@ function collection(req, res) {
 }
 
 function del(req, res) {
-    Answer.findById(req.body._id).exec(function(err, answer) {
+    var aid = req.body._id || '';
+    Answer.findById(aid).exec(function(err, answer) {
         if (err) { return sysError(res, err, ''); }
         if (answer.author_id !== req.body.author_id) {
             return res.json(invokeResult.failure('author_id', 'permission deny'));
@@ -131,7 +133,8 @@ function del(req, res) {
 
 function attitude(req, res) {
     log.out('answer attitude', req.body);
-    Answer.findById(req.body._id).exec(function(err, answer) {
+    var aid = req.body._id || '';
+    Answer.findById(aid).exec(function(err, answer) {
         if (err) { return sysError(res, err, ''); }
         switch (req.body.attitude) {
             case 1: answer.support();break;
@@ -147,7 +150,8 @@ function attitude(req, res) {
 
 function update(req, res) {
     log.out('answer edit', req.body);
-    Answer.findById(req.body._id).exec(function(err, answer) {
+    var aid = req.body._id || '';
+    Answer.findById(aid).exec(function(err, answer) {
         if (err) { return sysError(res, err, 'edit'); }
         if (req.body.author_id !== answer.author_id) {
             return res.status(401).json(invokeResult.failure('author_id', 'permission deny'));
@@ -166,7 +170,7 @@ function add(req, res) {
     var newAnswer = new Answer(req.body);
     newAnswer.save(function(err, result) {
         if (err) { return sysError(res, err, 'add answer'); }
-        Question.findOne({_id: req.body.question_id}).exec(function(err, question) {
+        Question.findOne({_id: req.body.question_id||''}).exec(function(err, question) {
             if (err) log.err(err);
             var mes = {
                 type: "reply1",
@@ -183,7 +187,7 @@ function add(req, res) {
 
 function getByUser(req, res) {
     log.out('answer getByUser', req.params);
-    Answer.find({author_id:req.params.author_id}).sort({created_time:-1})
+    Answer.find({author_id:req.params.author_id||''}).sort({created_time:-1})
         .exec(function(err, answers) {
             if (err) { return sysError(res, err, 'answer getByUser'); }
             getAuthor(answers, function(err, datas) {
@@ -230,7 +234,7 @@ function getByTopic(req, res) {
 
 function getByQuestion(req, res) {
     log.out('answer getByQuestion', req.params);
-    Answer.find({question_id: req.params.question_id})
+    Answer.find({question_id: req.params.question_id||''})
         .sort({score:-1, created_time:-1})
         .exec(function(err, results) {
             if (err) { return sysError(res, err, 'answer getByQuestion')}

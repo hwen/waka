@@ -30,7 +30,7 @@ function add(req, res) {
     var newReply = new Reply(req.body);
     newReply.save(function(err, result) {
         if (err) return sysError(res, err, 'add reply error');
-        Answer.findOne({_id: req.body.answer_id}).exec(function(err, answer) {
+        Answer.findOne({_id: req.body.answer_id||''}).exec(function(err, answer) {
             if (err) log.err(err);
             var mes = {
                 type: "reply2",
@@ -48,7 +48,7 @@ function add(req, res) {
 function list(req, res) {
     log.out(req.params);
     if (!req.params.answer_id) return res.send(400, 'answer_id cannot be null');
-    Reply.find({answer_id: req.params.answer_id}).exec(function(err, replys) {
+    Reply.find({answer_id: req.params.answer_id||''}).exec(function(err, replys) {
         if (err) return sysError(res, err, '');
         return res.json(invokeResult.success(replys, 'list replys success'));
     });
@@ -56,7 +56,7 @@ function list(req, res) {
 
 function update(req, res) {
     log.out(req.body);
-    Reply.findOne({_id:req.body._id}).exec(function(err, reply) {
+    Reply.findOne({_id:req.body._id||''}).exec(function(err, reply) {
         if (req.body.author_id !== reply.author_id) {
             return res.status(401).json(invokeResult.failure('author_id', 'no permission'));
         }
@@ -70,7 +70,7 @@ function update(req, res) {
 
 function del(req, res) {
     log.out(req.body);
-    Reply.findOne({_id:req.body._id}).exec(function(err, reply) {
+    Reply.findOne({_id:req.body._id||''}).exec(function(err, reply) {
         if (req.body.author_id !== reply.author_id) {
             return res.status(401).json(invokeResult.failure('author_id', 'no permission'));
         }

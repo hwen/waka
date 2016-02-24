@@ -25,7 +25,7 @@ function add(params) {
 }
 
 function getMes(req, res) {
-    var query = {master_id: req.body.master_id};
+    var query = {master_id: req.body.master_id||''};
     switch (req.body.type) {
         case "unread": query.unread = true; break;
         case "read": query.unread = false; break;

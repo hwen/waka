@@ -26,7 +26,7 @@ exports.update = update;
 
 function update(req, res) {
 	log.out(req.body);
-	Topic.findOne({_id: req.body.id}).exec(function(err, result) {
+	Topic.findOne({_id: req.body.id||''}).exec(function(err, result) {
 		if (err) return sysError(res, err, '');
 		if (!result) return res.json(404, 'topic not found');
 		result.name = req.body.name;

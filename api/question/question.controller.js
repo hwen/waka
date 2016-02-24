@@ -83,7 +83,7 @@ exports.getFollowList = getFollowList;
 
 function question(req, res) {
     log.out(req.params);
-    Question.findOne({_id: req.params.question_id}).exec(function(err, question) {
+    Question.findOne({_id: req.params.question_id||''}).exec(function(err, question) {
         if (err) return sysError(res, err);
         return res.json(invokeResult.success(question, 'success'));
     });
@@ -102,7 +102,10 @@ function getFollowList(req, res) {
 
 function getFollowers(req, res) {
     log.out('question getFollower: controller', req.params);
-    if (!filter.notNull(req.params.question_id)) {log.err('getFollower question_id cannot be null'); return res.json(invokeResult.failure('question_id', 'question_id null'));}
+    if (!filter.notNull(req.params.question_id)) {
+        log.err('getFollower question_id cannot be null');
+        return res.json(invokeResult.failure('question_id', 'question_id null'));
+    }
     QtnFollow.find({question_id:req.params.question_id}).exec(function(err, results) {
         async.map(results, function(qFollow, cb) {
             User.findById(qFollow.follower_id).exec(function(err, user) {
@@ -131,7 +134,8 @@ function follow(req, res) {
 
 function attitude(req, res) {
     log.out('question attitude: controller', req.body);
-    Question.findById(req.body._id).exec(function(err, question) {
+    var qid = req.body._id||'';
+    Question.findById(qid).exec(function(err, question) {
         switch (req.body.attitude) {
             case '1': question.support();break;
             case '2': question.unsupport();break;
@@ -146,7 +150,7 @@ function attitude(req, res) {
 
 function getByUser(req, res) {
     log.out('question getByUser: author_id', req.params.author_id);
-
+    if (!req.params.author_id) return res.json(invokeResult.failure('author_id', 'no author_id'));
     async.waterfall([
         function(cb) {
             User.findById(req.params.author_id).exec(function(err, user) {
@@ -218,7 +222,7 @@ function getNoAnswer(req, res) {
 }
 
 function update(req, res) {
-    Question.find({_id: req.body._id||''}).exec(function(err, question) {
+    Question.findOne({_id: req.body._id||''}).exec(function(err, question) {
         if (err) { return sysError(res, err, 'update err'); }
         if (!question) { return res.status(404).json(invokeResult.success('', 'question not found!')); }
         if (question.author_id != req.body.author_id) { return res.status(401).json(invokeResult.failure('author_id', 'no permission')); }
