@@ -8,7 +8,7 @@ var invokeResult = require('../../components/invoke_result'),
     log = require('../../components/util/log'),
     config = require('../../config/environment'),
     fs = require("fs"),
-     _ = require('lodash'),
+    _ = require('lodash'),
     invokeResult = require('../../components/invoke_result'),
     sysError = invokeResult.sysError;
 
@@ -62,32 +62,33 @@ exports.create = function(req, res) {
 };
 
 exports.update = function(req, res) {
-  log.out(req.body);
-  Uesr.find({_id: req.session.uid}).exec(function(err, user) {
-    if (err) return sysError(res, err, 'update err');
-    if (!user) {
-      return res.status(404).json(invokeResult.success('', 'cannot find user'));
-    }
-    var updated = _.merge(user, req.body);
-    updated.save(function(err) {
-      if (err) return sysError(res, err);
-      return res.json(invokeResult.success(updated, 'updated'));
+    log.out(req.body);
+    User.findOne({_id: req.cookies.uid}).exec(function(err, user) {
+        if (err) return sysError(res, err, 'update err');
+        if (!user) {
+            return res.status(404).json(invokeResult.success('', 'cannot find user'));
+        }
+        var updated = _.merge(user, req.body);
+        log.out(updated);
+        updated.save(function(err) {
+            if (err) return sysError(res, err);
+            return res.json(invokeResult.success(updated, 'updated'));
+        });
     });
-  });
 };
 
 exports.updatePassword = function(req, res) {
-  log.out(req.body);
-  User.findOne({_id:req.session.uid}).exec(function(err, user) {
-    if (req.body.oldPassword !== user.password) {
-      return res.json(invokeResult.failure('password', 'incorrect password'));
-    }
-    user.password = req.body.newPassword;
-    user.save(function(err) {
-      if (err) return sysError(res, err, 'update password err');
-      return res.json(invokeResult.success(user, 'update password success'));
+    log.out(req.body);
+    User.findOne({_id:req.cookies.uid}).exec(function(err, user) {
+        if (!user.authenticate(req.body.oldPassword)) {
+            return res.json(invokeResult.failure('password', 'incorrect password'));
+        }
+        user.password = user.encrytPassword(req.body.newPassword);
+        user.save(function(err) {
+            if (err) return sysError(res, err, 'update password err');
+            return res.json(invokeResult.success(user, 'update password success'));
+        });
     });
-  });
 };
 
 exports.login = function(req, res) {
@@ -122,9 +123,10 @@ exports.logout = function(req, res) {
 };
 
 exports.currentUser = function(req, res) {
-    //console.log(req);
-    var data = { uid : req.session.uid };
-    return res.json(invokeResult.success(data, 'currentUser'));
+    User.findOne({_id: req.cookies.uid}).exec(function(err, user) {
+        if (err) return sysError(res, err);
+        return res.json(invokeResult.success(user, 'currentUser'));
+    });
 };
 
 exports.imgUpload = function(req, res) {

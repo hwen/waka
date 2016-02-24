@@ -80,7 +80,9 @@
                         console.log('set cookie');
                         setCookie(res.data._id, res.data.username, params.password);
                     }
-                    $state.go('home-page');
+                    $timeout(function() {
+                        $state.go('home-page');
+                    }, 1000);
                 }
             });
         }

@@ -182,6 +182,7 @@
         /** @ngInject */
         function NavbarController($scope, $state, $timeout, User) {
             var vm = this;
+            var imgPath = "../assets/images/icons/";
 
             vm.isOpen = false;
             vm.tooltipVisible = false;
@@ -198,9 +199,9 @@
             });
 
             vm.items = [
-                {name:"我的主页", icon: "", direction: "left", action: "toHomePage"},
-                {name:"修改信息", icon: "", direction: "left", action: "toUpdateInfo"},
-                {name:"退出", icon: "", direction: "left", action: "logout"}
+                {name:"我的主页", icon: imgPath+"people.svg", direction: "left", action: "toHomePage"},
+                {name:"修改信息", icon: imgPath+"setting.svg", direction: "left", action: "toUpdateInfo"},
+                {name:"退出", icon: imgPath+"logout.svg", direction: "left", action: "logout"}
             ];
 
             vm.action = function(action) {
@@ -261,34 +262,6 @@
 })(angular);
 
 
-(function(angular) {
-    'use strict';
-
-    angular.module('waka').controller('userPageController', ['$scope', '$state', 'User',
-        userPageController]);
-
-    function userPageController($scope, $state, User) {
-        var vm = this;
-        vm.itemList = [{
-            title: "我的提问",
-            url: "question"
-        }, {
-            title: "我的回答",
-            url: "answer"
-        }, {
-            title: "我的收藏",
-            url: "collection"
-        }, {
-            title: "关注话题",
-            url: "topic"
-        }];
-
-        vm.userSetting = function() {
-            $state.go('user-setting');
-        };
-
-    }
-})(angular);
 /**
  * Created by hwen on 16/1/27.
  */
@@ -418,6 +391,34 @@
     }
 })(angular);
 
+(function(angular) {
+    'use strict';
+
+    angular.module('waka').controller('userPageController', ['$scope', '$state', 'User',
+        userPageController]);
+
+    function userPageController($scope, $state, User) {
+        var vm = this;
+        vm.itemList = [{
+            title: "我的提问",
+            url: "question"
+        }, {
+            title: "我的回答",
+            url: "answer"
+        }, {
+            title: "我的收藏",
+            url: "collection"
+        }, {
+            title: "关注话题",
+            url: "topic"
+        }];
+
+        vm.userSetting = function() {
+            $state.go('user-setting');
+        };
+
+    }
+})(angular);
 /**
  * Created by hwen.
  */

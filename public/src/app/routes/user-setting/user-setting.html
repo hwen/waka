@@ -23,7 +23,9 @@
                 </md-card-title-text>
               </md-card-title>
               <md-card-actions layout="row" layout-align="end center">
-                <md-button class="md-raised md-primary">保存</md-button>
+                <span ng-bind="vm.savingInfoMes" class="tip-message"></span>
+                <md-progress-circular ng-if="vm.savingInfo" md-mode="indeterminate"></md-progress-circular>
+                <md-button class="md-raised md-primary" ng-click="vm.updateInfo()">保存</md-button>
               </md-card-actions>
             </md-card>
           </div>
@@ -37,20 +39,22 @@
                 <md-card-title-text layout="column">
                   <md-input-container>
                     <label>旧密码</label>
-                    <input type="text" ng-model="vm.oldPassword"/>
+                    <input type="password" ng-model="vm.oldPassword"/>
                   </md-input-container>
                   <md-input-container>
                     <label>新密码</label>
-                    <input type="text" ng-model="vm.newPassword"/>
+                    <input type="password" ng-model="vm.newPassword"/>
                   </md-input-container>
                   <md-input-container>
                     <label>确认密码</label>
-                    <input type="text" ng-model="vm.newPassword2"/>
+                    <input type="password" ng-model="vm.newPassword2"/>
                   </md-input-container>
                 </md-card-title-text>
               </md-card-title>
               <md-card-actions layout="row" layout-align="end center">
-                <md-button class="md-raised md-primary">保存</md-button>
+                <span ng-bind="vm.savingPasswordMes" class="tip-message"></span>
+                <md-progress-circular ng-if="vm.savingPassword" md-mode="indeterminate"></md-progress-circular>
+                <md-button class="md-raised md-primary" ng-click="vm.updatePassword()">保存</md-button>
               </md-card-actions>
             </md-card>
           </div>
@@ -60,10 +64,9 @@
         <md-content layout="row" class="avatar-box">
           <div flex="20" flex-offset="20">
             <md-card class="md-whiteframe-5dp" layout="column">
-              <img src="../assets/images/welcome_card.jpg" alt="" class="avatar" />
-              <div layout="row">
-                <section flex><h1>头像预览</h1></section>
-                <img flex style="width: 128px;height: 128px;" src="{{vm.croppedDataUrl}}" alt=""/>
+              <div flex class="preview-title"><h2>头像预览</h2></div>
+              <div layout="row" class="preview-box">
+                <img class="preview-img" ng-src="{{vm.croppedDataUrl}}" alt=""/>
               </div>
             </md-card>
           </div>
@@ -73,6 +76,8 @@
                 <img-crop image="vm.picFile  | ngfDataUrl" result-image="vm.croppedDataUrl" ng-init="vm.croppedDataUrl=''">
                 </img-crop>
               </div>
+              <md-progress-linear md-mode="indeterminate" ng-if="vm.savingAvatar">
+              </md-progress-linear>
               <md-card-actions flex="25" layout="row" layout-align="end center">
                 <md-button class="md-raised md-accent" ng-model="vm.picFile" ngf-select accept="image/*">上传头像</md-button>
                 <md-button class="md-raised md-primary" ng-click="vm.upload(vm.croppedDataUrl)">保存</md-button>

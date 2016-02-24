@@ -24,6 +24,7 @@
         /** @ngInject */
         function NavbarController($scope, $state, $timeout, User) {
             var vm = this;
+            var imgPath = "../assets/images/icons/";
 
             vm.isOpen = false;
             vm.tooltipVisible = false;
@@ -40,9 +41,9 @@
             });
 
             vm.items = [
-                {name:"我的主页", icon: "", direction: "left", action: "toHomePage"},
-                {name:"修改信息", icon: "", direction: "left", action: "toUpdateInfo"},
-                {name:"退出", icon: "", direction: "left", action: "logout"}
+                {name:"我的主页", icon: imgPath+"people.svg", direction: "left", action: "toHomePage"},
+                {name:"修改信息", icon: imgPath+"setting.svg", direction: "left", action: "toUpdateInfo"},
+                {name:"退出", icon: imgPath+"logout.svg", direction: "left", action: "logout"}
             ];
 
             vm.action = function(action) {
@@ -54,11 +55,11 @@
             };
 
             function toHomePage() {
-                $state.go("user-page");
+                location.href = "/#/user-page";
             }
 
             function toUpdateInfo() {
-                $state.go("user-setting");
+                location.href = "/#/user-setting";
             }
 
             function logout() {
