@@ -15,5 +15,6 @@ module.exports = {
         CAPTCHA_ERROR: 6,
         USER_NOT_FOUND: 7,
         PROGRAM_EXCEPTION: 100
-    }
+    },
+    pageSize: 20
 };

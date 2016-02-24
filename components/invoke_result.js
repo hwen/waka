@@ -9,7 +9,8 @@ exports.success = success;
 
 exports.failure = failure;
 
-exports.sysError = function(res, err, errInfo) {
+exports.sysError = function(res, err, info) {
+    var errInfo = info || '';
     log.err(err); return res.send(500, failure(errInfo,err));
 };
 

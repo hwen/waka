@@ -13,7 +13,7 @@ var filter = require('../../components/util/filters');
 var invokeResult = require('../../components/invoke_result');
 var sysError = invokeResult.sysError;
 var log = require('../../components/util/log');
-
+var config = require('../../config/constant');
 /*
 *  params: title, content, author_id, topics
 *  method: post
@@ -42,6 +42,9 @@ exports.getNew = getNew;
 
 //params: topics, get top question by topic list ID
 exports.getHot = getHot;
+
+// method:get, params: question_id
+exports.question = question;
 
 /*
 *  params: author_id
@@ -77,6 +80,14 @@ exports.getFollowers = getFollowers;
 *  description: get user following questions
 * */
 exports.getFollowList = getFollowList;
+
+function question(req, res) {
+    log.out(req.params);
+    Question.findOne({_id: req.params.question_id}).exec(function(err, question)
+        if (err) return sysError(res, err);
+        return res.json(invokeResult.success(question, 'success'));
+    });
+}
 
 function getFollowList(req, res) {
     log.out('question getFollower: controller', req.params);
@@ -135,6 +146,7 @@ function attitude(req, res) {
 
 function getByUser(req, res) {
     log.out('question getByUser: author_id', req.params.author_id);
+
     async.waterfall([
         function(cb) {
             User.findById(req.params.author_id).exec(function(err, user) {
@@ -143,7 +155,7 @@ function getByUser(req, res) {
             });
         },
         function(user, cb) {
-            Question.find({author_id:req.params.author_id}).exec(function(err, questions) {
+            Question.find({author_id:req.params.author_id}).limit(config.pageSize).exec(function(err, questions) {
                 async.map(questions, function(question, callback) {
                     var data = {
                         q: question,
@@ -256,8 +268,12 @@ function getQuestionByTopicList(topicsList, params ,callback) {
         noAnswer : params.noAnswer ? {answer_count: {$lte:0}} : {},
         sort : params.score ? {score:-1, created_time:-1}: {created_time:-1}
     };
+    var limit = config.pageSize / topicsList.length;
     async.concat(topicsList, function(topic, cb) {
-        Question.find({topics:topic}, query.noAnswer).sort(query.sort).exec(function(err, questions) {
+        Question.find({topics:topic}, query.noAnswer)
+        .sort(query.sort)
+        .limit(limit)
+        .exec(function(err, questions) {
             if (err) { log.err(err); }
             else {
                 cb(null, questions);
