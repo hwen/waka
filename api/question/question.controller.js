@@ -146,7 +146,6 @@ function attitude(req, res) {
 
 function getByUser(req, res) {
     log.out('question getByUser: author_id', req.params.author_id);
-
     async.waterfall([
         function(cb) {
             User.findById(req.params.author_id).exec(function(err, user) {
