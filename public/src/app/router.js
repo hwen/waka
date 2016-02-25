@@ -76,6 +76,20 @@
                 }
             })
 
+            .state('find-question', {
+                url: '/find-question',
+                templateUrl: 'app/routes/find-question-page/find-question-page.html',
+                controller: 'findQuestionController',
+                controllerAs: 'vm'
+            })
+
+            .state('question', {
+                url: '/question',
+                templateUrl: 'app/routes/question/question.html',
+                controller: 'questionController',
+                controllerAs: 'vm'
+            })
+
 
 
         $urlRouterProvider.otherwise('/user-login');

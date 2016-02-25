@@ -37,4 +37,11 @@
                 }
             });
         }])
+
+        .factory('Question', ['$resource', function($resource) {
+            return $resource(URL + '/question', {}, {
+                
+            })
+        }])
+
 })(angular);
