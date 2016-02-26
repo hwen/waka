@@ -39,7 +39,36 @@
         }])
 
         .factory('Question', ['$resource', function($resource) {
+            var url = URL+'/question/';
             return $resource(URL + '/question', {}, {
+                add: {
+                    method: 'POST',
+                    url: url + 'add'
+                },
+                search: {
+                    method: 'POST',
+                    url: url + 'search'
+                },
+                update: {
+                    method: 'POST',
+                    url: url + 'update'
+                },
+                getNoAnswer: {
+                    method: 'POST',
+                    url: url + 'getNoAnswer'
+                },
+                getNew: {
+                    method: 'POST',
+                    url: url + 'getNew'
+                },
+                getHot: {
+                    method: 'POST',
+                    url: url + 'getHot'
+                },
+                getByUser: {
+                    method: 'GET',
+                    url: url + 'getByUser/:author_id'
+                },
                 
             })
         }])
