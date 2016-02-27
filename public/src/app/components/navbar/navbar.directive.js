@@ -28,7 +28,7 @@
 
             vm.isOpen = false;
             vm.tooltipVisible = false;
-            vm.avatar ="../assets/images/user/" +getCookie("uid") + ".png";
+            vm.avatar ="../assets/images/user/" + "default.png";
 
             $scope.$watch('vm.isOpen', function(isOpen) {
                 if (isOpen) {
@@ -66,6 +66,10 @@
                 cancelCookie();
                 User.logout();
                 $state.go("user-login");
+            }
+
+            function getAvatar() {
+                User.get({id: getCookie("uid")}).$promise.then();
             }
 
             function cancelCookie() {

@@ -25,7 +25,7 @@ exports.getByTopic = getByTopic;
 *  method: post
 *  description: get good answer in user following topic list
 * */
-exports.getUserTopics = getByTopic;
+exports.getByUserTopics = getByTopic;
 
 /*
 *  params: question_id

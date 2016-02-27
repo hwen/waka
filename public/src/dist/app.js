@@ -129,6 +129,66 @@
             'EXCEPTION': 100 //³ÌÐòÒì³£
         });
 })(angular);
+(function(angular) {
+	'use strict';
+
+	angular.module('waka')
+
+	.factory('iAES', function() {
+		return {
+			encrypt: function(key) {
+				return CryptoJS.AES.encrypt(key, "iwaka");
+			},
+			decrypt: function(key) {
+				return CryptoJS.AES.decrypt(encrypted, "iwaka").toString(CryptoJS.enc.Utf8);
+			}
+		};
+	})
+
+	.factory('iCookie', function() {
+		return {
+			setUserCookie: function(_id, username, password) {
+				document.cookie = "uid=" + _id + ";max-age=" + 60 * 60 * 24 * 10;
+				document.cookie = "username=" + username +
+					";max-age=" + 60 * 60 * 24 * 10;
+				document.cookie = "password=" + password +
+					";max-age=" + 60 * 60 * 24 * 10;
+			},
+
+			setCookie: function(key, value, max-age) {
+				document.cookie = key+"="+value+";max-age="+
+					max-age;
+			},
+
+			getCookie: function(key) {
+				var str = document.cookie;
+				if (str) {
+					str = str.substr(str.indexOf(key));
+					var end = str.indexOf(';') > -1 ? str.indexOf(';') : str.length;
+					var value = str.substring(str.indexOf("=") + 1, end);
+					return value;
+				} else {
+					return null;
+				}
+			},
+
+			cancelCookie: function() {
+				var cookies = document.cookie.split(";");
+				cookies.forEach(function(item) {
+					document.cookie = item + ";max-age=0";
+				});
+			},
+
+			updatePasswordCookie: function(password) {
+				password = password;
+				document.cookie = "password=" + password +
+					";max-age=" + 60 * 60 * 24 * 10;
+			}
+
+		};
+	})
+
+})(angular);
 /**
  * Created by hwen on 15/12/21.
  */
@@ -170,7 +230,36 @@
         }])
 
         .factory('Question', ['$resource', function($resource) {
+            var url = URL+'/question/';
             return $resource(URL + '/question', {}, {
+                add: {
+                    method: 'POST',
+                    url: url + 'add'
+                },
+                search: {
+                    method: 'POST',
+                    url: url + 'search'
+                },
+                update: {
+                    method: 'POST',
+                    url: url + 'update'
+                },
+                getNoAnswer: {
+                    method: 'POST',
+                    url: url + 'getNoAnswer'
+                },
+                getNew: {
+                    method: 'POST',
+                    url: url + 'getNew'
+                },
+                getHot: {
+                    method: 'POST',
+                    url: url + 'getHot'
+                },
+                getByUser: {
+                    method: 'GET',
+                    url: url + 'getByUser/:author_id'
+                },
                 
             })
         }])

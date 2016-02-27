@@ -22,7 +22,7 @@ var UserSchema = new Schema({
         password: String,
         bio: String,
         description: String,
-        avatar: String,
+        avatar: {type:String, default: 'default.png'},
 
         answer_count: { type:Number, default:0 },
         question_count: { type:Number, default:0 },

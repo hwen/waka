@@ -79,3 +79,5 @@ gulp.task('default', ['lessminicss', 'inject'], function() {
     gulp.start('minifyjs');
 });
 
+gulp.task('server', ['webserver', 'watch']);
+

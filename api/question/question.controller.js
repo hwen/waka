@@ -85,7 +85,10 @@ function question(req, res) {
     log.out(req.params);
     Question.findOne({_id: req.params.question_id||''}).exec(function(err, question) {
         if (err) return sysError(res, err);
-        return res.json(invokeResult.success(question, 'success'));
+        getAuthor(question, function(err, result) {
+            if (err) return sysError(res, err);
+            return res.json(invokeResult.success(result, 'success'));
+        });
     });
 }
 
@@ -290,7 +293,7 @@ function getAuthor(questions, callback) {
     async.map(questions, function(question, cb) {
         User.findById(question.author_id, function(err, user) {
             var data = {
-                q: question,
+                question: question,
                 author: user
             };
             cb(null, data);

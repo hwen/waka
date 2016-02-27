@@ -14,33 +14,38 @@
         }])
 
         .factory('User', ['$resource', function($resource) {
-            return $resource(URL + '/user', {}, {
+            var url = URL + '/user/';
+            return $resource(URL + '/user/:id', {
+                id: '@id'
+            }, {
                 login: {
                     method: 'POST',
-                    url: URL + '/user/login'
+                    url: url + 'login'
                 },
                 logout: {
                     method: 'GET',
-                    url: URL + '/user/logout'
+                    url: url + 'logout'
                 },
                 getCurrentUser: {
                     method: 'GET',
-                    url: URL + '/user/currentUser'
+                    url: url + 'currentUser'
                 },
                 update: {
                   method: 'POST',
-                  url: URL + '/user/update'
+                  url: url + 'update'
                 },
                 updatePassword: {
                   method: 'POST',
-                  url: URL + '/user/password'
+                  url: url + 'password'
                 }
             });
         }])
 
         .factory('Question', ['$resource', function($resource) {
             var url = URL+'/question/';
-            return $resource(URL + '/question', {}, {
+            return $resource(URL + '/question/:question_id', {
+                question_id: '@question_id'
+            }, {
                 add: {
                     method: 'POST',
                     url: url + 'add'
@@ -67,10 +72,146 @@
                 },
                 getByUser: {
                     method: 'GET',
-                    url: url + 'getByUser/:author_id'
+                    url: url + 'getByUser/:author_id',
+                    params: {
+                        author_id: '@author_id'
+                    }
                 },
-                
+                attitude: {
+                    method: 'POST',
+                    url: url + 'attitude'
+                },
+                follow: {
+                    method: 'POST',
+                    url: url + 'follow'
+                },
+                getFollower: {
+                    method: 'GET',
+                    url: url + 'getFollower/:question_id',
+                    params: {
+                        question_id: '@question_id'
+                    }
+                },
+                getFollwerList: {
+                    method: 'GET',
+                    url: url + 'getFollwerList/:follower_id',
+                    params: {
+                        follower_id: '@follower_id'
+                    }
+                }
             })
+        }])
+
+        .factory('Answer', ['$resource', function($resource) {
+            var url = URL + '/answer/';
+            return $resource(URL+'/answer', {}, {
+                getByTopic: {
+                    method: 'POST',
+                    url: url + 'getByTopic'
+                },
+                getByUserTopics: {
+                    method: 'POST',
+                    url: url + 'getByUserTopics'
+                },
+                getByQuestion: {
+                    method: 'GET',
+                    url: url + 'getByQuestion/:question_id',
+                    params: {
+                        question_id: '@question_id'
+                    }
+                },
+                getByUser: {
+                    method: 'GET',
+                    url: url + 'getByUser/:author_id',
+                    params: {
+                        author_id: '@author_id'
+                    }
+                },
+                collection: {
+                    method: 'GET',
+                    url: url + 'collection/:user_id',
+                    params: {
+                        user_id: '@user_id'
+                    }
+                },
+                addCollection: {
+                    method: 'POST',
+                    url: url + 'addCollection'
+                },
+                attitude: {
+                    method: 'POST',
+                    url: url + 'attitude'
+                },
+                add: {
+                    method: 'POST',
+                    url: url + 'add'
+                },
+                update: {
+                    method: 'POST',
+                    url: url + 'update'
+                },
+                del: {
+                    method: 'POST',
+                    url: url + 'del'
+                }
+            });
+        }])
+
+        .factory('Topic', ['$resource', function($resource) {
+            var url = URL + '/topic/';
+            return $resource(URL+'/topic', {}, {
+                add: {
+                    method: 'POST',
+                    url: url + 'add'
+                },
+                sub: {
+                    method: 'GET',
+                    url: url + 'sub/:name',
+                    params: {
+                        name: '@name'
+                    }
+                },
+                update: {
+                    method: 'POST',
+                    url: url + 'update'
+                }
+            });
+        }])
+
+
+        .factory('Reply', ['$resource', function($resource) {
+            var url = URL + '/reply/';
+            return $resource(URL+'/reply', {}, {
+                add: {
+                    method: 'POST',
+                    url: url + 'add'
+                },
+                update: {
+                    method: 'POST',
+                    url: url + 'update'
+                },
+                del: {
+                    method: 'POST',
+                    url: url + 'del'
+                },
+                list: {
+                    method: 'GET',
+                    url: url + 'list/:answer_id',
+                    params: {
+                        answer_id: '@answer_id'
+                    }
+                }                
+            });
+        }])
+
+        .factory('Message', ['$resource', function($resource) {
+            var url = URL + '/message/';
+            return $resource(URL+'/message', {}, {
+                getMes: {
+                    method: 'POST',
+                    url: url + 'getMes'
+                }
+            });
         }])
 
 })(angular);

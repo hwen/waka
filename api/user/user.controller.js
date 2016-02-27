@@ -17,6 +17,13 @@ var validationError = function(res, err) {
     return res.json(422, err);
 };
 
+exports.get = function(req, res) {
+    User.findOne({_id:req.params.id||''}).exec(function(err, user) {
+        if (err) return sysError(res, err);
+        return res.json(invokeResult.success(user, 'success'));
+    });
+}
+
 // get list of users
 exports.index = function(req, res) {
     User.find({}, '-salt -hashedPassword', function(err, users) {
@@ -137,12 +144,24 @@ exports.imgUpload = function(req, res) {
         imgPath = config.root + '/public/src/assets/images/user/' + req.cookies.uid + '.png';
         var fileStream = fs.createWriteStream(imgPath);
         file.pipe(fileStream);
+
+        setAvatar(req.cookies.uid);
+
         fileStream.on('close',function() {
             log.out("upload success!!!");
             return res.status(200).json(invokeResult.success('', 'upload avatar success'));
         });
     });
 };
+
+function setAvatar(uid) {
+    User.findOne({_id:uid||''}).exec(function(err, user) {
+        user.avatar = uid + '.png';
+        user.save(function(err) {
+            if (err) return sysError(res, err, 'setAvatar error');
+        });
+    });
+}
 
 exports.hello = function(req, res) {
     res.send('request get success: api/user/hello');

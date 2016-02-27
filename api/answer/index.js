@@ -7,7 +7,7 @@ var express = require('express'),
 var router = express.Router();
 
 router.post('/getByTopic', controller.getByTopic);
-router.post('/getUserTopics', controller.getUserTopics);
+router.post('/getByUserTopics', controller.getByUserTopics);
 router.get('/getByQuestion/:question_id', controller.getByQuestion);
 router.get('/getByUser/:author_id', controller.getByUser);
 router.get('/collection/:user_id', controller.collection);
