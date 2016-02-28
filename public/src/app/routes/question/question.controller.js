@@ -9,10 +9,7 @@
     	vm.answerList = [];
     	vm.question = "";
 
-
     	getQuestion();
-
-		console.log(timeFormat.postedTime);
 
 		vm.postedTime = timeFormat.postedTime;
 

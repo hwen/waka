@@ -431,6 +431,40 @@
             };
         })
 })(angular);
+(function(angular) {
+	angular.module('waka').directive('myEditor', myEditor);
+
+	function myEditor() {
+		var directive = {
+			restrict: 'E',
+			templateUrl: 'app/components/editor/editor.html',
+			scope: {
+
+			},
+			controller: editorController,
+			controllerAs: 'vm',
+			bindToController: true
+		};
+
+		return directive;
+
+		function editorController($scope, $state, Question, Answer) {
+			var vm = this;
+			var simplemde = new SimpleMDE({
+				element: document.getElementById('editor')
+			});
+
+			vm.submit = function() {
+
+			};
+
+			vm.show = function() {
+				console.log(simplemde.markdown(simplemde.value()));
+			};
+
+		}
+	}
+})(angular);
 /**
  * Created by hwen on 15/12/21.
  */
@@ -533,28 +567,6 @@
 })(angular);
 
 (function(angular) {
-	angular.module('waka').directive('myEditor', myEditor);
-
-	function myEditor() {
-		var directive = {
-			restrict: 'E',
-			templateUrl: 'app/components/editor/editor.html',
-			scope: {},
-			controller: editorController,
-			controllerAs: 'vm',
-			bindToController: true
-		};
-
-		return directive;
-
-		function editorController($scope, $state, Question, Answer) {
-			var simplemde = new SimpleMDE({
-				element: document.getElementById('editor')
-		});
-		}
-	}
-})(angular);
-(function(angular) {
 	'use strict';
 
 	angular.module('waka').controller('answerEditorController', [
@@ -576,6 +588,17 @@
 })(angular);
 (function(angular) {
     'use strict';
+
+    angular.module('waka').controller('homeController', ['$scope','$state', 'User', homeController]);
+
+    function homeController($scope, $state, User) {
+        var vm = this;
+
+    }
+})(angular);
+
+(function(angular) {
+    'use strict';
     angular.module('waka').controller('questionController', ['$scope', '$state', 'Question',
         'timeFormat', 'Answer', questionController]);
 
@@ -585,10 +608,7 @@
     	vm.answerList = [];
     	vm.question = "";
 
-
     	getQuestion();
-
-		console.log(timeFormat.postedTime);
 
 		vm.postedTime = timeFormat.postedTime;
 
@@ -621,17 +641,6 @@
     }
 
 })(angular);
-(function(angular) {
-    'use strict';
-
-    angular.module('waka').controller('homeController', ['$scope','$state', 'User', homeController]);
-
-    function homeController($scope, $state, User) {
-        var vm = this;
-
-    }
-})(angular);
-
 (function(angular) {
 	'use strict';
 
