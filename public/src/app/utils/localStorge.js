@@ -8,7 +8,7 @@
 			encrypt: function(key) {
 				return CryptoJS.AES.encrypt(key, "iwaka");
 			},
-			decrypt: function(key) {
+			decrypt: function(encrypted) {
 				return CryptoJS.AES.decrypt(encrypted, "iwaka").toString(CryptoJS.enc.Utf8);
 			}
 		};
@@ -24,9 +24,9 @@
 					";max-age=" + 60 * 60 * 24 * 10;
 			},
 
-			setCookie: function(key, value, max-age) {
+			setCookie: function(key, value, maxAge) {
 				document.cookie = key+"="+value+";max-age="+
-					max-age;
+					maxAge;
 			},
 
 			getCookie: function(key) {

@@ -15,6 +15,7 @@ exports.getMes = getMes;
 
 function add(params) {
     var newMes = new Message(params);
+    log.err('err reach here');
     newMes.save(function(err, result) {
         if (err) {
             log.err('add message error', err);

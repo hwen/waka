@@ -6,12 +6,13 @@ var AnswerModel = require('./answer.model'),
     AnswerCollect = AnswerModel.AnswerCollect,
     User = require('../user/user.model'),
     Question = require('../question/question.model').Question,
-    Message = require('../message/message.model'),
+    Message = require('../message/message.controller'),
     _ = require('lodash'),
     async = require('async'),
     invokeResult = require('../../components/invoke_result'),
     sysError = invokeResult.sysError,
     log = require('../../components/util/log');
+
 
 /*
 *  params: topicList
@@ -179,7 +180,7 @@ function add(req, res) {
                 question_id: req.body.question_id,
                 answer_id: result._id
             };
-            Message.add(JSON.stringify(mes));
+            Message.add(mes);
         });
         return res.json(invokeResult.success(result, 'add answer'));
     });

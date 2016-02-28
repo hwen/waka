@@ -5,6 +5,8 @@
     <title>waka</title>
     <link rel="stylesheet" href="./lib/angular/angular-material.min.css"/>
     <link rel="stylesheet" href="./dist/app.css">
+    <link rel="stylesheet" href="./lib/simplemde.min.css"/>
+    <script src="./lib/simplemde.min.js"></script>
     <script src="./lib/angular/angular.min.js"></script>
     <script src="./lib/angular/angular-resource.min.js"></script>
     <script src="./lib/angular/angular-ui-router.min.js"></script>
@@ -24,12 +26,16 @@
 <!-- inject:js -->
 <script src="app/module.js"></script>
 <script src="app/router.js"></script>
-<script src="app/utils/constant.js"></script>
+<script src="app/services.js"></script>
 <script src="app/utils/localStorge.js"></script>
-<script src="app/utils/services.js"></script>
+<script src="app/utils/tools.js"></script>
+<script src="app/components/editor/editor.directive.js"></script>
 <script src="app/components/navbar/navbar.directive.js"></script>
+<script src="app/routes/answer-editor/answer-editor.controller.js"></script>
+<script src="app/routes/find-question-page/find-question-page.controller.js"></script>
 <script src="app/routes/home-page/home-page.controller.js"></script>
 <script src="app/routes/question/question.controller.js"></script>
+<script src="app/routes/question-editor/question-editor.controller.js"></script>
 <script src="app/routes/user-login/user-login.controller.js"></script>
 <script src="app/routes/user-page/user-page.controller.js"></script>
 <script src="app/routes/user-page-answer/user-page-answer.controller.js"></script>
@@ -37,6 +43,5 @@
 <script src="app/routes/user-page-question/user-page-question.controller.js"></script>
 <script src="app/routes/user-page-topic/user-page-topic.controller.js"></script>
 <script src="app/routes/user-setting/user-setting.controller.js"></script>
-<script src="app/routes/find-question-page/find-question-page.controller.js"></script>
 <!-- endinject -->
 </html>

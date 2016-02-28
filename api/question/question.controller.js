@@ -43,8 +43,8 @@ exports.getNew = getNew;
 //params: topics, get top question by topic list ID
 exports.getHot = getHot;
 
-// method:get, params: question_id
-exports.question = question;
+// method:get, params: question_id  --> return array[{author: , question}]
+exports.getQuestion = getQuestion;
 
 /*
 *  params: author_id
@@ -81,11 +81,13 @@ exports.getFollowers = getFollowers;
 * */
 exports.getFollowList = getFollowList;
 
-function question(req, res) {
+function getQuestion(req, res) {
     log.out(req.params);
     Question.findOne({_id: req.params.question_id||''}).exec(function(err, question) {
         if (err) return sysError(res, err);
-        getAuthor(question, function(err, result) {
+        log.out(question);
+        var questions = [question];
+        getAuthor(questions, function(err, result) {
             if (err) return sysError(res, err);
             return res.json(invokeResult.success(result, 'success'));
         });

@@ -17,6 +17,6 @@ router.post('/attitude', controller.attitude);
 router.post('/follow', controller.follow);
 router.get('/getFollowers/:question_id', controller.getFollowers);
 router.get('/getFollowList/:follower_id', controller.getFollowList);
-router.get('/:question_id', controller.question);
+router.get('/:question_id', controller.getQuestion);
 
 module.exports = router;

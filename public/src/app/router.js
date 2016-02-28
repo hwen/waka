@@ -84,12 +84,25 @@
             })
 
             .state('question', {
-                url: '/question',
+                url: '/question/:question_id',
                 templateUrl: 'app/routes/question/question.html',
                 controller: 'questionController',
                 controllerAs: 'vm'
             })
 
+            .state('question-editor', {
+                url: '/question-editor',
+                templateUrl: 'app/routes/question-editor/question-editor.html',
+                controller: 'questionEditorController',
+                controllerAs: 'vm'
+            })
+
+            .state('answer-editor', {
+                url: '/answer-editor',
+                templateUrl: 'app/routes/answer-editor/answer-editor.html',
+                controller: 'answerEditorController',
+                controllerAs: 'vm'                
+            })
 
 
         $urlRouterProvider.otherwise('/user-login');

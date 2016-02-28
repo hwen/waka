@@ -18,6 +18,7 @@ var validationError = function(res, err) {
 };
 
 exports.get = function(req, res) {
+    log.out('user get', req.params);
     User.findOne({_id:req.params.id||''}).exec(function(err, user) {
         if (err) return sysError(res, err);
         return res.json(invokeResult.success(user, 'success'));

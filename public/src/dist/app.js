@@ -101,34 +101,248 @@
             })
 
             .state('question', {
-                url: '/question',
+                url: '/question/:question_id',
                 templateUrl: 'app/routes/question/question.html',
                 controller: 'questionController',
                 controllerAs: 'vm'
             })
 
+            .state('question-editor', {
+                url: '/question-editor',
+                templateUrl: 'app/routes/question-editor/question-editor.html',
+                controller: 'questionEditorController',
+                controllerAs: 'vm'
+            })
+
+            .state('answer-editor', {
+                url: '/answer-editor',
+                templateUrl: 'app/routes/answer-editor/answer-editor.html',
+                controller: 'answerEditorController',
+                controllerAs: 'vm'                
+            })
 
 
         $urlRouterProvider.otherwise('/user-login');
     }
 })(angular);
 /**
- * Created by hwen on 15/12/22.
+ * Created by hwen on 15/12/21.
  */
 
 (function(angular) {
+    'use strict';
+
+    var URL = 'api';
+
     angular.module('waka')
 
-        .constant('STATUS', {
-            'SUCCESS': 0, //³É¹¦
-            'FAILED': 1,  //Ê§°Ü
-            'NOLOGIN': 2, //Î´µÇÂ¼
-            'ILLEGAL': 3, //²»ºÏ·¨²Ù×÷
-            'NOTFOUND': 4, //Î´ÕÒµ½
-            'NOEXIST': 5, //ÓÃ»§²»´æÔÚ
-            'EXCEPTION': 100 //³ÌÐòÒì³£
-        });
+        .factory('URL', [function() {
+            return URL + '/';
+        }])
+
+        .factory('User', ['$resource', function($resource) {
+            var url = URL + '/user/';
+            return $resource(URL + '/user/:id', {
+                id: '@id'
+            }, {
+                login: {
+                    method: 'POST',
+                    url: url + 'login'
+                },
+                logout: {
+                    method: 'GET',
+                    url: url + 'logout'
+                },
+                getCurrentUser: {
+                    method: 'GET',
+                    url: url + 'currentUser'
+                },
+                update: {
+                  method: 'POST',
+                  url: url + 'update'
+                },
+                updatePassword: {
+                  method: 'POST',
+                  url: url + 'password'
+                }
+            });
+        }])
+
+        .factory('Question', ['$resource', function($resource) {
+            var url = URL+'/question/';
+            return $resource(URL + '/question/:question_id', {
+                question_id: '@question_id'
+            }, {
+                add: {
+                    method: 'POST',
+                    url: url + 'add'
+                },
+                search: {
+                    method: 'POST',
+                    url: url + 'search'
+                },
+                update: {
+                    method: 'POST',
+                    url: url + 'update'
+                },
+                getNoAnswer: {
+                    method: 'POST',
+                    url: url + 'getNoAnswer'
+                },
+                getNew: {
+                    method: 'POST',
+                    url: url + 'getNew'
+                },
+                getHot: {
+                    method: 'POST',
+                    url: url + 'getHot'
+                },
+                getByUser: {
+                    method: 'GET',
+                    url: url + 'getByUser/:author_id',
+                    params: {
+                        author_id: '@author_id'
+                    }
+                },
+                attitude: {
+                    method: 'POST',
+                    url: url + 'attitude'
+                },
+                follow: {
+                    method: 'POST',
+                    url: url + 'follow'
+                },
+                getFollower: {
+                    method: 'GET',
+                    url: url + 'getFollower/:question_id',
+                    params: {
+                        question_id: '@question_id'
+                    }
+                },
+                getFollwerList: {
+                    method: 'GET',
+                    url: url + 'getFollwerList/:follower_id',
+                    params: {
+                        follower_id: '@follower_id'
+                    }
+                }
+            })
+        }])
+
+        .factory('Answer', ['$resource', function($resource) {
+            var url = URL + '/answer/';
+            return $resource(URL+'/answer', {}, {
+                getByTopic: {
+                    method: 'POST',
+                    url: url + 'getByTopic'
+                },
+                getByUserTopics: {
+                    method: 'POST',
+                    url: url + 'getByUserTopics'
+                },
+                getByQuestion: {
+                    method: 'GET',
+                    url: url + 'getByQuestion/:question_id',
+                    params: {
+                        question_id: '@question_id'
+                    }
+                },
+                getByUser: {
+                    method: 'GET',
+                    url: url + 'getByUser/:author_id',
+                    params: {
+                        author_id: '@author_id'
+                    }
+                },
+                collection: {
+                    method: 'GET',
+                    url: url + 'collection/:user_id',
+                    params: {
+                        user_id: '@user_id'
+                    }
+                },
+                addCollection: {
+                    method: 'POST',
+                    url: url + 'addCollection'
+                },
+                attitude: {
+                    method: 'POST',
+                    url: url + 'attitude'
+                },
+                add: {
+                    method: 'POST',
+                    url: url + 'add'
+                },
+                update: {
+                    method: 'POST',
+                    url: url + 'update'
+                },
+                del: {
+                    method: 'POST',
+                    url: url + 'del'
+                }
+            });
+        }])
+
+        .factory('Topic', ['$resource', function($resource) {
+            var url = URL + '/topic/';
+            return $resource(URL+'/topic', {}, {
+                add: {
+                    method: 'POST',
+                    url: url + 'add'
+                },
+                sub: {
+                    method: 'GET',
+                    url: url + 'sub/:name',
+                    params: {
+                        name: '@name'
+                    }
+                },
+                update: {
+                    method: 'POST',
+                    url: url + 'update'
+                }
+            });
+        }])
+
+
+        .factory('Reply', ['$resource', function($resource) {
+            var url = URL + '/reply/';
+            return $resource(URL+'/reply', {}, {
+                add: {
+                    method: 'POST',
+                    url: url + 'add'
+                },
+                update: {
+                    method: 'POST',
+                    url: url + 'update'
+                },
+                del: {
+                    method: 'POST',
+                    url: url + 'del'
+                },
+                list: {
+                    method: 'GET',
+                    url: url + 'list/:answer_id',
+                    params: {
+                        answer_id: '@answer_id'
+                    }
+                }                
+            });
+        }])
+
+        .factory('Message', ['$resource', function($resource) {
+            var url = URL + '/message/';
+            return $resource(URL+'/message', {}, {
+                getMes: {
+                    method: 'POST',
+                    url: url + 'getMes'
+                }
+            });
+        }])
+
 })(angular);
+
 (function(angular) {
 	'use strict';
 
@@ -139,7 +353,7 @@
 			encrypt: function(key) {
 				return CryptoJS.AES.encrypt(key, "iwaka");
 			},
-			decrypt: function(key) {
+			decrypt: function(encrypted) {
 				return CryptoJS.AES.decrypt(encrypted, "iwaka").toString(CryptoJS.enc.Utf8);
 			}
 		};
@@ -155,9 +369,9 @@
 					";max-age=" + 60 * 60 * 24 * 10;
 			},
 
-			setCookie: function(key, value, max-age) {
+			setCookie: function(key, value, maxAge) {
 				document.cookie = key+"="+value+";max-age="+
-					max-age;
+					maxAge;
 			},
 
 			getCookie: function(key) {
@@ -190,82 +404,33 @@
 
 })(angular);
 /**
- * Created by hwen on 15/12/21.
+ * Created by hwen.
  */
-
 (function(angular) {
     'use strict';
-
-    var URL = 'api';
-
     angular.module('waka')
 
-        .factory('URL', [function() {
-            return URL + '/';
-        }])
+        .factory('timeFormat', function() {
+            return {
+                postedTime: function(time) {
+                    var postedTime = new Date(time);
+                    var current = new Date();
+                    var result = (current - postedTime)/(1000 * 60);
 
-        .factory('User', ['$resource', function($resource) {
-            return $resource(URL + '/user', {}, {
-                login: {
-                    method: 'POST',
-                    url: URL + '/user/login'
-                },
-                logout: {
-                    method: 'GET',
-                    url: URL + '/user/logout'
-                },
-                getCurrentUser: {
-                    method: 'GET',
-                    url: URL + '/user/currentUser'
-                },
-                update: {
-                  method: 'POST',
-                  url: URL + '/user/update'
-                },
-                updatePassword: {
-                  method: 'POST',
-                  url: URL + '/user/password'
+                    if (result <= 60) {
+                        return Math.floor(result) + "åˆ†é’Ÿå‰";
+                    } else if (result > 60 && result <= 60*24) {
+                        return Math.floor(result/60) + "å°æ—¶å‰";
+                    } else if (result > 60*24 && result <= 60*24*20 ) {
+                        return Math.floor(result/(60*24)) + "å¤©å‰";
+                    } else {
+                        return postedTime.getYear() + '-' + postedTime.getMonth() + '-' +
+                                postedTime.getDate();
+                    }
                 }
-            });
-        }])
-
-        .factory('Question', ['$resource', function($resource) {
-            var url = URL+'/question/';
-            return $resource(URL + '/question', {}, {
-                add: {
-                    method: 'POST',
-                    url: url + 'add'
-                },
-                search: {
-                    method: 'POST',
-                    url: url + 'search'
-                },
-                update: {
-                    method: 'POST',
-                    url: url + 'update'
-                },
-                getNoAnswer: {
-                    method: 'POST',
-                    url: url + 'getNoAnswer'
-                },
-                getNew: {
-                    method: 'POST',
-                    url: url + 'getNew'
-                },
-                getHot: {
-                    method: 'POST',
-                    url: url + 'getHot'
-                },
-                getByUser: {
-                    method: 'GET',
-                    url: url + 'getByUser/:author_id'
-                },
-                
-            })
-        }])
-
+            };
+        })
 })(angular);
-
 /**
  * Created by hwen on 15/12/21.
  */
@@ -296,7 +461,9 @@
 
             vm.isOpen = false;
             vm.tooltipVisible = false;
-            vm.avatar ="../assets/images/user/" +getCookie("uid") + ".png";
+            vm.avatar ="../assets/images/user/" + "default.png";
+
+            getAvatar();
 
             $scope.$watch('vm.isOpen', function(isOpen) {
                 if (isOpen) {
@@ -336,6 +503,12 @@
                 $state.go("user-login");
             }
 
+            function getAvatar() {
+                User.get({id: getCookie("uid")}).$promise.then(function(res) {
+                    vm.avatar = "../assets/images/user/" + res.data.avatar;
+                });
+            }
+
             function cancelCookie() {
                 var cookies = document.cookie.split(";");
                 cookies.forEach(function(item) {
@@ -360,6 +533,38 @@
 })(angular);
 
 (function(angular) {
+	angular.module('waka').directive('myEditor', myEditor);
+
+	function myEditor() {
+		var directive = {
+			restrict: 'E',
+			templateUrl: 'app/components/editor/editor.html',
+			scope: {},
+			controller: editorController,
+			controllerAs: 'vm',
+			bindToController: true
+		};
+
+		return directive;
+
+		function editorController($scope, $state, Question, Answer) {
+			var simplemde = new SimpleMDE({
+				element: document.getElementById('editor')
+		});
+		}
+	}
+})(angular);
+(function(angular) {
+	'use strict';
+
+	angular.module('waka').controller('answerEditorController', [
+		'$scope', '$state', 'Question', answerEditorController]);
+
+	function answerEditorController($scope, $state, Question) {
+		
+	}
+})(angular);
+(function(angular) {
     'use strict';
     angular.module('waka').controller('findQuestionController', ['$scope', '$state', 'Question',
         findQuestionController]);
@@ -371,24 +576,71 @@
 })(angular);
 (function(angular) {
     'use strict';
+    angular.module('waka').controller('questionController', ['$scope', '$state', 'Question',
+        'timeFormat', 'Answer', questionController]);
 
-    angular.module('waka').controller('homeController', ['$scope','$state', 'User', 'STATUS',  homeController]);
+    function questionController($scope, $state, Question, timeFormat, Answer) {
+    	var vm = this;
 
-    function homeController($scope, $state, User, STATUS) {
+    	vm.answerList = [];
+    	vm.question = "";
+
+
+    	getQuestion();
+
+		console.log(timeFormat.postedTime);
+
+		vm.postedTime = timeFormat.postedTime;
+
+    	function getQuestion() {
+    		var params = location.hash.split('/');
+			console.log(params);
+    		Question.get({question_id:params[2]}).$promise.then(function(res) {
+    			if (res.status > -1) {
+					console.log(res);
+					var result = res.data[0];
+    				vm.question = result.question;
+    				vm.question.author = result.author;
+    				vm.question.createdTime = timeFormat.postedTime(vm.question.created_time);
+    				getAnswers(vm.question._id);
+    			} else {
+    				alert('getQuestion error');
+    			}
+    		});
+    	}
+
+    	function getAnswers(qid) {
+    		Answer.getByQuestion({question_id:qid}).$promise.then(function(res) {
+    			if (res.status > -1) {
+    				vm.answerList = res.data;
+    			} else {
+    				alert('getAnswers error');
+    			}
+    		});
+    	}
+    }
+
+})(angular);
+(function(angular) {
+    'use strict';
+
+    angular.module('waka').controller('homeController', ['$scope','$state', 'User', homeController]);
+
+    function homeController($scope, $state, User) {
         var vm = this;
 
     }
 })(angular);
 
 (function(angular) {
-    'use strict';
-    angular.module('waka').controller('questionController', ['$scope', '$state', 'Question',
-        questionController]);
+	'use strict';
 
-    function questionController($scope, $state, Question) {
+	angular.module('waka').controller('questionEditorController', [
+		'$scope', '$state', 'Question', questionEditorController]);
 
-    }
-
+	function questionEditorController($scope, $state, Question) {
+		
+	}
 })(angular);
 /**
  * Created by hwen on 16/1/27.

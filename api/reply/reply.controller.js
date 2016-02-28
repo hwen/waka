@@ -3,7 +3,7 @@
  */
 var Reply = require('./reply.model'),
     Answer = require('../answer/answer.model'),
-    Message = require('../message/message.model'),
+    Message = require('../message/message.controller'),
     invokeResult = require('../../components/invoke_result'),
     sysError = invokeResult.sysError,
     log = require('../../components/util/log'),
@@ -39,7 +39,7 @@ function add(req, res) {
                 question_id: answer.question_id,
                 answer_id: answer._id
             };
-            Message.add(JSON.stringify(mes));
+            Message.add(mes);
         });
         return res.json(invokeResult.success(result, 'add reply success'));
     });

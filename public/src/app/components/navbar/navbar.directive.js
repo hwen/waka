@@ -30,6 +30,8 @@
             vm.tooltipVisible = false;
             vm.avatar ="../assets/images/user/" + "default.png";
 
+            getAvatar();
+
             $scope.$watch('vm.isOpen', function(isOpen) {
                 if (isOpen) {
                     $timeout(function() {
@@ -69,7 +71,9 @@
             }
 
             function getAvatar() {
-                User.get({id: getCookie("uid")}).$promise.then();
+                User.get({id: getCookie("uid")}).$promise.then(function(res) {
+                    vm.avatar = "../assets/images/user/" + res.data.avatar;
+                });
             }
 
             function cancelCookie() {

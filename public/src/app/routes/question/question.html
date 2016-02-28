@@ -3,7 +3,7 @@
   <div class="question-title">
     <div class="header" layout="row">
       <div flex="70" class="title-box" layout="column">
-        <md-button class="question-ask md-fab md-mini md-ink-ripple md-raised" alt="question-ask"><md-icon md-svg-src="../assets/images/icons/question-ask.svg"></md-icon></md-button>
+        <md-button class="question-ask md-fab md-mini md-ink-ripple md-raised" alt="question-ask" aria-label="question-ask"><md-icon md-svg-src="../assets/images/icons/question-ask.svg"></md-icon></md-button>
         <div flex class="title" ng-bind="vm.question.title">Something wrong</div>
         <div flex class="detials" layout="row">
           <div flex="15" class="author" ng-bind="vm.question.author.username">作者</div>
@@ -46,14 +46,14 @@
       </section>
       <div class="answer-detail" flex layout="row">
         <div class="answer-action" flex="20">
-          <span ng-bind="item.answer.created_time">8小时前回答</span>
+          <span ng-bind="vm.postedTime(item.answer.created_time)">8小时前回答</span>
           <a href="javascript:;">编辑</a>
           <a href="javascript:;">评论</a>
         </div>
         <span flex></span>
-        <div flex="20">
-          <img ng-src="" alt=""/>
-          <span ng-bind="item.author.username"></span>
+        <div flex="20" class="answer-author">
+          <img class="author-avatar" ng-src="../assets/images/user/{{item.author.avatar}}" alt=""/>
+          <span class="author-username" ng-bind="item.author.username"></span>
         </div>
       </div>
     </div>

@@ -44,5 +44,5 @@ AnswerSchema.methods = {
     }
 };
 
-module.exports = mongoose.model('Answer', AnswerSchema);
-module.exports = mongoose.model('AnswerCollect', AswCollectSchema);
+exports.Answer = mongoose.model('Answer', AnswerSchema);
+exports.AnswerCollect = mongoose.model('AnswerCollect', AswCollectSchema);
