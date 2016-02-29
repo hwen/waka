@@ -11,5 +11,6 @@ var router = express.Router();
 router.post('/add', controller.add);
 router.get('/sub/:name', controller.sub);
 router.post('/update', controller.update);
+router.get('/list', controller.list);
 
 module.exports = router;

@@ -10,6 +10,7 @@ router.post('/getByTopic', controller.getByTopic);
 router.post('/getByUserTopics', controller.getByUserTopics);
 router.get('/getByQuestion/:question_id', controller.getByQuestion);
 router.get('/getByUser/:author_id', controller.getByUser);
+router.post('/getByUserAndQuestion', controller.getByUserAndQuestion);
 router.get('/collection/:user_id', controller.collection);
 router.post('/addCollection', controller.addCollection);
 router.post('/attitude', controller.attitude);

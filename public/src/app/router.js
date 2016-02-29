@@ -98,10 +98,10 @@
             })
 
             .state('answer-editor', {
-                url: '/answer-editor',
+                url: '/answer-editor/:question_id',
                 templateUrl: 'app/routes/answer-editor/answer-editor.html',
                 controller: 'answerEditorController',
-                controllerAs: 'vm'                
+                controllerAs: 'vm'
             })
 
 

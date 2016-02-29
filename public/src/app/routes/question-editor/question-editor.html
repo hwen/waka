@@ -1,2 +1,15 @@
 <nav-bar></nav-bar>
-<my-editor></my-editor>
+<div class="question-editor-title" layout="column">
+    <md-input-container md-no-float class="md-block question-title" flex>
+        <input ng-model="vm.title" placeholder="标题：一句话说清楚，以问号结尾。">
+    </md-input-container>
+    <div class="question-topics" flex>
+        <md-contact-chips ng-model="vm.topics" md-contacts="vm.querySearch($query)" md-contact-name="name" md-require-match="true" md-highlight-flags="i" filter-selected="vm.filterSelected" placeholder="话题分类">
+        </md-contact-chips>
+    </div>
+    <div class="question-editor-action" flex>
+        <md-button class="md-raised md-accent submit-button" ng-click="vm.submit()">发布问题</md-button><i></i>
+    </div>
+</div>
+<!-- 必须在HTML里标注出所引用的属性方法，这是directive绑定的关键 -->
+<my-editor simplemde="vm.simplemde"  content="vm.content" dr-content-html="vm.contentHtml"></my-editor>

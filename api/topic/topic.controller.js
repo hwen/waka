@@ -24,6 +24,30 @@ exports.add = add;
 
 exports.update = update;
 
+exports.list = list;
+
+exports.getTopicsId = getTopicsId;
+
+function getTopicsId(req, res) {
+    log.out(req.body);
+    async.map(req.body.topics, function(topic, callback) {
+        Topic.findOne({name:topic}).exec(function(err, result) {
+            if (err) return sysError(res, err);
+            callback(null, result._id);
+        });
+    }, function(err, results) {
+        if (err) return sysError(res, err);
+        return res.json(results, 'getTopicsId success');
+    });
+}
+
+function list(req, res) {
+    Topic.find().exec(function(err, results) {
+        if (err) return sysError(res, err);
+        return res.json(results, 'list topics success');
+    })
+}
+
 function update(req, res) {
 	log.out(req.body);
 	Topic.findOne({_id: req.body.id||''}).exec(function(err, result) {

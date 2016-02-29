@@ -43,6 +43,16 @@ exports.getByQuestion = getByQuestion;
 exports.getByUser = getByUser;
 
 /*
+*  params: author_id, question_id
+*  method: post
+*  description: get answer by user
+*  return {author: , question: , answer:　}
+* */
+exports.getByUserAndQuestion = getByUserAndQuestion;
+
+
+
+/*
 *  params: user_id
 *  method: get
 *  description: get answers by user collection
@@ -168,6 +178,9 @@ function update(req, res) {
 //require: question_id, author_id, content
 function add(req, res) {
     log.out('answer add', req.body);
+    if (!req.body.question_id||!req.body.author_id||!req.body.content) {
+        return res.json(invokeResult.failure('require value null', 'add answer failure'));
+    }
     var newAnswer = new Answer(req.body);
     newAnswer.save(function(err, result) {
         if (err) { return sysError(res, err, 'add answer'); }
@@ -188,7 +201,19 @@ function add(req, res) {
 
 function getByUser(req, res) {
     log.out('answer getByUser', req.params);
-    Answer.find({author_id:req.params.author_id||''}).sort({created_time:-1})
+    var query = {author_id:req.params.author_id||''};
+    findAnswer(req, res, query);
+}
+
+function getByUserAndQuestion(req, res) {
+    log.out('answer getByUserAndQuestion', req.body);
+    var query = {author_id: req.body.author_id, question_id: req.body.question_id};
+    findAnswer(req, res, query);
+}
+
+//return array
+function findAnswer(req, res, query) {
+    Answer.find(query).sort({created_time:-1})
         .exec(function(err, answers) {
             if (err) { return sysError(res, err, 'answer getByUser'); }
             getAuthor(answers, function(err, datas) {
@@ -261,7 +286,9 @@ function getAnswerByQuestionArr(questions, callback) {
     }, callback);
 }
 
+//return array
 function getQuestionByTopicList(topicsList ,callback) {
+    topicsList = convertToArray(topicsList);
     async.concat(topicsList, function(topic, cb) {
         Question.find({topics:topic}, query.noAnswer).exec(function(err, questions) {
             if (err) { log.err('answer: getQuestionByTopicList', err); }
@@ -272,8 +299,9 @@ function getQuestionByTopicList(topicsList ,callback) {
     }, callback);
 }
 
-
+//return array
 function getAuthor(answers, callback) {
+    answers = convertToArray(answers);
     async.map(answers, function(answer, cb) {
         User.findById(answer.author_id, function(err, user) {
             var data = {
@@ -283,4 +311,14 @@ function getAuthor(answers, callback) {
             cb(null, data);
         })
     }, callback);
+}
+
+function convertToArray(data) {
+    if ( !(data instanceof Array) ) {
+        var result = [];
+        result.push(data);
+        return result;
+    } else {
+        return data;
+    }
 }
