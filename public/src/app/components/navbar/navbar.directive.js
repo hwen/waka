@@ -48,6 +48,10 @@
                 {name:"退出", icon: imgPath+"logout.svg", direction: "left", action: "logout"}
             ];
 
+            vm.addQuestion = function() {
+                $state.go("question-editor");
+            };
+
             vm.action = function(action) {
                 switch (action) {
                     case "toHomePage": toHomePage();break;

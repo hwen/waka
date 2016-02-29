@@ -1,2 +1,12 @@
 <nav-bar></nav-bar>
-<my-editor></my-editor>
+<div class="answer-editor-title" layout="column">
+    <header class="question-title">
+        <h2>问题：<span ng-bind="vm.title"></span></h2>
+    </header>
+    <div class="answer-editor-action" flex>
+        <md-button class="md-raised md-accent submit-button" ng-click="vm.addAnswer()" ng-if="!vm.hasAnswer">添加回答</md-button><i></i>
+        <md-button class="md-raised md-accent submit-button" ng-click="vm.updateAnswer()" ng-if="vm.hasAnswer">更新回答</md-button><i></i>
+    </div>
+</div>
+<!-- 必须在HTML里标注出所引用的属性方法，这是directive绑定的关键 -->
+<my-editor simplemde="vm.simplemde"  content="vm.content" dr-content-html="vm.contentHtml"></my-editor>

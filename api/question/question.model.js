@@ -13,6 +13,7 @@ var ObjectId = Schema.ObjectId;
 var QuestionSchema = new Schema({
     title: { type:String },
     content: { type:String },
+    contentHtml: {type:String},
     topics: [ObjectId],
     author_id: { type: ObjectId},
     follow_count: { type:Number, default:0 },
@@ -46,13 +47,17 @@ QuestionSchema.methods = {
         this.follow_count++;
         this.score += 2;
     },
-    answerCount: function() {
+    addAnswer: function() {
         this.answer_count++;
         this.score++;
     },
+    delAnswer: function() {
+        this.answer_count--;
+        this.score--;
+    },
     addTopics: function(topicId) {
         if (_.indexOf(this.topics, topicId) === -1) {
-            this.topics.push(topicId);    
+            this.topics.push(topicId);
         } else {
             log.err('addTopics', 'topic alreay existing', 'in questin model');
         }

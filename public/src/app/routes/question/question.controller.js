@@ -1,22 +1,24 @@
 (function(angular) {
     'use strict';
-    angular.module('waka').controller('questionController', ['$scope', '$state', 'Question',
-        'timeFormat', 'Answer', questionController]);
+    angular.module('waka').controller('questionController', ['$scope', '$state', '$sce',  'Question',
+		'timeFormat', 'Answer', 'iCookie', questionController]);
 
-    function questionController($scope, $state, Question, timeFormat, Answer) {
+    function questionController($scope, $state, $sce, Question, timeFormat, Answer, iCookie) {
     	var vm = this;
+		var question_id = location.hash.split('/')[2];
 
     	vm.answerList = [];
     	vm.question = "";
+		vm.addAnswer = addAnswer;
+		vm.checkAuthor = checkAuthor;
 
     	getQuestion();
 
 		vm.postedTime = timeFormat.postedTime;
 
     	function getQuestion() {
-    		var params = location.hash.split('/');
-			console.log(params);
-    		Question.get({question_id:params[2]}).$promise.then(function(res) {
+			console.log(question_id);
+    		Question.get({question_id:question_id}).$promise.then(function(res) {
     			if (res.status > -1) {
 					console.log(res);
 					var result = res.data[0];
@@ -39,6 +41,14 @@
     			}
     		});
     	}
+
+		function addAnswer() {
+			location.href = '/#/answer-editor/' + question_id;
+		}
+
+		function checkAuthor(author_id) {
+			return iCookie.getCookie("uid") == author_id;
+		}
     }
 
 })(angular);

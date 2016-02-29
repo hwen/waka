@@ -127,6 +127,10 @@
                         author_id: '@author_id'
                     }
                 },
+                getByUserAndQuestion: {
+                    method: 'POST',
+                    url: url + 'getByUserAndQuestion'
+                },
                 collection: {
                     method: 'GET',
                     url: url + 'collection/:user_id',
@@ -174,6 +178,10 @@
                 update: {
                     method: 'POST',
                     url: url + 'update'
+                },
+                list: {
+                    method: 'GET',
+                    url: url + 'list'
                 }
             });
         }])
@@ -200,7 +208,7 @@
                     params: {
                         answer_id: '@answer_id'
                     }
-                }                
+                }
             });
         }])
 

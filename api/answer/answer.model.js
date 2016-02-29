@@ -16,6 +16,7 @@ var AnswerSchema = new Schema({
     useless_count: { type:Number, default:0 },
     score: { type:Number, default:0 },
     content: { type:String },
+    contentHtml: {type:String},
     created_time: { type:Date, default:Date.now }
 });
 

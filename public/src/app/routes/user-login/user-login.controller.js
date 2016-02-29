@@ -57,7 +57,7 @@
                 }
                 if (res.status > -1) {
                     console.log('signup success');
-                    $state.go('home-page');
+                    $state.go('user-login');
                 }
             }, function(err) {
                 console.log('signup fail');

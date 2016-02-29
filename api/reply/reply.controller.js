@@ -57,7 +57,7 @@ function list(req, res) {
 function update(req, res) {
     log.out(req.body);
     Reply.findOne({_id:req.body._id||''}).exec(function(err, reply) {
-        if (req.body.author_id !== reply.author_id) {
+        if (req.body.author_id != reply.author_id) {
             return res.status(401).json(invokeResult.failure('author_id', 'no permission'));
         }
         var updated = _.merge(reply, req.body);
@@ -71,7 +71,7 @@ function update(req, res) {
 function del(req, res) {
     log.out(req.body);
     Reply.findOne({_id:req.body._id||''}).exec(function(err, reply) {
-        if (req.body.author_id !== reply.author_id) {
+        if (req.body.author_id != reply.author_id) {
             return res.status(401).json(invokeResult.failure('author_id', 'no permission'));
         }
         reply.remove(function(err) {

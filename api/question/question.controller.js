@@ -247,7 +247,7 @@ function add(req, res) {
                 return sysError(res, err, 'add err');
             } else {
                 log.out('add question', question);
-                res.json(invokeResult.success({q:question}, 'add question success'));
+                res.json(invokeResult.success(question, 'add question success'));
             }
         });
     } else {
