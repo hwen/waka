@@ -121,6 +121,19 @@
                 controllerAs: 'vm'
             })
 
+            .state('topic', {
+                url: '/topic',
+                templateUrl: 'app/routes/topic/topic.html',
+                controller: 'topicController',
+                controllerAs: 'vm'
+            })
+
+            .state('topic.tree', {
+                url: 'topic/:topic_id',
+                templateUrl: 'app/routes/topic-tree/topic-tree.html',
+                controller: 'topicTreeController',
+                controllerAs: 'tree'
+            })
 
         $urlRouterProvider.otherwise('/user-login');
     }
@@ -460,13 +473,18 @@
 
 		return directive;
 
-		function editorController($scope, $state, Question, Answer) {
+		function editorController($scope, $state, $timeout, Question, Answer) {
 			var vm = this;
 			var simplemde = new SimpleMDE({
-				element: document.getElementById('editor')
+				element: document.getElementById('editor'),
+				spellChecker: false
 			});
 
-			initContent();
+			$scope.$watch('vm.content', function() {
+				$timeout(function() {
+					initContent();
+				}, 2000);
+			});
 
 			vm.simplemde = simplemde;
 			vm.submit = function() {
@@ -637,6 +655,7 @@
 			getContent();
 			var params = {
 				_id: answer_id,
+				author_id: author_id,
 				content: vm.content,
 				contentHtml: vm.contentHtml
 			};
@@ -644,6 +663,7 @@
 			Answer.update(JSON.stringify(params))
 				.$promise
 				.then(function(res) {
+					console.log(res);
 					if (res.status > -1) {
 						alert("更新回答成功");
 					} else {
@@ -674,10 +694,11 @@
 		}
 
 		function getQuestion(question_id) {
-			Question.getQuestion({id:question_id})
+			Question.get({question_id:question_id})
 				.$promise
 				.then(function(res) {
-					vm.title = res.data.title;
+					var data = res.data[0];
+					vm.title = data.question.title;
 				});
 		}
 
@@ -715,27 +736,28 @@
 (function(angular) {
     'use strict';
     angular.module('waka').controller('questionController', ['$scope', '$state', '$sce',  'Question',
-		'timeFormat', 'Answer',questionController]);
+		'timeFormat', 'Answer', 'iCookie', questionController]);
 
-    function questionController($scope, $state, $sce, Question, timeFormat, Answer) {
+    function questionController($scope, $state, $sce, Question, timeFormat, Answer, iCookie) {
     	var vm = this;
+		var question_id = location.hash.split('/')[2];
 
     	vm.answerList = [];
     	vm.question = "";
+		vm.addAnswer = addAnswer;
+		vm.checkAuthor = checkAuthor;
 
     	getQuestion();
 
 		vm.postedTime = timeFormat.postedTime;
 
     	function getQuestion() {
-    		var params = location.hash.split('/');
-			console.log(params);
-    		Question.get({question_id:params[2]}).$promise.then(function(res) {
+			console.log(question_id);
+    		Question.get({question_id:question_id}).$promise.then(function(res) {
     			if (res.status > -1) {
 					console.log(res);
 					var result = res.data[0];
     				vm.question = result.question;
-					vm.question.content = $sce.trustAsHtml(vm.question.content);
     				vm.question.author = result.author;
     				vm.question.createdTime = timeFormat.postedTime(vm.question.created_time);
     				getAnswers(vm.question._id);
@@ -754,6 +776,14 @@
     			}
     		});
     	}
+
+		function addAnswer() {
+			location.href = '/#/answer-editor/' + question_id;
+		}
+
+		function checkAuthor(author_id) {
+			return iCookie.getCookie("uid") == author_id;
+		}
     }
 
 })(angular);
@@ -808,7 +838,8 @@
 					alert("添加问题失败");
 				} else {
 					console.log("添加问题成功");
-					$state.go("question", {question_id:res.data._id});
+					//$state.go("question", {question_id:res.data._id});
+					location.href = '/#/question/' + res.data._id;
 				}
 			});
 		}
@@ -832,6 +863,61 @@
 			});
 		}
 	}
+})(angular);
+
+/**
+ * Created by hwen.
+ */
+(function(angular) {
+    'use strict';
+
+    angular.module('waka').controller('topicController', ['$scope', '$state',
+        'Topic', 'User', topicController]);
+
+    function topicController($scope, $state, Topic, User) {
+        var vm = this;
+
+        vm.querySearch = '';
+        vm.allTopics = [];
+        vm.topics = [];
+        vm.filterSelected = true;
+
+        loadTopics();
+        $state.go('topic.tree', {topic_id: "233"});
+
+        function querySearch(query) {
+            var results = query ?
+                vm.allTopics.filter(createFilterFor(query)) : [];
+            return results;
+        }
+
+        function createFilterFor(query) {
+            return function filterFn(topic) {
+                return (topic.name.indexOf(query) !== -1);
+            }
+        }
+
+        function loadTopics() {
+            Topic.list().$promise.then(function(res) {
+                vm.allTopics = res.data;
+                vm.querySearch = querySearch;
+            });
+        }
+    }
+})(angular);
+
+/**
+ * Created by hwen.
+ */
+(function(angular) {
+    'use strict';
+
+    angular.module('waka').controller('topicTreeController', ['$scope', '$state',
+        '$stateParams', 'Topic', 'User', topicTreeController]);
+
+    function topicTreeController($scope, $state, $stateParams, Topic, User) {
+
+    }
 })(angular);
 
 /**
@@ -893,7 +979,7 @@
                 }
                 if (res.status > -1) {
                     console.log('signup success');
-                    $state.go('home-page');
+                    $state.go('user-login');
                 }
             }, function(err) {
                 console.log('signup fail');

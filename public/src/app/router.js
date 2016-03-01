@@ -104,6 +104,19 @@
                 controllerAs: 'vm'
             })
 
+            .state('topic', {
+                url: '/topic',
+                templateUrl: 'app/routes/topic/topic.html',
+                controller: 'topicController',
+                controllerAs: 'vm'
+            })
+
+            .state('topic.tree', {
+                url: '/:topic_id',
+                templateUrl: 'app/routes/topic-tree/topic-tree.html',
+                controller: 'topicTreeController',
+                controllerAs: 'tree'
+            })
 
         $urlRouterProvider.otherwise('/user-login');
     }
