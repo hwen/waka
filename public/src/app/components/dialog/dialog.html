@@ -1,0 +1,24 @@
+<md-dialog aria-label="添加话题分类"  ng-cloak>
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>添加话题分类</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="vm.cancel()">
+          <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content" layout="column">
+          <strong flex>父话题：<span ng-bind=""></span></strong>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button ng-click="vm.addTopic()" class="md-raised md-accent">
+       保存话题
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

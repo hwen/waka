@@ -129,7 +129,7 @@
             })
 
             .state('topic.tree', {
-                url: 'topic/:topic_id',
+                url: '/:topic_id',
                 templateUrl: 'app/routes/topic-tree/topic-tree.html',
                 controller: 'topicTreeController',
                 controllerAs: 'tree'
@@ -453,6 +453,37 @@
             };
         })
 })(angular);
+(function(angular) {
+    'use strict';
+    angular.module('waka').directive('topicDialog', topicDialog);
+
+    function topicDialog() {
+        var directive = {
+            restrict: 'E',
+            templateUrl: 'app/components/dialog/dialog.html',
+            scope: {
+                parentTopic: '='
+            },
+            controller: dialogController,
+            controllerAs: 'vm',
+            bindToController: true
+        };
+
+        return directive;
+
+        function dialogController($scope, $state, $mdDialog, Topic) {
+            var vm = this;
+
+            vm.cancel = function() {
+                $mdDialog.cancel();
+            };
+            vm.addTopic = function() {
+                $mdDialog.hide();
+            };
+        }
+    }
+})(angular);
+
 (function(angular) {
 	angular.module('waka').directive('myEditor', myEditor);
 
@@ -913,11 +944,28 @@
     'use strict';
 
     angular.module('waka').controller('topicTreeController', ['$scope', '$state',
-        '$stateParams', 'Topic', 'User', topicTreeController]);
+        '$stateParams', '$mdDialog','Topic', 'User', topicTreeController]);
 
-    function topicTreeController($scope, $state, $stateParams, Topic, User) {
+    function topicTreeController($scope, $state, $stateParams, $mdDialog, Topic,
+         User, dialogController) {
+        var vm = this;
+        vm.currentTopic = {name:'fuck', id: '110'};
 
+        vm.showTopicDialog = showTopicDialog;
+
+        function showTopicDialog(ev) {
+            $mdDialog.show({
+                template: '<topic-dialog parent-topic="vm.currentTopic"></topic-dialog>',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose: true
+            })
+            .then(function(addTopic) {
+            });
+        }
     }
+
+    // function dialogController() {}
 })(angular);
 
 /**

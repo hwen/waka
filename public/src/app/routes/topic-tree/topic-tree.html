@@ -8,15 +8,14 @@
             <ul class="sub-topic">
                 <h3>子话题</h3>
                 <li ng-repeat="item in tree.sub"></li>
-                <li>apple</li>
+                <li><a href="/#/topic/234">apple </a></li>
                 <li>apple</li>
                 <li>apple</li>
                 <li>apple</li>
                 <li>apple</li>
                 <li>apple</li>
             </ul>
-            <a href="javascript:;" class="add-topic">
-                <i></i>
+            <a href="javascript:;" class="add-topic" ng-click="tree.showTopicDialog($event)">
             </a>
         </ul>
     </ul>
