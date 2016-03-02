@@ -1,19 +1,27 @@
 <div class="topic-tree-container">
     <ul class="parent-topic">
         <h3>父话题</h3>
-        <li>food</li>
+        <li ng-if="tree.parentTopic._id">
+            <a href="/#topic/{{tree.parentTopic._id}}" ng-bind="tree.parentTopic.name">
+            </a>
+        </li>
+        <li ng-if="!tree.parentTopic._id">
+            <a href="javascript:;" ng-bind="tree.parentTopic.name"></a>
+        </li>
         <ul class="current-topic">
             <h3>当前话题</h3>
-            <li>fruit</li>
+            <li>
+                <a href="/#/topic/{{tree.currentTopic._id}}" ng-bind="tree.currentTopic.name">
+                </a>
+            </li>
             <ul class="sub-topic">
                 <h3>子话题</h3>
-                <li ng-repeat="item in tree.sub"></li>
-                <li><a href="/#/topic/234">apple </a></li>
-                <li>apple</li>
-                <li>apple</li>
-                <li>apple</li>
-                <li>apple</li>
-                <li>apple</li>
+                <li ng-if="tree.subTopicList" ng-repeat="child in tree.subTopicList">
+                    <a href="/#/topic/{{child._id}}" ng-bind="child.name"></a>
+                </li>
+                <li ng-if="tree.subTopicList.length == 0">
+                    <a href="javascript:;">无</a>
+                </li>
             </ul>
             <a href="javascript:;" class="add-topic" ng-click="tree.showTopicDialog($event)">
             </a>

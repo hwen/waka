@@ -15,6 +15,8 @@ var Topic = require('./topic.model'),
 * */
 exports.sub = sub;
 
+exports.getAllChild = getAllChild;
+
 /*
 *  params: name, parent(parent_name)
 *  method: post
@@ -27,6 +29,17 @@ exports.update = update;
 exports.list = list;
 
 exports.getTopicsId = getTopicsId;
+
+exports.getTopicById = getTopicById;
+
+function getTopicById(req, res) {
+	if (req.params._id) {
+		Topic.findOne({_id: req.params._id}).exec(function(err, result) {
+			if (err) return sysError(res, err);
+			return res.json(invokeResult.success(result, 'getTopicById success'));
+		});
+	}
+}
 
 function getTopicsId(req, res) {
     log.out(req.body);
@@ -88,8 +101,22 @@ function add(req, res) {
 
 function sub(req, res) {
 	log.out(req.params);
-	if (req.params.name) {
-		Topic.findOne({name: req.params.name}).exec(function(err, result) {
+	if (req.params._id) {
+		Topic.findOne({_id: req.params._id}).exec(function(err, result) {
+			if (err) return sysError(res, err, 'sub findOne error');
+			if (!result) return res.send(404, 'topic not found');
+			result.getChildren(false, function(err, results) {
+				if (err) return sysError(res, err, 'sub getChildren error');
+				res.json(invokeResult.success(results, 'sub getChildren success'));
+			});
+		});
+	}
+}
+
+function getAllChild(req, res) {
+	log.out(req.params);
+	if (req.params._id) {
+		Topic.findOne({_id: req.params._id}).exec(function(err, result) {
 			if (err) return sysError(res, err, 'sub findOne error');
 			if (!result) return res.send(404, 'topic not found');
 			result.getChildren(true, function(err, results) {

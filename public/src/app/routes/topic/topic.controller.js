@@ -16,7 +16,6 @@
         vm.filterSelected = true;
 
         loadTopics();
-        $state.go('topic.tree', {topic_id: "233"});
 
         function querySearch(query) {
             var results = query ?
@@ -34,6 +33,8 @@
             Topic.list().$promise.then(function(res) {
                 vm.allTopics = res.data;
                 vm.querySearch = querySearch;
+                //$state.go('topic.tree', {topic_id: "56d6f9a7eb0e07a804e952c9"});
+                location.href = '/#topic/56d6f9a7eb0e07a804e952c9';
             });
         }
     }

@@ -163,16 +163,25 @@
 
         .factory('Topic', ['$resource', function($resource) {
             var url = URL + '/topic/';
-            return $resource(URL+'/topic', {}, {
+            return $resource(URL+'/topic/:_id', {
+                _id: '@_id'
+            }, {
                 add: {
                     method: 'POST',
                     url: url + 'add'
                 },
                 sub: {
                     method: 'GET',
-                    url: url + 'sub/:name',
+                    url: url + 'sub/:_id',
                     params: {
-                        name: '@name'
+                        _id: '@_id'
+                    }
+                },
+                getAllChild: {
+                    method: 'GET',
+                    url: url + 'allChild/:_id',
+                    params: {
+                        _id: '@_id'
                     }
                 },
                 update: {
