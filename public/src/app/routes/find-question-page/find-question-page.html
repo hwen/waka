@@ -1,4 +1,50 @@
 <nav-bar></nav-bar>
 <div class="find-question-page-container">
   <a href="/#/question/56d251a010619c0416bc6855">问题</a>
+  <md-content>
+    <md-tabs md-dynamic-height md-border-bottom>
+      <md-tab label="最新的">
+        <md-content class="md-padding newly-question" layout="column">
+            <div class="question-stream">
+                <section class="stream-item" layout="row">
+                    <div class="qa-rank" flex="10">
+                        <span class="votes" flex>
+                            <span>6</span>
+                            赞
+                        </span>
+                        <span class="answers" flex>
+                            <span>2</span>
+                            回答
+                        </span>
+                    </div>
+                    <div class="summary" layout="column" flex>
+                        <div class="author" flex>
+                            vastch  58 分钟前提问
+                        </div>
+                        <div class="title" flex layout="row">
+                            <strong>
+                                使用ionic组件 chrome与其他浏览器显示效果不同
+                            </strong>
+                            <div class="topics" flex>
+                                <ul>
+                                    <li>angularjs</li>
+                                    <li>javascript</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </md-content>
+      </md-tab>
+      <md-tab label="热门的">
+        <md-content class="md-padding hot-question" layout="column">
+        </md-content>
+      </md-tab>
+      <md-tab label="未回答的">
+        <md-content class="no-answer-question" layout="column" >
+        </md-content>
+      </md-tab>
+    </md-tabs>
+  </md-content>
 </div>

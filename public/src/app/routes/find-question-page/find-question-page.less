@@ -1,0 +1,43 @@
+.find-question-page-container {
+    .newly-question, .hot-question, .no-answer-question {
+        width: 80%;
+        margin: auto;
+    }
+
+    .question-stream {
+        padding-bottom: 10px;
+        border-bottom: 1px solid #dcdcdc;
+        .qa-rank {
+            .votes, .answers {
+                display: inline-block;
+                padding: 5px;
+                min-width: 55px;
+                text-align: center;
+                span {
+                    display: block;
+                }
+            }
+            .votes {
+                color: #D985B4;
+                font-weight: 600;
+            }
+            .answers {
+                background: @lightPrimary;
+                color: white;
+            }
+        }
+        .topics {
+            ul {
+                margin:0;
+                padding-bottom: 5px;
+            }
+            li {
+                list-style: none;
+                display: inline-block;
+                padding: 3px 8px;
+                background:@lightPrimary;
+                color: white;
+            }
+        }
+    }
+}
