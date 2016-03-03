@@ -20,7 +20,7 @@
 
         function initData() {
             loadTopics();
-            getFollowingTopic();
+            getUserFollowingTopic();
         }
 
         function querySearch(query) {
