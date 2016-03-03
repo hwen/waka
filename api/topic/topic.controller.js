@@ -32,13 +32,31 @@ exports.getTopicsId = getTopicsId;
 
 exports.getTopicById = getTopicById;
 
+exports.getTopicByIdList = getTopicByIdList;
+
+function getTopicByIdList(req, res) {
+    if (!req.body.topicIdList) return res.json(invokeResult.error('topicIdList', 'null'));
+    async.map(req.body.topicIdList, function(topicId, callback) {
+        Topic.findOne({_id: topicId})
+            .exec(function(err, topic) {
+                if (err) return sysError(res, err);
+                callback(null, topic);
+            });
+    }, function(err, results) {
+        if (err) return sysError(res, err);
+        return res.json(results, 'getTopicByIdList success');
+    });
+}
+
 function getTopicById(req, res) {
 	if (req.params._id) {
 		Topic.findOne({_id: req.params._id}).exec(function(err, result) {
 			if (err) return sysError(res, err);
 			return res.json(invokeResult.success(result, 'getTopicById success'));
 		});
-	}
+	} else {
+        return res.json(invokeResult.error('_id', 'null'));
+    }
 }
 
 function getTopicsId(req, res) {

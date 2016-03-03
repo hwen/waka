@@ -6,6 +6,7 @@
 
 var mongoose = require('mongoose');
 var Schema  = mongoose.Schema;
+var ObjectId = Schema.ObjectId;
 var crypto  = require('crypto');
 
 var UserSchema = new Schema({
@@ -23,7 +24,7 @@ var UserSchema = new Schema({
         bio: String,
         description: String,
         avatar: {type:String, default: 'default.png'},
-
+        following_topic: [ObjectId],
         answer_count: { type:Number, default:0 },
         question_count: { type:Number, default:0 },
         receive_support: { type:Number, default:0 },

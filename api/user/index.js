@@ -9,13 +9,14 @@ var express = require('express'),
 var router = express.Router();
 
 router.post('/login', controller.login);
-router.get('/logout', controller.logout);
-router.get('/currentUser', controller.currentUser);
 router.post("/", controller.create);
-router.get("/hello", controller.hello);
 router.post("/imgUpload", controller.imgUpload);
 router.post("/update", controller.update);
 router.post("/password", controller.updatePassword);
+router.get('/logout', controller.logout);
+router.get('/currentUser', controller.currentUser);
+router.get("/hello", controller.hello);
+router.get("/followingTopic/:_id", controller.getFollowingTopic);
 router.get("/:id", controller.get);
 
 module.exports = router;

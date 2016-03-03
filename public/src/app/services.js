@@ -37,6 +37,13 @@
                 updatePassword: {
                   method: 'POST',
                   url: url + 'password'
+                },
+                getFollowingTopic: {
+                    method: 'GET',
+                    url: url + 'followingTopic/:_id',
+                    params: {
+                        _id: '@_id'
+                    }
                 }
             });
         }])
@@ -191,6 +198,14 @@
                 list: {
                     method: 'GET',
                     url: url + 'list'
+                },
+                getTopicsId: {
+                    method: 'POST',
+                    url: url + 'getTopicsId'
+                },
+                getTopicByIdList: {
+                    method: 'POST',
+                    url: url + 'getTopicByIdList'
                 }
             });
         }])

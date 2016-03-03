@@ -7,7 +7,7 @@
             restrict: 'E',
             templateUrl: 'app/components/dialog/dialog.html',
             scope: {
-                parentTopic: '='
+                initTree: '&'
             },
             controller: dialogController,
             controllerAs: 'vm',
@@ -40,7 +40,7 @@
                     .then(function(res) {
                         if (res.status > -1) {
                             alert("添加成功");
-                            location.reload();
+                            vm.initTree();
                         }
                     });
             };

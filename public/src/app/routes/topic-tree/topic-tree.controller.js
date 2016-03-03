@@ -59,7 +59,7 @@
 
         function showTopicDialog(ev) {
             $mdDialog.show({
-                template: '<topic-dialog parent-topic="tree.currentTopic"></topic-dialog>',
+                template: '<topic-dialog parent-topic="tree.initTree()"></topic-dialog>',
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 clickOutsideToClose: true

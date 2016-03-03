@@ -155,6 +155,14 @@ exports.imgUpload = function(req, res) {
     });
 };
 
+exports.getFollowingTopic(req, res) {
+    if (req.params._id);
+    User.findOne({_id: req.params._id}).exec(function(err, result) {
+        if (err) return sysError(res, err);
+        return res.json(invokeResult.success(result));
+    });
+}
+
 function setAvatar(uid) {
     User.findOne({_id:uid||''}).exec(function(err, user) {
         user.avatar = uid + '.png';

@@ -9,6 +9,8 @@ var express = require('express'),
 var router = express.Router();
 
 router.post('/add', controller.add);
+router.post('/getTopicsId', controller.getTopicsId);
+router.post('/getTopicByIdList', controller.getTopicByIdList);
 router.get('/list', controller.list);
 router.get('/sub/:_id', controller.sub);
 router.get('/allChild/:_id', controller.getAllChild);
