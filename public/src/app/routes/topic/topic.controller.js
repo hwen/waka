@@ -61,7 +61,10 @@
             Topic.getTopicByIdList(JSON.stringify(params))
                 .$promise
                 .then(function(res) {
-                    vm.topics = res.data;
+                    console.log(res);
+                    if (res.data) {
+                        vm.topics = res.data;
+                    }
                 });
         }
 
@@ -84,6 +87,7 @@
                 .$promise
                 .then(function(res) {
                     if (res.status > -1) {
+                        console.log(res);
                         alert("关注的话题已更新");
                     } else {
                         alert("程序出错");

@@ -178,6 +178,13 @@
                 updatePassword: {
                   method: 'POST',
                   url: url + 'password'
+                },
+                getFollowingTopic: {
+                    method: 'GET',
+                    url: url + 'followingTopic/:_id',
+                    params: {
+                        _id: '@_id'
+                    }
                 }
             });
         }])
@@ -332,6 +339,14 @@
                 list: {
                     method: 'GET',
                     url: url + 'list'
+                },
+                getTopicsId: {
+                    method: 'POST',
+                    url: url + 'getTopicsId'
+                },
+                getTopicByIdList: {
+                    method: 'POST',
+                    url: url + 'getTopicByIdList'
                 }
             });
         }])
@@ -471,7 +486,7 @@
             restrict: 'E',
             templateUrl: 'app/components/dialog/dialog.html',
             scope: {
-                parentTopic: '='
+                initTree: '&'
             },
             controller: dialogController,
             controllerAs: 'vm',
@@ -483,22 +498,45 @@
         function dialogController($scope, $state, $mdDialog, Topic) {
             var vm = this;
 
+            vm.parentTopic = '';
+            vm.topicToAdd = '';
+
             vm.cancel = function() {
                 $mdDialog.cancel();
             };
             vm.addTopic = function() {
+                if ( !vm.topicToAdd ) {
+                    alert("话题名不能为空");
+                    return;
+                }
+                var params = {
+                    name: vm.topicToAdd,
+                    parent: vm.parentTopic.name
+                };
                 $mdDialog.hide();
+                Topic.add(params)
+                    .$promise
+                    .then(function(res) {
+                        if (res.status > -1) {
+                            alert("添加成功");
+                            vm.initTree();
+                        }
+                    });
             };
 
             initData();
 
             function initData() {
-
+                getParentTopic();
             }
 
-            function getTopicId() {
+            function getParentTopic() {
                 var params = location.href.split('#/topic/')[1];
-                return params;
+                Topic.get({_id: params})
+                    .$promise
+                    .then(function(res) {
+                        vm.parentTopic = res.data;
+                    });
             }
         }
     }
@@ -766,13 +804,17 @@
 (function(angular) {
     'use strict';
     angular.module('waka').controller('findQuestionController', ['$scope', '$state', 'Question',
-        findQuestionController]);
+        'iCookie', findQuestionController]);
 
-    function findQuestionController($scope, $state, Question) {
+    function findQuestionController($scope, $state, Question, iCookie) {
+
+        function getNewQuestion() {
+        }
 
     }
 
 })(angular);
+
 (function(angular) {
     'use strict';
 
@@ -923,18 +965,23 @@
     'use strict';
 
     angular.module('waka').controller('topicController', ['$scope', '$state',
-        'Topic', 'User', topicController]);
+        'Topic', 'User', 'iCookie', topicController]);
 
-    function topicController($scope, $state, Topic, User) {
+    function topicController($scope, $state, Topic, User, iCookie) {
         var vm = this;
 
         vm.querySearch = '';
         vm.allTopics = [];
         vm.topics = [];
         vm.filterSelected = true;
+        vm.updateFollowingTopic = updateFollowingTopic;
 
-        loadTopics();
-        $state.go('topic.tree', {topic_id: "56d6f9a7eb0e07a804e952c9"});
+        initData();
+
+        function initData() {
+            loadTopics();
+            getUserFollowingTopic();
+        }
 
         function querySearch(query) {
             var results = query ?
@@ -952,7 +999,65 @@
             Topic.list().$promise.then(function(res) {
                 vm.allTopics = res.data;
                 vm.querySearch = querySearch;
+                //$state.go('topic.tree', {topic_id: "56d6f9a7eb0e07a804e952c9"});
+                location.href = '/#topic/56d6f9a7eb0e07a804e952c9';
             });
+        }
+
+        function getUserFollowingTopic() {
+            var uid = iCookie.getCookie("uid");
+            User.getFollowingTopic({_id: uid})
+                .$promise
+                .then(function(res) {
+                    console.log(res);
+                    var topicList = res.data.following_topic;
+
+                    getTopicByIdList(topicList);
+                });
+        }
+
+        function getTopicByIdList(topicIdList) {
+            var params = {topicIdList: topicIdList};
+            Topic.getTopicByIdList(JSON.stringify(params))
+                .$promise
+                .then(function(res) {
+                    vm.topics = res.data;
+                });
+        }
+
+        function updateFollowingTopic() {
+            var updatedTopic = getUpdatedTopicList();
+            var flag = true;
+
+            if (updatedTopic.length === 0) {
+                flag = confirm("你确认要取消所有关注么？");
+            }
+
+            if (!flag) return;
+
+            var params = {
+                _id: iCookie.getCookie("uid"),
+                following_topic: updatedTopic
+            };
+
+            User.update(JSON.stringify(params))
+                .$promise
+                .then(function(res) {
+                    if (res.status > -1) {
+                        alert("关注的话题已更新");
+                    } else {
+                        alert("程序出错");
+                        console.log(res);
+                    }
+                });
+        }
+
+        function getUpdatedTopicList() {
+            var updatedTopic = vm.topics.map(function(topic) {
+                return topic._id;
+            });
+
+            return updatedTopic;
         }
     }
 })(angular);
@@ -1018,7 +1123,7 @@
 
         function showTopicDialog(ev) {
             $mdDialog.show({
-                template: '<topic-dialog parent-topic="tree.currentTopic"></topic-dialog>',
+                template: '<topic-dialog parent-topic="tree.initTree()"></topic-dialog>',
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 clickOutsideToClose: true

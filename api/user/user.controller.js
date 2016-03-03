@@ -73,10 +73,21 @@ exports.update = function(req, res) {
     log.out(req.body);
     User.findOne({_id: req.cookies.uid||''}).exec(function(err, user) {
         if (err) return sysError(res, err, 'update err');
+
         if (!user) {
             return res.status(404).json(invokeResult.success('', 'cannot find user'));
         }
+
         var updated = _.merge(user, req.body);
+
+        if ( req.body.following_topic ) {
+            if (req.body.following_topic.length === 0)
+                updated.following_topic = null;
+            //Mongoose 混合类型修改后需要调用 markModified 不然该字段保存不了
+            //坑爹
+            updated.markModified('following_topic');
+        }
+
         log.out(updated);
         updated.save(function(err) {
             if (err) return sysError(res, err);
@@ -155,7 +166,7 @@ exports.imgUpload = function(req, res) {
     });
 };
 
-exports.getFollowingTopic(req, res) {
+exports.getFollowingTopic =  function(req, res) {
     if (req.params._id);
     User.findOne({_id: req.params._id}).exec(function(err, result) {
         if (err) return sysError(res, err);

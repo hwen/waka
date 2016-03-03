@@ -283,7 +283,7 @@ function getQuestionByTopicList(topicsList, params ,callback) {
         .sort(query.sort)
         .limit(limit)
         .exec(function(err, questions) {
-            if (err) { log.err(err); }
+            if (err) { log.err(err, 'getQuestionByTopicList'); }
             else {
                 cb(null, questions);
             }
@@ -301,6 +301,10 @@ function getAuthor(questions, callback) {
             cb(null, data);
         });
     }, callback);
+}
+
+function getAllTopic() {
+
 }
 
 //function findById(req, res) {

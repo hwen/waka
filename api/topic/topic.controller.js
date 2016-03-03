@@ -35,7 +35,7 @@ exports.getTopicById = getTopicById;
 exports.getTopicByIdList = getTopicByIdList;
 
 function getTopicByIdList(req, res) {
-    if (!req.body.topicIdList) return res.json(invokeResult.error('topicIdList', 'null'));
+    if (!req.body.topicIdList) return res.json(invokeResult.failure('topicIdList', 'null'));
     async.map(req.body.topicIdList, function(topicId, callback) {
         Topic.findOne({_id: topicId})
             .exec(function(err, topic) {
@@ -44,7 +44,7 @@ function getTopicByIdList(req, res) {
             });
     }, function(err, results) {
         if (err) return sysError(res, err);
-        return res.json(results, 'getTopicByIdList success');
+        return res.json(invokeResult.success(results, 'getTopicByIdList success'));
     });
 }
 
@@ -55,7 +55,7 @@ function getTopicById(req, res) {
 			return res.json(invokeResult.success(result, 'getTopicById success'));
 		});
 	} else {
-        return res.json(invokeResult.error('_id', 'null'));
+        return res.json(invokeResult.failure('_id', 'null'));
     }
 }
 

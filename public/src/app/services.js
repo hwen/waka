@@ -99,7 +99,7 @@
                         question_id: '@question_id'
                     }
                 },
-                getFollwerList: {
+                getFollowerList: {
                     method: 'GET',
                     url: url + 'getFollwerList/:follower_id',
                     params: {
