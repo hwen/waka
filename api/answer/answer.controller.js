@@ -6,6 +6,7 @@ var AnswerModel = require('./answer.model'),
     AnswerCollect = AnswerModel.AnswerCollect,
     User = require('../user/user.model'),
     Question = require('../question/question.model').Question,
+    Topic = require('../topic/topic.model'),
     Message = require('../message/message.controller'),
     _ = require('lodash'),
     async = require('async'),
@@ -248,17 +249,27 @@ function getByTopic(req, res) {
     log.out('answer topic', req.body);
     getQuestionByTopicList(req.body.topicList,function(err, questions) {
         if (err) { return sysError(res, err, 'getQuestionByTopicList'); }
+        
         getAnswerByQuestionArr(questions, function(err, data) {
             if (err) { return sysError(res, err, 'getAnswerByQuestionArr'); }
+
             var results = _.sortBy(data, 'score');
+
+            results = _.reverse(results);
+
             getAuthor(results, function(err, datas) {
                async.map(datas, function(data, cb) {
                    Question.findById(data.answer.question_id).exec(function(err, question) {
-                       var result = {
-                           answer: data.answer,
-                           author: data.author,
-                           question: question
-                       };
+
+                       getTopic(question, function(topics) {
+                           var result = {
+                               answer: data.answer,
+                               author: data.author,
+                               question: question,
+                               topics: topics
+                           };
+                       });
+
                        cb(null, result);
                    });
                }, function(err, results) {
@@ -301,7 +312,7 @@ function getAnswerByQuestionArr(questions, callback) {
 function getQuestionByTopicList(topicsList ,callback) {
     topicsList = convertToArray(topicsList);
     async.concat(topicsList, function(topic, cb) {
-        Question.find({topics:topic}, query.noAnswer).exec(function(err, questions) {
+        Question.find({topics:topic}).exec(function(err, questions) {
             if (err) { log.err('answer: getQuestionByTopicList', err); }
             else {
                 cb(null, questions);
@@ -332,4 +343,13 @@ function convertToArray(data) {
     } else {
         return data;
     }
+}
+
+function getTopic(question, callback) {
+    async.concat(question.topics, function(topic_id, cb) {
+        Topic.findOne({_id: topic_id})
+            .exec(function(err, topic) {
+                cb(null, topic);
+            });
+    }, callback);
 }

@@ -24,6 +24,7 @@
 					var result = res.data[0];
     				vm.question = result.question;
     				vm.question.author = result.author;
+                    vm.question.topics = result.topics;
     				vm.question.createdTime = timeFormat.postedTime(vm.question.created_time);
     				getAnswers(vm.question._id);
     			} else {
