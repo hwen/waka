@@ -3,12 +3,12 @@
  */
 
 'use strict';
-var invokeResult = require('../../components/invoke_result'),
-    User = require('./user.model'),
+var User = require('./user.model'),
     Topic = require('../topic/topic.model'),
     log = require('../../components/util/log'),
     config = require('../../config/environment'),
     fs = require("fs"),
+    async = require('async'),
     _ = require('lodash'),
     invokeResult = require('../../components/invoke_result'),
     sysError = invokeResult.sysError;
@@ -172,7 +172,7 @@ exports.getFollowingTopic =  function(req, res) {
         function(cb) {
             if (req.params._id);
             User.findOne({_id: req.params._id}).exec(function(err, user) {
-                callback(null, user);
+                cb(null, user);
             });
         },
         function(user, cb) {
@@ -201,17 +201,20 @@ function setAvatar(uid) {
 }
 
 function getTopic(topicList, callback) {
+
     if ( !topicList || topicList.length === 0 ) {
         var result = [];
         callback(result);
     } else {
 
         async.concat(topicList, function(topic_id, cb) {
-            Topic.findOne(_id: topic_id)
+            Topic.findOne({_id: topic_id})
                 .exec(function(err, topic) {
                     cb(null, topic);
                 });
-        }, callback);
+        }, function(err, topics) {
+            callback(topics);
+        });
         
     }
 

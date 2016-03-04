@@ -240,7 +240,7 @@
                         question_id: '@question_id'
                     }
                 },
-                getFollwerList: {
+                getFollowerList: {
                     method: 'GET',
                     url: url + 'getFollwerList/:follower_id',
                     params: {
@@ -803,83 +803,199 @@
 
 (function(angular) {
     'use strict';
-    angular.module('waka').controller('findQuestionController', ['$scope', '$state', 'Question',
-        'iCookie', findQuestionController]);
 
-    function findQuestionController($scope, $state, Question, iCookie) {
+    angular.module('waka').controller('homeController', ['$scope','$state', 'User', 'Answer', homeController]);
+
+    function homeController($scope, $state, User, Answer) {
+        var vm = this;
+
+        vm.allTopics = '';
+        vm.followingTopic = '';
+
+        function getAnswers() {
+            getUserFollowingTopic(function(topicIdList) {
+                var params = {
+                    topicList: topicIdList
+                };
+                Answer.getByUserTopics(JSON.stringify(params))
+                    .$promise
+                    .then(function(res) {
+                        
+                    });
+            });
+        }
+
+        function getUserFollowingTopic(callback) {
+            if (vm.followingTopicIdList) {
+                callback(vm.followingTopicIdList);
+                return;
+            }
+
+            User.getFollowingTopic({_id: iCookie.getCookie("uid")})
+                .$promise
+                .then(function(res) {
+                    var user = res.data.user;
+                    if ( res.data.topics.length > 0 ) {
+
+                        var topicIdList = res.topics.map(function(item) {
+                            return item._id;
+                        });
+
+                        vm.followingTopicIdList = topicIdList;
+
+                        callback(topicIdList);
+                    } else {  // user is not following any topics
+
+                        getAllTopic(function(topics) {
+                            var topicIdList = res.topics.map(function(item) {
+                                return item._id;
+                            });
+
+                            callback(topicIdList);
+                        });
+
+                    }
+                })
+        }
+
+        function getAllTopic(callback) {
+            if (vm.allTopics) callback(vm.allTopics);
+            else {
+                Topic.list().$promise.then(function(res) {
+                    vm.allTopics = res.data;
+                    callback(res.data);
+                });
+            }
+        }
+    }
+})(angular);
+
+(function(angular) {
+    'use strict';
+    angular.module('waka').controller('findQuestionController', ['$scope', '$state', '$timeout',
+        'Question','Topic', 'User', 'iCookie', 'timeFormat', findQuestionController]);
+
+    function findQuestionController($scope, $state, $timeout, Question, Topic,
+                                    User, iCookie, timeFormat) {
+        var vm = this;
+        vm.postedTime = timeFormat.postedTime;
+        vm.allTopics = '';
+        vm.followingTopic = '';
+        vm.questionNew = '';
+        vm.questionHot = '';
+        vm.questionNoAnswer = '';
+
+        initData();
+
+        function initData() {
+            getNewQuestion();
+            $timeout(function () {
+                getHotQuestion();
+                getNewQuestion();
+            }, 500);
+        }
 
         function getNewQuestion() {
+
+            getUserFollowingTopic(function(topicIdList) {
+                console.log(topicList);
+                var params = {
+                    topics: topicList
+                };
+
+                Question.getNew(JSON.stringify(params))
+                    .$promise
+                    .then(function(res) {
+                        console.log('getNew');
+                        console.log(res);
+                        vm.questionNew = res.data;
+                    });
+            });
+
+        }
+
+        function getHotQuestion() {
+            getUserFollowingTopic(function(topicIdList) {
+                console.log(topicList);
+                var params = {
+                    topics: topicList
+                };
+
+                Question.getHot(JSON.stringify(params))
+                    .$promise
+                    .then(function(res) {
+                        console.log('getHot');
+                        console.log(res);
+                        vm.questionHot = res.data;
+                    });
+            });
+        }
+
+        function getNoAnswerQuestion() {
+            getUserFollowingTopic(function(topicIdList) {
+                console.log(topicList);
+                var params = {
+                    topics: topicList
+                };
+
+                Question.getNoAnswer(JSON.stringify(params))
+                    .$promise
+                    .then(function(res) {
+                        console.log('getNoAnswer');
+                        console.log(res);
+                        vm.questionNoAnswer = res.data;
+                    });
+            });
+        }
+
+
+        function getUserFollowingTopic(callback) {
+            if (vm.followingTopicIdList) {
+                callback(vm.followingTopicIdList);
+                return;
+            }
+
+            User.getFollowingTopic({_id: iCookie.getCookie("uid")})
+                .$promise
+                .then(function(res) {
+                    var user = res.data.user;
+                    if ( res.data.topics.length > 0 ) {
+
+                        var topicIdList = res.topics.map(function(item) {
+                            return item._id;
+                        });
+
+                        vm.followingTopicIdList = topicIdList;
+
+                        callback(topicIdList);
+                    } else {  // user is not following any topics
+
+                        getAllTopic(function(topics) {
+                            var topicIdList = res.topics.map(function(item) {
+                                return item._id;
+                            });
+
+                            callback(topicIdList);
+                        });
+
+                    }
+                })
+        }
+
+        function getAllTopic(callback) {
+            if (vm.allTopics) callback(vm.allTopics);
+            else {
+                Topic.list().$promise.then(function(res) {
+                    vm.allTopics = res.data;
+                    callback(res.data);
+                });
+            }
         }
 
     }
 
 })(angular);
 
-(function(angular) {
-    'use strict';
-
-    angular.module('waka').controller('homeController', ['$scope','$state', 'User', homeController]);
-
-    function homeController($scope, $state, User) {
-        var vm = this;
-
-    }
-})(angular);
-
-(function(angular) {
-    'use strict';
-    angular.module('waka').controller('questionController', ['$scope', '$state', '$sce',  'Question',
-		'timeFormat', 'Answer', 'iCookie', questionController]);
-
-    function questionController($scope, $state, $sce, Question, timeFormat, Answer, iCookie) {
-    	var vm = this;
-		var question_id = location.hash.split('/')[2];
-
-    	vm.answerList = [];
-    	vm.question = "";
-		vm.addAnswer = addAnswer;
-		vm.checkAuthor = checkAuthor;
-
-    	getQuestion();
-
-		vm.postedTime = timeFormat.postedTime;
-
-    	function getQuestion() {
-			console.log(question_id);
-    		Question.get({question_id:question_id}).$promise.then(function(res) {
-    			if (res.status > -1) {
-					console.log(res);
-					var result = res.data[0];
-    				vm.question = result.question;
-    				vm.question.author = result.author;
-    				vm.question.createdTime = timeFormat.postedTime(vm.question.created_time);
-    				getAnswers(vm.question._id);
-    			} else {
-    				alert('getQuestion error');
-    			}
-    		});
-    	}
-
-    	function getAnswers(qid) {
-    		Answer.getByQuestion({question_id:qid}).$promise.then(function(res) {
-    			if (res.status > -1) {
-    				vm.answerList = res.data;
-    			} else {
-    				alert('getAnswers error');
-    			}
-    		});
-    	}
-
-		function addAnswer() {
-			location.href = '/#/answer-editor/' + question_id;
-		}
-
-		function checkAuthor(author_id) {
-			return iCookie.getCookie("uid") == author_id;
-		}
-    }
-
-})(angular);
 (function(angular) {
 	'use strict';
 
@@ -1010,20 +1126,23 @@
                 .$promise
                 .then(function(res) {
                     console.log(res);
-                    var topicList = res.data.following_topic;
+                    vm.topics = res.data.topics;
 
-                    getTopicByIdList(topicList);
+                    // getTopicByIdList(topicList);
                 });
         }
 
-        function getTopicByIdList(topicIdList) {
-            var params = {topicIdList: topicIdList};
-            Topic.getTopicByIdList(JSON.stringify(params))
-                .$promise
-                .then(function(res) {
-                    vm.topics = res.data;
-                });
-        }
+        // function getTopicByIdList(topicIdList) {
+        //     var params = {topicIdList: topicIdList};
+        //     Topic.getTopicByIdList(JSON.stringify(params))
+        //         .$promise
+        //         .then(function(res) {
+        //             console.log(res);
+        //             if (res.data) {
+        //                 vm.topics = res.data;
+        //             }
+        //         });
+        // }
 
         function updateFollowingTopic() {
             var updatedTopic = getUpdatedTopicList();
@@ -1044,6 +1163,7 @@
                 .$promise
                 .then(function(res) {
                     if (res.status > -1) {
+                        console.log(res);
                         alert("关注的话题已更新");
                     } else {
                         alert("程序出错");
@@ -1264,6 +1384,62 @@
             return CryptoJS.AES.decrypt(encrypted, "iwaka").toString(CryptoJS.enc.Utf8);
         }
     }
+})(angular);
+
+(function(angular) {
+    'use strict';
+    angular.module('waka').controller('questionController', ['$scope', '$state', '$sce',  'Question',
+		'timeFormat', 'Answer', 'iCookie', questionController]);
+
+    function questionController($scope, $state, $sce, Question, timeFormat, Answer, iCookie) {
+    	var vm = this;
+		var question_id = location.hash.split('/')[2];
+
+    	vm.answerList = [];
+    	vm.question = "";
+		vm.addAnswer = addAnswer;
+		vm.checkAuthor = checkAuthor;
+
+    	getQuestion();
+
+		vm.postedTime = timeFormat.postedTime;
+
+    	function getQuestion() {
+			console.log(question_id);
+    		Question.get({question_id:question_id}).$promise.then(function(res) {
+    			if (res.status > -1) {
+					console.log(res);
+					var result = res.data[0];
+    				vm.question = result.question;
+    				vm.question.author = result.author;
+                    vm.question.topics = result.topics;
+    				vm.question.createdTime = timeFormat.postedTime(vm.question.created_time);
+    				getAnswers(vm.question._id);
+    			} else {
+    				alert('getQuestion error');
+    			}
+    		});
+    	}
+
+    	function getAnswers(qid) {
+    		Answer.getByQuestion({question_id:qid}).$promise.then(function(res) {
+    			if (res.status > -1) {
+    				vm.answerList = res.data;
+    			} else {
+    				alert('getAnswers error');
+    			}
+    		});
+    	}
+
+		function addAnswer() {
+			location.href = '/#/answer-editor/' + question_id;
+		}
+
+		function checkAuthor(author_id) {
+			return iCookie.getCookie("uid") == author_id;
+		}
+    }
+
 })(angular);
 
 (function(angular) {

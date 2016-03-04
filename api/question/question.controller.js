@@ -201,9 +201,13 @@ function getByUser(req, res) {
 function getHot(req, res) {
     log.out('get hot question by user following topics ID', req.body);
     var topicsList = req.body.topics;
-    getQuestionByTopicList(topicsList, {noAnswer:false, sort:true}, function(err, data) {
+    getQuestionByTopicList(topicsList, function(err, data) {
         if (err) { return sysError(res, err, 'getHot error');}
+
         var results = _.uniqBy(data, "_id");
+        results = _.sortBy(results, 'score');
+        results = _.reverse(results);
+
         log.out('get Hot question', results);
         getAuthor(results, function(err, data) {
             if (err) { return sysError(res, err,'getAuthor error in getHot');}
@@ -215,9 +219,13 @@ function getHot(req, res) {
 function getNew(req, res) {
     log.out('get new question by user following topics ID', req.body);
     var topicsList = req.body.topics;
-    getQuestionByTopicList(topicsList, {}, function(err, data) {
+    getQuestionByTopicList(topicsList, function(err, data) {
         if (err) { return sysError(res, err,'getNew error');}
+
         var results = _.uniqBy(data, "_id");
+        results = _.sortBy(results, 'created_time');
+        results = _.reverse(results);
+
         log.out('get new question', results);
         getAuthor(results, function(err, data) {
             if (err) { return sysError(res, err,'getAuthor error in getNew');}
@@ -230,15 +238,19 @@ function getNew(req, res) {
 function getNoAnswer(req, res) {
     log.out('get no answer question by user following topics ID', req.body);
     var topicsList = req.body.topics;
-    getQuestionByTopicList(topicsList, {noAnswer:true, sort:false} ,function(err, data) {
+
+    getNoAnswerByTopicList(topicsList ,function(err, data) {
         if (err) { return sysError(res, err, 'getNoAnswer error');}
+
         var results = _.uniqBy(data, "_id");
+
         log.out('no answer question', results);
         getAuthor(results, function(err, data) {
             if (err) { return sysError(res, err,'getNoAnswer error'); }
             return res.json(invokeResult.success(data, 'get no answer questions success'));
         });
     });
+
 }
 
 function update(req, res) {
@@ -294,15 +306,14 @@ function search(req, res) {
     })
 }
 
-function getQuestionByTopicList(topicsList, params ,callback) {
-    var query = {
-        noAnswer : params.noAnswer ? {answer_count: {$lte:0}} : {},
-        sort : params.score ? {score:-1, created_time:-1}: {created_time:-1}
-    };
+function getQuestionByTopicList(topicsList ,callback) {
+
     var limit = config.pageSize / topicsList.length;
+    limit = Math.floor(limit);
+
     async.concat(topicsList, function(topic, cb) {
-        Question.find({topics:topic}, query.noAnswer)
-        .sort(query.sort)
+        Question.find({topics:topic})
+        .sort({created_time: -1})
         .limit(limit)
         .exec(function(err, questions) {
             if (err) { log.err(err, 'getQuestionByTopicList'); }
@@ -313,11 +324,29 @@ function getQuestionByTopicList(topicsList, params ,callback) {
     }, callback);
 }
 
+function getNoAnswerByTopicList(topicsList ,callback) {
+
+    var limit = config.pageSize / topicsList.length;
+    limit = Math.floor(limit);
+
+    async.concat(topicsList, function(topic, cb) {
+        Question.find({topics:topic, answer_count: 0})
+            .sort({created_time: -1})
+            .limit(limit)
+            .exec(function(err, questions) {
+                if (err) { log.err(err, 'getQuestionByTopicList'); }
+                else {
+                    cb(null, questions);
+                }
+            });
+    }, callback);
+}
+
 function getAuthor(questions, callback) {
     async.map(questions, function(question, cb) {
         User.findById(question.author_id, function(err, user) {
 
-            getTopic(question, function(topics) {
+            getTopic(question, function(err, topics) {
                 var data = {
                     question: question,
                     author: user,

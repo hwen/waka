@@ -1,9 +1,10 @@
 (function(angular) {
     'use strict';
     angular.module('waka').controller('findQuestionController', ['$scope', '$state', '$timeout',
-        'Question','Topic', 'iCookie', 'timeFormat', findQuestionController]);
+        'Question','Topic', 'User', 'iCookie', 'timeFormat', findQuestionController]);
 
-    function findQuestionController($scope, $state, $timeout, Question, Topic,  iCookie, timeFormat) {
+    function findQuestionController($scope, $state, $timeout, Question, Topic,
+                                    User, iCookie, timeFormat) {
         var vm = this;
         vm.postedTime = timeFormat.postedTime;
         vm.allTopics = '';
@@ -18,16 +19,16 @@
             getNewQuestion();
             $timeout(function () {
                 getHotQuestion();
-                getNewQuestion();
+                getNoAnswerQuestion();
             }, 500);
         }
 
         function getNewQuestion() {
 
             getUserFollowingTopic(function(topicIdList) {
-                console.log(topicList);
+                console.log(topicIdList);
                 var params = {
-                    topics: topicList
+                    topics: topicIdList
                 };
 
                 Question.getNew(JSON.stringify(params))
@@ -43,9 +44,9 @@
 
         function getHotQuestion() {
             getUserFollowingTopic(function(topicIdList) {
-                console.log(topicList);
+                console.log(topicIdList);
                 var params = {
-                    topics: topicList
+                    topics: topicIdList
                 };
 
                 Question.getHot(JSON.stringify(params))
@@ -60,9 +61,9 @@
 
         function getNoAnswerQuestion() {
             getUserFollowingTopic(function(topicIdList) {
-                console.log(topicList);
+                console.log(topicIdList);
                 var params = {
-                    topics: topicList
+                    topics: topicIdList
                 };
 
                 Question.getNoAnswer(JSON.stringify(params))
@@ -86,9 +87,11 @@
                 .$promise
                 .then(function(res) {
                     var user = res.data.user;
+                    console.log('getFollowingTopic');
+                    console.log(res);
                     if ( res.data.topics.length > 0 ) {
 
-                        var topicIdList = res.topics.map(function(item) {
+                        var topicIdList = res.data.topics.map(function(item) {
                             return item._id;
                         });
 
@@ -98,7 +101,7 @@
                     } else {  // user is not following any topics
 
                         getAllTopic(function(topics) {
-                            var topicIdList = res.topics.map(function(item) {
+                            var topicIdList = res.data.topics.map(function(item) {
                                 return item._id;
                             });
 
