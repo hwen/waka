@@ -50,23 +50,23 @@
                 .$promise
                 .then(function(res) {
                     console.log(res);
-                    var topicList = res.data.following_topic;
+                    vm.topics = res.data.topics;
 
-                    getTopicByIdList(topicList);
+                    // getTopicByIdList(topicList);
                 });
         }
 
-        function getTopicByIdList(topicIdList) {
-            var params = {topicIdList: topicIdList};
-            Topic.getTopicByIdList(JSON.stringify(params))
-                .$promise
-                .then(function(res) {
-                    console.log(res);
-                    if (res.data) {
-                        vm.topics = res.data;
-                    }
-                });
-        }
+        // function getTopicByIdList(topicIdList) {
+        //     var params = {topicIdList: topicIdList};
+        //     Topic.getTopicByIdList(JSON.stringify(params))
+        //         .$promise
+        //         .then(function(res) {
+        //             console.log(res);
+        //             if (res.data) {
+        //                 vm.topics = res.data;
+        //             }
+        //         });
+        // }
 
         function updateFollowingTopic() {
             var updatedTopic = getUpdatedTopicList();

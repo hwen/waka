@@ -8,6 +8,7 @@ var _ = require('lodash');
 var qModel = require('./question.model');
 var Question = qModel.Question;
 var QtnFollow = qModel.QtnFollow;
+var Topic = require('../topic/topic.model');
 var User = require('../user/user.model');
 var filter = require('../../components/util/filters');
 var invokeResult = require('../../components/invoke_result');
@@ -157,29 +158,43 @@ function getByUser(req, res) {
     log.out('question getByUser: author_id', req.params.author_id);
     if (!req.params.author_id) return res.json(invokeResult.failure('author_id', 'no author_id'));
     async.waterfall([
+
         function(cb) {
+
             User.findById(req.params.author_id).exec(function(err, user) {
                 if (err) { return sysError(res, err, 'getByUser->findUser error');}
                 cb(null, user);
             });
+
         },
         function(user, cb) {
+
             Question.find({author_id:req.params.author_id}).limit(config.pageSize).exec(function(err, questions) {
                 async.map(questions, function(question, callback) {
-                    var data = {
-                        q: question,
-                        author: user
-                    }
-                    callback(null, data);
+
+                    getTopic(question, function(topics) {
+                        var data = {
+                            question: question,
+                            author: user,
+                            topics: topics
+                        };
+
+                        callback(null, data);
+                    })
+
                 }, function(err, datas) {
+
                     if (err) { return sysError(res, err, 'getByUser->map question error');}
                     cb(null, datas);
+
                 });
             });
         }
     ], function(err, result) {
+
         if (err) {return sysError(res, err,'getByUser->waterfall question error');}
         return res.json(invokeResult.success(result, 'get question by user'));
+
     });
 }
 
@@ -228,10 +243,17 @@ function getNoAnswer(req, res) {
 
 function update(req, res) {
     Question.findOne({_id: req.body._id||''}).exec(function(err, question) {
+
         if (err) { return sysError(res, err, 'update err'); }
         if (!question) { return res.status(404).json(invokeResult.success('', 'question not found!')); }
         if (question.author_id != req.body.author_id) { return res.status(401).json(invokeResult.failure('author_id', 'no permission')); }
+
         var updated = _.merge(question, req.body);
+
+        if (req.body.topics) {
+            updated.markModified("topics");
+        }
+
         updated.save(function(err) {
             if (err) { return res.send(500, err); }
             return res.json(invokeResult.success({q:question}, 'question updated!'));
@@ -294,18 +316,30 @@ function getQuestionByTopicList(topicsList, params ,callback) {
 function getAuthor(questions, callback) {
     async.map(questions, function(question, cb) {
         User.findById(question.author_id, function(err, user) {
-            var data = {
-                question: question,
-                author: user
-            };
-            cb(null, data);
+
+            getTopic(question, function(topics) {
+                var data = {
+                    question: question,
+                    author: user,
+                    topics: topics
+                };
+                cb(null, data);
+            });
+
         });
     }, callback);
 }
 
-function getAllTopic() {
-
+function getTopic(question, callback) {
+    var topics  = question.topics;
+    async.concat(topics, function(topic_id, cb) {
+        Topic.findOne({_id: topic_id})
+            .exec(function(err, topic) {
+                cb(null, topic);
+            });
+    }, callback);
 }
+
 
 //function findById(req, res) {
 //    Question.find({_id:req.body.id}).exec(function(err, data) {

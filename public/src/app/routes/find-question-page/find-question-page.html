@@ -1,6 +1,5 @@
 <nav-bar></nav-bar>
 <div class="find-question-page-container">
-  <a href="/#/question/56d251a010619c0416bc6855">问题</a>
   <md-content>
     <md-tabs md-dynamic-height md-border-bottom>
       <md-tab label="最新的">
@@ -24,13 +23,12 @@
                             <span ng-bind="vm.postedTime(item.question.created_time)"></span>
                         </div>
                         <div class="title" flex layout="row">
-                            <strong ng-bind="item.question.title">
-                                使用ionic组件 chrome与其他浏览器显示效果不同
-                            </strong>
+                            <a href="/#/question/{{item.question._id}}">
+                                <strong ng-bind="item.question.title"></strong>
+                            </a>
                             <div class="topics" flex>
                                 <ul>
-                                    <li>angularjs</li>
-                                    <li>javascript</li>
+                                    <li ng-repeat="topic in item.topics" ng-bind="topic.name"></li>
                                 </ul>
                             </div>
                         </div>
@@ -41,10 +39,72 @@
       </md-tab>
       <md-tab label="热门的">
         <md-content class="md-padding hot-question" layout="column">
+            <div class="question-stream">
+                <section class="stream-item" layout="row" ng-repeat="item in vm.questionHot">
+                    <div class="qa-rank" flex="10" layout="row">
+                        <span class="votes" flex>
+                            <span ng-bind="item.question.support_count">6</span>
+                            赞
+                        </span>
+                        <span class="answers" flex>
+                            <span ng-bind="item.question.answer_count">2</span>
+                            回答
+                        </span>
+                    </div>
+                    <span flex="5"></span>
+                    <div class="summary" layout="column" flex>
+                        <div class="author" flex>
+                            <span ng-bind="item.author.username"></span>
+                            <span ng-bind="vm.postedTime(item.question.created_time)"></span>
+                        </div>
+                        <div class="title" flex layout="row">
+                            <a href="/#/question/{{item.question._id}}">
+                                <strong ng-bind="item.question.title"></strong>
+                            </a>
+                            <div class="topics" flex>
+                                <ul>
+                                    <li ng-repeat="topic in item.topics" ng-bind="topic.name"></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </md-content>
       </md-tab>
       <md-tab label="未回答的">
         <md-content class="no-answer-question" layout="column" >
+            <div class="question-stream">
+                <section class="stream-item" layout="row" ng-repeat="item in vm.questionNoAnswer">
+                    <div class="qa-rank" flex="10" layout="row">
+                        <span class="votes" flex>
+                            <span ng-bind="item.question.support_count">6</span>
+                            赞
+                        </span>
+                        <span class="answers" flex>
+                            <span ng-bind="item.question.answer_count">2</span>
+                            回答
+                        </span>
+                    </div>
+                    <span flex="5"></span>
+                    <div class="summary" layout="column" flex>
+                        <div class="author" flex>
+                            <span ng-bind="item.author.username"></span>
+                            <span ng-bind="vm.postedTime(item.question.created_time)"></span>
+                        </div>
+                        <div class="title" flex layout="row">
+                            <a href="/#/question/{{item.question._id}}">
+                                <strong ng-bind="item.question.title"></strong>
+                            </a>
+                            <div class="topics" flex>
+                                <ul>
+                                    <li ng-repeat="topic in item.topics" ng-bind="topic.name"></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </md-content>
       </md-tab>
     </md-tabs>

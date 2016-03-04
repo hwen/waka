@@ -5,6 +5,7 @@
 'use strict';
 var invokeResult = require('../../components/invoke_result'),
     User = require('./user.model'),
+    Topic = require('../topic/topic.model'),
     log = require('../../components/util/log'),
     config = require('../../config/environment'),
     fs = require("fs"),
@@ -167,10 +168,26 @@ exports.imgUpload = function(req, res) {
 };
 
 exports.getFollowingTopic =  function(req, res) {
-    if (req.params._id);
-    User.findOne({_id: req.params._id}).exec(function(err, result) {
-        if (err) return sysError(res, err);
-        return res.json(invokeResult.success(result));
+    async.waterfall([
+        function(cb) {
+            if (req.params._id);
+            User.findOne({_id: req.params._id}).exec(function(err, user) {
+                callback(null, user);
+            });
+        },
+        function(user, cb) {
+            getTopic(user.following_topic, function(topics) {
+                var data = {
+                    user: user,
+                    topics: topics
+                };
+                cb(null, data);
+            });
+        }
+    ], function(err, result) {
+        if (err) return sysError(res, err, 'getFollowingTopic');
+
+        return res.json(invokeResult.success(result, 'getFollowingTopic success'));
     });
 }
 
@@ -181,6 +198,23 @@ function setAvatar(uid) {
             if (err) return sysError(res, err, 'setAvatar error');
         });
     });
+}
+
+function getTopic(topicList, callback) {
+    if ( !topicList || topicList.length === 0 ) {
+        var result = [];
+        callback(result);
+    } else {
+
+        async.concat(topicList, function(topic_id, cb) {
+            Topic.findOne(_id: topic_id)
+                .exec(function(err, topic) {
+                    cb(null, topic);
+                });
+        }, callback);
+        
+    }
+
 }
 
 exports.hello = function(req, res) {
