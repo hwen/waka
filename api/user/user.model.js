@@ -55,6 +55,18 @@ UserSchema.methods = {
         if (!password) return '';
         //var salt = new Buffer('iwaka', 'base64');
         return crypto.pbkdf2Sync(password, 'iwaka', 10000, 64).toString('base64');
+    },
+
+    addQuestion: function () {
+        this.question_count++;
+    },
+
+    addAnswer: function() {
+        this.answer_count ++;
+    },
+
+    addSupport: function() {
+        this.receive_support++;
     }
 };
 

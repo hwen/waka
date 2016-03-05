@@ -5,7 +5,7 @@
       <div flex="70" class="title-box" layout="column">
         <md-button class="question-ask md-fab md-mini md-ink-ripple md-raised" alt="question-ask" aria-label="question-ask"><md-icon md-svg-src="../assets/images/icons/question-ask.svg"></md-icon></md-button>
         <div flex class="title" ng-bind="vm.question.title"></div>
-        <div flex class="detials" layout="row">
+        <div flex class="details" layout="row">
           <div flex="15" class="author" ng-bind="vm.question.author.username">作者</div>
           <div flex="20" class="ask-time">
             <span ng-bind="vm.question.createdTime"></span>提问
@@ -21,12 +21,21 @@
           <md-button class="md-raised md-primary" flex ng-click="vm.addAnswer()">
             回答
           </md-button>
-          <label class="action-detail" flex><strong ng-bind="vm.question.answer_count">0</strong>&nbsp;&nbsp;回答</label>
+          <label class="action-detail" flex>
+            <strong ng-bind="vm.question.answer_count">0</strong>&nbsp;&nbsp;回答
+          </label>
         </div>
       </div>
     </div>
   </div>
   <section class="question-content" data-qid="" layout="column">
+    <div class="attitude-box" layout="column" disabled>
+      <a class="up-attitude" flex="60">
+      </a>
+      <label style="height: 40%;">0</label>
+      <a class="down-attitude" flex="40">
+      </a>
+    </div>
     <p flex class="question" ng-bind-html="vm.question.contentHtml">
     </p>
     <strong flex><span ng-bind="vm.question.answer_count"></span>个回答</strong>

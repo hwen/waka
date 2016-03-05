@@ -3,13 +3,13 @@
     <div layout="row" class="header">
         <div flex="15" class="avatar-box">
             <a href="" class="avatar">
-                <img src="../assets/images/welcome_card.jpg" alt=""/>
+                <img ng-src="../assets/images/user/{{vm.user.avatar}}" alt=""/>
             </a>
         </div>
         <div flex="55" layou="column" class="user-info" layout-padding>
-            <div flex="50">username</div>
-            <div flex="50">description</div>
-            <div flex="50">profile</div>
+            <div flex="50" ng-bind="vm.user.username"></div>
+            <div flex="50" ng-bind="vm.user.bio"></div>
+            <div flex="50" ng-bind="vm.user.description"></div>
         </div>
         <div flex="30" layout="column">
             <div flex>
@@ -17,29 +17,29 @@
             </div>
             <div flex layout="row">
                 <div flex layout="column">
-                    <span flex>20</span>
+                    <span flex ng-bind="vm.user.question_count">20</span>
                     <span flex>提问</span>
                 </div>
                 <div flex layout="column">
-                    <span flex>20</span>
+                    <span flex ng-bind="vm.user.answer_count">20</span>
                     <span flex>回答</span>
                 </div>
                 <div flex layout="column">
-                    <span flex>20</span>
+                    <span flex ng-bind="vm.user.receive_support">20</span>
                     <span flex>获赞</span>
                 </div>
             </div>
         </div>
     </div>
     <div class="content" layout="row">
-        <div flex="30" layout="column">
+        <div flex="10" layout="column">
             <ul class="nav-list">
                 <li ng-repeat="item in vm.itemList" ui-sref-active="selected">
                     <a ui-sref="user-page.{{item.url}}">{{item.title}}</a>
                 </li>
             </ul>
         </div>
-        <div flex="70" layout="column">
+        <div flex="90" layout="column">
             <div ui-view="user-page"></div>
         </div>
     </div>

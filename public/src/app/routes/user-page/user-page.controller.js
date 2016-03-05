@@ -2,10 +2,13 @@
     'use strict';
 
     angular.module('waka').controller('userPageController', ['$scope', '$state', 'User',
-        userPageController]);
+        'iCookie', userPageController]);
 
-    function userPageController($scope, $state, User) {
+    function userPageController($scope, $state, User, iCookie) {
         var vm = this;
+
+        vm.user = '';
+
         vm.itemList = [{
             title: "我的提问",
             url: "question"
@@ -20,9 +23,20 @@
             url: "topic"
         }];
 
+        getUser();
+
         vm.userSetting = function() {
             $state.go('user-setting');
         };
+
+        function getUser() {
+            User.get({id: iCookie.getCookie("uid")})
+                .$promise
+                .then(function(res) {
+                    console.log(res);
+                    vm.user = res.data;
+                });
+        }
 
     }
 })(angular);

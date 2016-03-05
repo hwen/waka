@@ -31,6 +31,11 @@ AnswerSchema.index({author_id:1, created_time:-1});
 AnswerSchema.index({score:-1, created_time:-1});
 
 AnswerSchema.methods = {
+    changeToSupport: function() {
+        this.unsupport_count--;
+        this.support_count++;
+        this.score+=3;
+    },
     support: function() {
         this.support_count++;
         this.score++;
@@ -38,6 +43,11 @@ AnswerSchema.methods = {
     unsupport: function() {
         this.unsupport_count++;
         this.score -= 2;
+    },
+    changeToUnsupport: function() {
+        this.support_count--;
+        this.unsupport_count++;
+        this.score -= 3;
     },
     useless: function() {
         this.useless_count++;

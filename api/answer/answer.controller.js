@@ -205,6 +205,9 @@ function add(req, res) {
             question.addAnswer();
             question.save(function(err) {
                 if (err) log.err(err);
+                else {
+                    addUserAnswer(req.body.author_id);
+                }
             });
         });
         return res.json(invokeResult.success(result, 'add answer'));
@@ -352,4 +355,15 @@ function getTopic(question, callback) {
                 cb(null, topic);
             });
     }, callback);
+}
+
+function addUserAnswer(uid) {
+    User.findOne({_id: uid})
+        .exec(function(err, user) {
+            user.addAnswer();
+
+            user.save( function(err) {
+                if (err) log.out('addUserAnswer', err);
+            });
+        })
 }

@@ -35,6 +35,11 @@ QuestionSchema.index({topics: -1});
 QuestionSchema.index({score: -1, created_time: -1});
 
 QuestionSchema.methods = {
+    changeToSupport: function() {
+        this.unsupport_count--;
+        this.support_count++;
+        this.score+=3;
+    },
     support: function() {
         this.support_count++;
         this.score++;
@@ -42,6 +47,11 @@ QuestionSchema.methods = {
     unsupport: function() {
         this.unsupport_count++;
         this.score -= 2;
+    },
+    changeToUnsupport: function() {
+        this.support_count--;
+        this.unsupport_count++;
+        this.score -= 3;
     },
     follow: function() {
         this.follow_count++;

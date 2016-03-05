@@ -34,6 +34,7 @@
 				.then(function(res) {
 					if (res.status > -1) {
 						alert("添加回答成功");
+						location.href = '/#/question/' + question_id;
 					} else {
 						alert("添加回答失败");
 					}

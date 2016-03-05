@@ -276,11 +276,13 @@ function update(req, res) {
 function add(req, res) {
     if (filter.notNull(req.body.title)&&filter.notNull(req.body.author_id)&&filter.notNull(req.body.topics)) {
         var newQuestion = new Question(req.body);
+
         newQuestion.save(function (err, question) {
             if (err) {
                 return sysError(res, err, 'add err');
             } else {
                 log.out('add question', question);
+                addUserQuestion(req.body.author_id);
                 res.json(invokeResult.success(question, 'add question success'));
             }
         });
@@ -313,7 +315,7 @@ function getQuestionByTopicList(topicsList ,callback) {
 
     async.concat(topicsList, function(topic, cb) {
         Question.find({topics:topic})
-        .sort({created_time: -1})
+        .sort({created_time: -1, score: -1})
         .limit(limit)
         .exec(function(err, questions) {
             if (err) { log.err(err, 'getQuestionByTopicList'); }
@@ -369,7 +371,16 @@ function getTopic(question, callback) {
     }, callback);
 }
 
+function addUserQuestion(uid) {
+    User.findOne({_id: uid})
+        .exec(function(err, user) {
+            user.addQuestion();
 
+            user.save( function(err) {
+                if (err) log.out('addUserQuestion', err);
+            });
+        })
+}
 //function findById(req, res) {
 //    Question.find({_id:req.body.id}).exec(function(err, data) {
 //        if (err) { log.err(err);return res.send(500, 'not find');}
