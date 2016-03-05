@@ -1,13 +1,19 @@
 (function(angular) {
     'use strict';
 
-    angular.module('waka').controller('homeController', ['$scope','$state', 'User', 'Answer', homeController]);
+    angular.module('waka').controller('homeController', ['$scope','$state', 'User',
+        'Answer', 'Topic', 'iCookie', homeController]);
 
-    function homeController($scope, $state, User, Answer) {
+    function homeController($scope, $state, User, Answer, Topic, iCookie) {
         var vm = this;
 
         vm.allTopics = '';
         vm.followingTopic = '';
+        vm.answerList = '';
+        vm.answerListLeft = '';
+        vm.answerListRight ='';
+
+        getAnswers();
 
         function getAnswers() {
             getUserFollowingTopic(function(topicIdList) {
@@ -17,7 +23,10 @@
                 Answer.getByUserTopics(JSON.stringify(params))
                     .$promise
                     .then(function(res) {
-                        
+                        console.log(res);
+                        vm.answerList = res.data;
+                        vm.answerListRight = vm.answerList.slice(0, vm.answerList.length/2);
+                        vm.answerListLeft = vm.answerList.slice(vm.answerList.length/2);
                     });
             });
         }
@@ -34,7 +43,7 @@
                     var user = res.data.user;
                     if ( res.data.topics.length > 0 ) {
 
-                        var topicIdList = res.topics.map(function(item) {
+                        var topicIdList = res.data.topics.map(function(item) {
                             return item._id;
                         });
 
@@ -44,7 +53,7 @@
                     } else {  // user is not following any topics
 
                         getAllTopic(function(topics) {
-                            var topicIdList = res.topics.map(function(item) {
+                            var topicIdList = topics.map(function(item) {
                                 return item._id;
                             });
 

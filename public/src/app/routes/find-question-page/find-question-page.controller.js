@@ -26,7 +26,6 @@
         function getNewQuestion() {
 
             getUserFollowingTopic(function(topicIdList) {
-                console.log(topicIdList);
                 var params = {
                     topics: topicIdList
                 };
@@ -44,7 +43,7 @@
 
         function getHotQuestion() {
             getUserFollowingTopic(function(topicIdList) {
-                console.log(topicIdList);
+
                 var params = {
                     topics: topicIdList
                 };
@@ -61,7 +60,7 @@
 
         function getNoAnswerQuestion() {
             getUserFollowingTopic(function(topicIdList) {
-                console.log(topicIdList);
+
                 var params = {
                     topics: topicIdList
                 };
@@ -101,7 +100,7 @@
                     } else {  // user is not following any topics
 
                         getAllTopic(function(topics) {
-                            var topicIdList = res.data.topics.map(function(item) {
+                            var topicIdList = topics.map(function(item) {
                                 return item._id;
                             });
 

@@ -11,7 +11,7 @@
                             <span ng-bind="item.question.support_count">6</span>
                             赞
                         </span>
-                        <span class="answers" flex>
+                        <span class="answers" ng-class="{'active': item.question.answer_count>0}" flex>
                             <span ng-bind="item.question.answer_count">2</span>
                             回答
                         </span>
@@ -46,7 +46,7 @@
                             <span ng-bind="item.question.support_count">6</span>
                             赞
                         </span>
-                        <span class="answers" flex>
+                        <span class="answers" flex ng-class="{'active': item.question.answer_count>0}">
                             <span ng-bind="item.question.answer_count">2</span>
                             回答
                         </span>
@@ -81,7 +81,7 @@
                             <span ng-bind="item.question.support_count">6</span>
                             赞
                         </span>
-                        <span class="answers" flex>
+                        <span class="answers" flex ng-class="{'active': item.question.answer_count>0}">
                             <span ng-bind="item.question.answer_count">2</span>
                             回答
                         </span>

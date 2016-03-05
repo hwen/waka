@@ -261,16 +261,16 @@ function getByTopic(req, res) {
                async.map(datas, function(data, cb) {
                    Question.findById(data.answer.question_id).exec(function(err, question) {
 
-                       getTopic(question, function(topics) {
+                       getTopic(question, function(err, topics) {
                            var result = {
                                answer: data.answer,
                                author: data.author,
                                question: question,
                                topics: topics
                            };
+                           cb(null, result);
                        });
 
-                       cb(null, result);
                    });
                }, function(err, results) {
                    return res.json(invokeResult.success(results, 'answer:getByTopic'));

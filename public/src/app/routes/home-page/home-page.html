@@ -1,4 +1,68 @@
 <nav-bar></nav-bar>
 <div class="home-page-container">
-    
+    <md-content class="md-padding content-box" layout="row" layout-wrap layout-align="center start" layout-xs="column" >
+        <div flex="45" flex-xs="100" layout="column">
+            <md-card ng-repeat="item in home.answerListLeft">
+                <md-card-title>
+                    <md-card-title-text layout="row">
+                        <span class="md-headline" flex>
+                            <label class="support">{{item.answer.score}} 分</label>
+                            <span ng-bind="item.question.title" flex></span>
+                        </span>
+                        <span layout="row">
+                            <span class="answer-author">回答者：</span>
+                            <a href="" layout="row">
+                                <img flex class="avatar" ng-src="../assets/images/user/{{item.author.avatar}}" alt="avatar"/>
+                                <span ng-bind="item.author.username"></span>
+                            </a>
+                        </span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content ng-bind-html="item.answer.contentHtml">
+
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <div class="question-topic-wrap" flex>
+                        <span class="topic" ng-repeat="topic in item.topics" ng-bind="topic.name">
+                        </span>
+                    </div>
+                    <a href="/#/question/{{item.question._id}}">
+                        <md-button>问题详情</md-button>
+                    </a>
+                </md-card-actions>
+            </md-card>
+        </div>
+
+        <div flex="45" flex-xs="100" layout="column">
+            <md-card ng-repeat="item in home.answerListRight">
+                <md-card-title>
+                    <md-card-title-text layout="row">
+                        <span class="md-headline" flex>
+                            <label class="support">{{item.answer.score}} 分</label>
+                            <span ng-bind="item.question.title" flex></span>
+                        </span>
+                        <span layout="row">
+                            <span class="answer-author">回答者：</span>
+                            <a href="" layout="row">
+                                <img flex class="avatar" ng-src="../assets/images/user/{{item.author.avatar}}" alt="avatar"/>
+                                <span ng-bind="item.author.username"></span>
+                            </a>
+                        </span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content ng-bind-html="item.answer.contentHtml">
+
+                </md-card-content>
+                <md-card-actions layout="row" layout-align="end center">
+                    <div class="question-topic-wrap" flex>
+                        <span class="topic" ng-repeat="topic in item.topics" ng-bind="topic.name">
+                        </span>
+                    </div>
+                    <a href="/#/question/{{item.question._id}}">
+                        <md-button>问题详情</md-button>
+                    </a>
+                </md-card-actions>
+            </md-card>
+        </div>
+        </md-content>
 </div>
