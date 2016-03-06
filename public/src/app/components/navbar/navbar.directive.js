@@ -61,7 +61,7 @@
             };
 
             function toHomePage() {
-                location.href = "/#/user-page";
+                location.href = "/#/user-page/question";
             }
 
             function toUpdateInfo() {
