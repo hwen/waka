@@ -1,1 +1,15 @@
-<div>answer</div>
+<div class="user-answer">
+    <ul class="answer-list">
+        <p>总共：<span ng-bind="vm.answerList.length"></span>&nbsp;个回答</p>
+        <section ng-if="vm.answerList.length == 0">
+            <p>亲，你还没有任何回答</p>
+            <p>快去答题吧~</p>
+        </section>
+        <li ng-repeat="item in vm.answerList">
+            <a href="/#/question/{{item.question._id}}">
+                <h4>问题：<span ng-bind="item.question.title"></span></h4>
+            </a>
+            <p ng-bind-html="item.answer.contentHtml"></p>
+        </li>
+    </ul>
+</div>

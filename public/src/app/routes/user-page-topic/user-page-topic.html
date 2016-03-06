@@ -1,1 +1,11 @@
-topic
+<div class="user-topic">
+    <ul class="topic-list">
+        <p>关注了：<span ng-bind="vm.topicList.length"></span>&nbsp;个话题</p>
+        <section ng-if="vm.topicList.length == 0">
+            <p>亲，你还没有关注任何话题</p>
+            <p>快去 <a href="/#topic/56d6f9a7eb0e07a804e952c9">关注话题</a> 吧~</p>
+        </section>
+        <li ng-repeat="item in vm.topicList" ng-bind="item.name">
+        </li>
+    </ul>
+</div>

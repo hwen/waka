@@ -26,6 +26,7 @@
         ];
 
         getUser();
+        $state.go('user-page.question');
 
         vm.userSetting = function() {
             $state.go('user-setting');

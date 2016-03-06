@@ -1,1 +1,14 @@
-<div>question</div>
+<div class="user-question">
+    <ul class="question-list">
+        <p>总共：<span ng-bind="vm.questionList.length"></span>&nbsp;个提问</p>
+        <section ng-if="vm.questionList.length == 0">
+            <p>亲，你还没有提过问题</p>
+            <p>快去提问吧~</p>
+        </section>
+        <li ng-repeat="item in vm.questionList">
+            <a href="/#/question/{{item.question._id}}">
+                <h4>问题：<span ng-bind="item.question.title"></span></h4>
+            </a>
+        </li>
+    </ul>
+</div>
