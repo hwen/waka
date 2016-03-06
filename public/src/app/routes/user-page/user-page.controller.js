@@ -16,12 +16,14 @@
             title: "我的回答",
             url: "answer"
         }, {
-            title: "我的收藏",
-            url: "collection"
-        }, {
             title: "关注话题",
             url: "topic"
-        }];
+        },
+        //    {
+        //    title: "我的收藏",
+        //    url: "collection"
+        //}
+        ];
 
         getUser();
 

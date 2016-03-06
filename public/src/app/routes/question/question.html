@@ -29,11 +29,15 @@
     </div>
   </div>
   <section class="question-content" data-qid="" layout="column">
-    <div class="attitude-box" layout="column" disabled>
-      <a class="up-attitude" flex="60">
+    <div class="attitude-box" layout="column">
+      <a ng-if="!vm.question.attitude  || vm.question.attitude.type < 0" ng-click="vm.setQuestionAttitude(1)" class="up-attitude" flex="60">
       </a>
-      <label style="height: 40%;">0</label>
-      <a class="down-attitude" flex="40">
+      <a ng-if="vm.question.attitude  && vm.question.attitude.type > 0" class="up-attitude-already" flex="60">
+      </a>
+      <label style="height: 40%;" ng-bind="vm.question.support_count">0</label>
+      <a ng-if="!vm.question.attitude  || vm.question.attitude.type > 0" ng-click="vm.setQuestionAttitude(-1)" class="down-attitude" flex="40">
+      </a>
+      <a ng-if="vm.question.attitude  && vm.question.attitude.type < 0" class="down-attitude-already" flex="40">
       </a>
     </div>
     <p flex class="question" ng-bind-html="vm.question.contentHtml">
@@ -42,6 +46,17 @@
   </section>
   <div class="answer-list" layout="column" ng-repeat="item in vm.answerList track by $index">
     <div class="answer-box">
+      <div class="attitude-box" layout="column">
+        <a ng-if="!item.attitude  || item.attitude.type < 0" ng-click="vm.setAnswerAttitude(1, $index)" class="up-attitude" flex="60">
+        </a>
+        <a ng-if="item.attitude  && item.attitude.type > 0" class="up-attitude-already" flex="60">
+        </a>
+        <label style="height: 40%;" ng-bind="item.answer.support_count">0</label>
+        <a ng-if="!item.attitude  || item.attitude.type > 0" ng-click="vm.setAnswerAttitude(-1, $index)" class="down-attitude" flex="40">
+        </a>
+        <a ng-if="item.attitude  && item.attitude.type < 0" class="down-attitude-already" flex="40">
+        </a>
+      </div>
       <section class="answer-content" flex ng-bind-html="item.answer.contentHtml">
       </section>
       <div class="answer-detail" flex layout="row">

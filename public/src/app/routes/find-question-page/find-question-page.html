@@ -5,6 +5,7 @@
       <md-tab label="最新的">
         <md-content class="md-padding newly-question" layout="column">
             <div class="question-stream">
+                <h3 ng-if="vm.questionNew.length == 0">无</h3>
                 <section class="stream-item" layout="row" ng-repeat="item in vm.questionNew">
                     <div class="qa-rank" flex="10" layout="row">
                         <span class="votes" flex>
@@ -40,6 +41,7 @@
       <md-tab label="热门的">
         <md-content class="md-padding hot-question" layout="column">
             <div class="question-stream">
+                <h3 ng-if="vm.questionHot.length == 0">无</h3>
                 <section class="stream-item" layout="row" ng-repeat="item in vm.questionHot">
                     <div class="qa-rank" flex="10" layout="row">
                         <span class="votes" flex>
@@ -75,6 +77,7 @@
       <md-tab label="未回答的">
         <md-content class="no-answer-question" layout="column" >
             <div class="question-stream">
+                <h3 ng-if="vm.questionNoAnswer.length == 0">无</h3>
                 <section class="stream-item" layout="row" ng-repeat="item in vm.questionNoAnswer">
                     <div class="qa-rank" flex="10" layout="row">
                         <span class="votes" flex>

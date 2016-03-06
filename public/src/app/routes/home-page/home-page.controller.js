@@ -10,8 +10,8 @@
         vm.allTopics = '';
         vm.followingTopic = '';
         vm.answerList = '';
-        vm.answerListLeft = '';
-        vm.answerListRight ='';
+        vm.answerListLeft = [];
+        vm.answerListRight =[];
 
         getAnswers();
 
@@ -25,8 +25,12 @@
                     .then(function(res) {
                         console.log(res);
                         vm.answerList = res.data;
-                        vm.answerListRight = vm.answerList.slice(0, vm.answerList.length/2);
-                        vm.answerListLeft = vm.answerList.slice(vm.answerList.length/2);
+                        res.data.forEach(function(item, index) {
+                            if (index%2 ===0)
+                                vm.answerListRight.push(item);
+                            else
+                                vm.answerListLeft.push(item);
+                        });
                     });
             });
         }

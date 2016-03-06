@@ -246,4 +246,18 @@
             });
         }])
 
+        .factory('Attitude', ['$resource', function($resource) {
+            var url = URL + '/attitude/';
+            return $resource(URL + '/attitude', {}, {
+                getAttitude: {
+                    method: 'POST',
+                    url: url + 'getAttitude'
+                },
+                setAttitude: {
+                    method: 'POST',
+                    url: url + 'setAttitude'
+                }
+            });
+        }])
+
 })(angular);

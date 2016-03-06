@@ -67,6 +67,10 @@ UserSchema.methods = {
 
     addSupport: function() {
         this.receive_support++;
+    },
+
+    cancelSupport: function() {
+        this.receive_support--;
     }
 };
 

@@ -387,6 +387,20 @@
             });
         }])
 
+        .factory('Attitude', ['$resource', function($resource) {
+            var url = URL + '/attitude/';
+            return $resource(URL + '/attitude', {}, {
+                getAttitude: {
+                    method: 'POST',
+                    url: url + 'getAttitude'
+                },
+                setAttitude: {
+                    method: 'POST',
+                    url: url + 'setAttitude'
+                }
+            });
+        }])
+
 })(angular);
 
 (function(angular) {
@@ -734,6 +748,7 @@
 				.then(function(res) {
 					if (res.status > -1) {
 						alert("添加回答成功");
+						location.href = '/#/question/' + question_id;
 					} else {
 						alert("添加回答失败");
 					}
@@ -903,7 +918,7 @@
                     } else {  // user is not following any topics
 
                         getAllTopic(function(topics) {
-                            var topicIdList = res.data.topics.map(function(item) {
+                            var topicIdList = topics.map(function(item) {
                                 return item._id;
                             });
 
@@ -931,13 +946,19 @@
 (function(angular) {
     'use strict';
 
-    angular.module('waka').controller('homeController', ['$scope','$state', 'User', 'Answer', homeController]);
+    angular.module('waka').controller('homeController', ['$scope','$state', 'User',
+        'Answer', 'Topic', 'iCookie', homeController]);
 
-    function homeController($scope, $state, User, Answer) {
+    function homeController($scope, $state, User, Answer, Topic, iCookie) {
         var vm = this;
 
         vm.allTopics = '';
         vm.followingTopic = '';
+        vm.answerList = '';
+        vm.answerListLeft = '';
+        vm.answerListRight ='';
+
+        getAnswers();
 
         function getAnswers() {
             getUserFollowingTopic(function(topicIdList) {
@@ -947,7 +968,10 @@
                 Answer.getByUserTopics(JSON.stringify(params))
                     .$promise
                     .then(function(res) {
-                        
+                        console.log(res);
+                        vm.answerList = res.data;
+                        vm.answerListRight = vm.answerList.slice(0, vm.answerList.length/2);
+                        vm.answerListLeft = vm.answerList.slice(vm.answerList.length/2);
                     });
             });
         }
@@ -964,7 +988,7 @@
                     var user = res.data.user;
                     if ( res.data.topics.length > 0 ) {
 
-                        var topicIdList = res.topics.map(function(item) {
+                        var topicIdList = res.data.topics.map(function(item) {
                             return item._id;
                         });
 
@@ -974,7 +998,7 @@
                     } else {  // user is not following any topics
 
                         getAllTopic(function(topics) {
-                            var topicIdList = res.topics.map(function(item) {
+                            var topicIdList = topics.map(function(item) {
                                 return item._id;
                             });
 
@@ -1000,11 +1024,13 @@
 (function(angular) {
     'use strict';
     angular.module('waka').controller('questionController', ['$scope', '$state', '$sce',  'Question',
-		'timeFormat', 'Answer', 'iCookie', questionController]);
+		'timeFormat', 'Answer', 'Attitude', 'iCookie', questionController]);
 
-    function questionController($scope, $state, $sce, Question, timeFormat, Answer, iCookie) {
+    function questionController($scope, $state, $sce, Question, timeFormat,
+								Answer, Attitude, iCookie) {
     	var vm = this;
 		var question_id = location.hash.split('/')[2];
+		var user_id = iCookie.getCookie("uid");
 
     	vm.answerList = [];
     	vm.question = "";
@@ -1014,6 +1040,10 @@
     	getQuestion();
 
 		vm.postedTime = timeFormat.postedTime;
+
+		function setQuestionAttitude() {
+
+		}
 
     	function getQuestion() {
 			console.log(question_id);
@@ -1025,6 +1055,9 @@
     				vm.question.author = result.author;
                     vm.question.topics = result.topics;
     				vm.question.createdTime = timeFormat.postedTime(vm.question.created_time);
+
+					getQuestionAttitude(vm.question._id);
+
     				getAnswers(vm.question._id);
     			} else {
     				alert('getQuestion error');
@@ -1036,11 +1069,42 @@
     		Answer.getByQuestion({question_id:qid}).$promise.then(function(res) {
     			if (res.status > -1) {
     				vm.answerList = res.data;
+					getAnswerAttitude();
     			} else {
     				alert('getAnswers error');
     			}
     		});
     	}
+
+		function getQuestionAttitude(question_id) {
+			var params = {
+				user_id: user_id,
+				question_id: question_id
+			};
+			Attitude.getAttitude(JSON.stringify(params))
+				.$promise
+				.then(function(res) {
+					if (res.status > 0) {
+						vm.question.attitude = res.data;
+					}
+				});
+		}
+
+		function getAnswerAttitude() {
+			vm.answerList.forEach(function(item, index) {
+				var params = {
+					user_id: user_id,
+					answer_id: item.answer._id
+				};
+				Attitude.getAttitude(JSON.stringify(params))
+					.$promise
+					.then(function(res) {
+						if (res.status > 0) {
+							vm.answerList[index].attitude = res.data;
+						}
+					});
+			});
+		}
 
 		function addAnswer() {
 			location.href = '/#/answer-editor/' + question_id;
@@ -1312,145 +1376,17 @@
 
 })(angular);
 
-/**
- * Created by hwen on 16/1/27.
- */
-(function(angular) {
-    'use strict';
-
-    angular.module('waka').controller('loginController', ['$scope', '$timeout','$state', 'User',  loginController]);
-
-    function loginController($scope, $timeout, $state, User) {
-        var vm = this;
-        var emRg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
-
-        vm.signin = true;
-        vm.auth = {
-            email: false,
-            pass: false,
-            loginErr: false,
-            userExist: false,
-            emailExist:false
-        };
-
-        (function checkCurrentUser() {
-            if (getCookie("uid")) {
-                var params = {
-                    username: decrypt(getCookie("username")),
-                    password: decrypt(getCookie("password"))
-                };
-                userLogin(params);
-            }
-        })();
-
-        vm.login = function() {
-            var params = {
-                email: emRg.test(vm.email) ? vm.email: '',
-                username: emRg.test(vm.email)? '': vm.email,
-                password: vm.password
-            };
-            userLogin(params);
-        };
-
-        vm.signup = function() {
-            var reg = vm.reg;
-            if (reg.password!==reg.password2) {vm.auth.pass = true; $timeout(initAuth, 4000); return;}
-            if (!emRg.test(reg.email)) {vm.auth.email = true;$timeout(initAuth, 4000); return;}
-            var params = {
-                "username": reg.username,
-                "email": reg.email,
-                "password": reg.password
-            };
-            User.save(params).$promise.then(function(res) {
-                console.log(res);
-                if (res.status === -1) {
-                    switch (res.error) {
-                        case 'email': vm.auth.emailExist = true;$timeout(initAuth, 4000); return;
-                        case 'username': vm.auth.userExist = true;$timeout(initAuth, 4000);return;
-                    }
-                }
-                if (res.status > -1) {
-                    console.log('signup success');
-                    $state.go('user-login');
-                }
-            }, function(err) {
-                console.log('signup fail');
-                console.log(err);
-            });
-        };
-
-        function userLogin(params) {
-            User.login(params).$promise.then(function(res) {
-                console.log(res);
-                if (res.status === -1) {
-                    switch (res.error) {
-                        case 'user':
-                        case 'password': vm.auth.loginErr = true;
-                            $timeout(initAuth, 4000);return;
-                    }
-                }
-                if (res.status > -1) {
-                    if (!getCookie("uid")) {
-                        console.log('set cookie');
-                        setCookie(res.data._id, res.data.username, params.password);
-                    }
-                    $timeout(function() {
-                        $state.go('home-page');
-                    }, 1000);
-                }
-            });
-        }
-
-        function initAuth() {
-            vm.auth = {
-                email: false,
-                pass: false,
-                userExist: false,
-                loginErr: false,
-                emailExist:false
-            };
-        }
-
-        function setCookie(_id, username, password) {
-            username = encrypt(username);
-            password = encrypt(password);
-            document.cookie = "uid="+_id + ";max-age=" + 60*60*24*10;
-            document.cookie = "username="+username +
-                ";max-age=" + 60*60*24*10;
-            document.cookie = "password=" + password +
-                ";max-age=" +  60*60*24*10;
-        }
-
-        function getCookie(key) {
-            var str = document.cookie;
-            if (str) {
-                str = str.substr(str.indexOf(key));
-                var end = str.indexOf(';') >-1 ? str.indexOf(';') : str.length;
-                var value = str.substring(str.indexOf("=")+1, end);
-                return value;
-            } else {
-                return null;
-            }
-        }
-
-        function encrypt(key) {
-            return CryptoJS.AES.encrypt(key, "iwaka");
-        }
-
-        function decrypt(encrypted) {
-            return CryptoJS.AES.decrypt(encrypted, "iwaka").toString(CryptoJS.enc.Utf8);
-        }
-    }
-})(angular);
-
 (function(angular) {
     'use strict';
 
     angular.module('waka').controller('userPageController', ['$scope', '$state', 'User',
-        userPageController]);
+        'iCookie', userPageController]);
 
-    function userPageController($scope, $state, User) {
+    function userPageController($scope, $state, User, iCookie) {
         var vm = this;
+
+        vm.user = '';
+
         vm.itemList = [{
             title: "我的提问",
             url: "question"
@@ -1465,9 +1401,20 @@
             url: "topic"
         }];
 
+        getUser();
+
         vm.userSetting = function() {
             $state.go('user-setting');
         };
+
+        function getUser() {
+            User.get({id: iCookie.getCookie("uid")})
+                .$promise
+                .then(function(res) {
+                    console.log(res);
+                    vm.user = res.data;
+                });
+        }
 
     }
 })(angular);
@@ -1623,4 +1570,135 @@
         }
     }
 
+})(angular);
+
+/**
+ * Created by hwen on 16/1/27.
+ */
+(function(angular) {
+    'use strict';
+
+    angular.module('waka').controller('loginController', ['$scope', '$timeout','$state', 'User',  loginController]);
+
+    function loginController($scope, $timeout, $state, User) {
+        var vm = this;
+        var emRg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+
+        vm.signin = true;
+        vm.auth = {
+            email: false,
+            pass: false,
+            loginErr: false,
+            userExist: false,
+            emailExist:false
+        };
+
+        (function checkCurrentUser() {
+            if (getCookie("uid")) {
+                var params = {
+                    username: decrypt(getCookie("username")),
+                    password: decrypt(getCookie("password"))
+                };
+                userLogin(params);
+            }
+        })();
+
+        vm.login = function() {
+            var params = {
+                email: emRg.test(vm.email) ? vm.email: '',
+                username: emRg.test(vm.email)? '': vm.email,
+                password: vm.password
+            };
+            userLogin(params);
+        };
+
+        vm.signup = function() {
+            var reg = vm.reg;
+            if (reg.password!==reg.password2) {vm.auth.pass = true; $timeout(initAuth, 4000); return;}
+            if (!emRg.test(reg.email)) {vm.auth.email = true;$timeout(initAuth, 4000); return;}
+            var params = {
+                "username": reg.username,
+                "email": reg.email,
+                "password": reg.password
+            };
+            User.save(params).$promise.then(function(res) {
+                console.log(res);
+                if (res.status === -1) {
+                    switch (res.error) {
+                        case 'email': vm.auth.emailExist = true;$timeout(initAuth, 4000); return;
+                        case 'username': vm.auth.userExist = true;$timeout(initAuth, 4000);return;
+                    }
+                }
+                if (res.status > -1) {
+                    console.log('signup success');
+                    $state.go('user-login');
+                }
+            }, function(err) {
+                console.log('signup fail');
+                console.log(err);
+            });
+        };
+
+        function userLogin(params) {
+            User.login(params).$promise.then(function(res) {
+                console.log(res);
+                if (res.status === -1) {
+                    switch (res.error) {
+                        case 'user':
+                        case 'password': vm.auth.loginErr = true;
+                            $timeout(initAuth, 4000);return;
+                    }
+                }
+                if (res.status > -1) {
+                    if (!getCookie("uid")) {
+                        console.log('set cookie');
+                        setCookie(res.data._id, res.data.username, params.password);
+                    }
+                    $timeout(function() {
+                        $state.go('home-page');
+                    }, 1000);
+                }
+            });
+        }
+
+        function initAuth() {
+            vm.auth = {
+                email: false,
+                pass: false,
+                userExist: false,
+                loginErr: false,
+                emailExist:false
+            };
+        }
+
+        function setCookie(_id, username, password) {
+            username = encrypt(username);
+            password = encrypt(password);
+            document.cookie = "uid="+_id + ";max-age=" + 60*60*24*10;
+            document.cookie = "username="+username +
+                ";max-age=" + 60*60*24*10;
+            document.cookie = "password=" + password +
+                ";max-age=" +  60*60*24*10;
+        }
+
+        function getCookie(key) {
+            var str = document.cookie;
+            if (str) {
+                str = str.substr(str.indexOf(key));
+                var end = str.indexOf(';') >-1 ? str.indexOf(';') : str.length;
+                var value = str.substring(str.indexOf("=")+1, end);
+                return value;
+            } else {
+                return null;
+            }
+        }
+
+        function encrypt(key) {
+            return CryptoJS.AES.encrypt(key, "iwaka");
+        }
+
+        function decrypt(encrypted) {
+            return CryptoJS.AES.decrypt(encrypted, "iwaka").toString(CryptoJS.enc.Utf8);
+        }
+    }
 })(angular);

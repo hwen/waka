@@ -6,7 +6,8 @@ var _ = require('lodash');
 var Attitude = require('./attitude.model');
 var qModel = require('../question/question.model');
 var Question = qModel.Question;
-var Answer = require('../answer/answer.model');
+var aModel = require('../answer/answer.model');
+var Answer = aModel.Answer;
 var User = require('../user/user.model');
 var invokeResult = require('../../components/invoke_result');
 var sysError = invokeResult.sysError;
@@ -17,27 +18,35 @@ exports.getAttitude = getAttitude;
 exports.setAttitude = setAttitude;
 
 function getAttitude(req, res) {
-    log.out('getAttitude');
 
-    if ( !req.body.user_id ) return res.json(invokeResult.failure('user_id', 'null'));
+    var params = req.body;
+    log.out('getAttitude', params);
 
-    if ( req.body.answer_id ) {
-        Attitude.find({user_id: req.body.user_id, answer_id: req.body.answer_id})
+    if ( !params.user_id ) return;
+
+    if ( params.answer_id ) {
+        Attitude.find({user_id: params.user_id, answer_id: params.answer_id})
             .exec(function(err, attitude) {
-                if (err) return sysError(res, err, 'getAttitude');
+                if (err) {
+                    log.err('getAttitude', err);
+                    return;
+                }
 
-                if (!attitude) return res.json(invokeResult.failure('cannot find attitude'));
+                if (!attitude) return res.json(invokeResult.failure('null', 'getAttitude'));
                 else
                     return res.json(invokeResult.success(attitude, 'getAttitude success'));
             });
     }
 
-    if ( req.body.question_id ) {
-        Attitude.find({user_id: req.body.user_id, question_id: req.body.question_id})
+    if ( params.question_id ) {
+        Attitude.find({user_id: params.user_id, question_id: params.question_id})
             .exec(function(err, attitude) {
-                if (err) return sysError(res, err, 'getAttitude');
+                if (err) {
+                    log.err('getAttitude', err);
+                    return;
+                }
 
-                if (!attitude) return res.json(invokeResult.failure('cannot find attitude'));
+                if (!attitude) return res.json(invokeResult.failure('null', 'getAttitude'));
                 else
                     return res.json(invokeResult.success(attitude, 'getAttitude success'));
             });
@@ -54,6 +63,9 @@ function setAttitude(req, res) {
         Attitude.findOne({user_id: req.body.user_id, answer_id: req.body.answer_id})
             .exec(function(err, attitude) {
                 if ( !attitude ) {
+
+                    userAttitude(req.body.user_id, req.body.type, false);
+
                     answerAttitude(req.body.answer_id, req.body.type);
 
                     var params = {
@@ -64,8 +76,9 @@ function setAttitude(req, res) {
                     addAttitude(params, res);
 
                 } else {
-                    changeAnswerAttitude(attitude, req.body.answer_id,
-                        req.body.type, res);
+                    userAttitude(req.body.user_id, req.body.type, true);
+
+                    changeAnswerAttitude(attitude, req.body.answer_id, req.body.type, res);
                 }
             });
     }
@@ -73,7 +86,10 @@ function setAttitude(req, res) {
     if ( req.body.question_id ) {
         Attitude.findOne({user_id: req.body.user_id, question_id: req.body.question_id})
             .exec(function(err, attitude) {
+
                 if ( !attitude ) {
+                    userAttitude(req.body.user_id, req.body.type, false);
+
                     questionAttitude(req.body.question_id, req.body.type);
 
                     var params = {
@@ -84,8 +100,9 @@ function setAttitude(req, res) {
                     addAttitude(params, res);
 
                 } else {
-                    changeAnswerAttitude(attitude, req.body.question_id,
-                        req.body.type, res);
+                    userAttitude(req.body.user_id, req.body.type, true);
+
+                    changeQuestionAttitude(attitude, req.body.question_id, req.body.type, res);
                 }
             });
     }
@@ -100,7 +117,9 @@ function addAttitude(params, res) {
         if (err) return sysError(res, err, 'addAttitude');
 
         log.out('addAttitude success', result);
-        return res.json(invokeResult.success(result, 'addAttitude success'));
+        return res.json(invokeResult.success({
+            attitude: result
+        }, 'addAttitude success'));
     });
 }
 
@@ -144,6 +163,8 @@ function changeAnswerAttitude(attitude, answer_id, type, res) {
     Answer.findOne({_id: answer_id})
         .exec(function(err, answer) {
 
+            if (!answer) return;
+
             if ( attitude.type==-1 && type==1 ) {
                 answer.changeToSupport();
                 attitude.type = type;
@@ -157,10 +178,10 @@ function changeAnswerAttitude(attitude, answer_id, type, res) {
                 if (err) return sysError(res, err, 'changeAnswerAttitude');
                 else {
                     attitude.save(function(err, attitude) {
-                        return invokeResult.success({
+                        return res.json(invokeResult.success({
                             answer: answer,
                             attitude: attitude
-                        }, 'changeAnswerAttitude');
+                        }, 'changeAnswerAttitude success'));
                     });
                 }
             })
@@ -185,12 +206,52 @@ function changeQuestionAttitude(attitude, question_id, type, res) {
                 if (err) return sysError(res, err, 'changeQuestionAttitude');
                 else {
                     attitude.save(function(err, attitude) {
-                        return invokeResult.success({
-                            answer: question,
+                        return res.json(invokeResult.success({
+                            question: question,
                             attitude: attitude
-                        }, 'changeQuestionAttitude');
+                        }, 'changeQuestionAttitude success'));
                     });
                 }
             })
+        });
+}
+
+function userAttitude(user_id, type, change) {
+    if (change) {
+        if( type >0 ) userAddSupport(user_id);
+        else userCancelSupport(user_id);
+    } else {
+        if ( type> 0 )
+            userAddSupport(user_id);
+    }
+}
+
+function userAddSupport(user_id) {
+    User.findOne({_id: user_id})
+        .exec(function(err, user) {
+            if (err) {
+                log.err('userAddSupport');
+                return;
+            } else {
+                user.addSupport();
+                user.save(function(err) {
+                    if (!err) log.out('addUser Support sucess');
+                });
+            }
+        });
+}
+
+function userCancelSupport(user_id) {
+    User.findOne({_id: user_id})
+        .exec(function(err, user) {
+            if (err) {
+                log.err('userAddSupport');
+                return;
+            } else {
+                user.cancelSupport();
+                user.save(function(err) {
+                    if (!err) log.out('addUser Support sucess');
+                });
+            }
         });
 }

@@ -19,6 +19,7 @@ module.exports = function(app) {
     app.use('/api/topic', require('./api/topic'));
     app.use('/api/reply', require('./api/reply'));
     app.use('/api/message', require('./api/message'));
+    app.use('/api/attitude', require('./api/attitude'));
 
     // all und
     //app.route('/:url(api|components|app)/*').get(erros[404]);
