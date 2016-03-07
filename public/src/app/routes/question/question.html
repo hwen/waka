@@ -66,7 +66,7 @@
           <a href="/#/answer-editor/{{vm.question._id}}" ng-if="vm.checkAuthor(item.answer.author_id)">
             编辑&nbsp;&nbsp;
           </a>
-          <a href="javascript:;">评论</a>
+          <a href="javascript:;" ng-click="vm.openReplyBox(item.answer._id, $index)">评论</a>
           <a ng-if="!item.collected" ng-click="vm.addCollection(item.answer._id)" href="javascript:;">收藏</a>
           <a ng-if="item.collected" href="javascript:;">已收藏</a>
         </div>
@@ -75,6 +75,16 @@
           <img class="author-avatar" ng-src="../assets/images/user/{{item.author.avatar}}" alt=""/>
           <span class="author-username" ng-bind-html="item.author.username"></span>
         </div>
+      </div>
+      <div class="reply-box" ng-if="vm.replyList[$index]">
+        <ul>
+          <li ng-repeat="data in item.replys">
+            <span ng-bind="data.reply.content"></span>
+            <label class="reply-user">评论者：<span ng-bind="data.user.username"></span></label>
+          </li>
+          <textarea name="reply" ng-model="vm.replyContentList[$index]"></textarea>
+          <button ng-click="vm.addReply(item.answer._id, $index)">添加评论</button>
+        </ul>
       </div>
     </div>
   </div>

@@ -1,10 +1,10 @@
 (function(angular) {
     'use strict';
     angular.module('waka').controller('questionController', ['$scope', '$state', '$sce',  'Question',
-		'timeFormat', 'Answer', 'Attitude', 'iCookie', questionController]);
+		'timeFormat', 'Answer', 'Attitude', 'Reply', 'iCookie', questionController]);
 
     function questionController($scope, $state, $sce, Question, timeFormat,
-								Answer, Attitude, iCookie) {
+								Answer, Attitude, Reply, iCookie) {
     	var vm = this;
 		var question_id = location.hash.split('/')[2];
 		var user_id = iCookie.getCookie("uid");
@@ -18,7 +18,12 @@
 		vm.followQuestion = followQuestion;
 		vm.unfollowQuestion = unfollowQuestion;
 		vm.addCollection = addCollection;
+		vm.loadReply = loadReply;
+		vm.addReply = addReply;
+		vm.openReplyBox = openReplyBox;
 		vm.isFollowing = false;
+		vm.replyList = [];
+		vm.replyContentList = [];
 
     	getQuestion();
 		checkFollowState();
@@ -184,7 +189,7 @@
 				answer_id: answer_id,
 				user_id: user_id
 			};
-			
+
 			Answer.addCollection(JSON.stringify(params))
 				.$promise
 				.then(function(res) {
@@ -213,6 +218,42 @@
 						vm.answerList[index].collected = true;
 					}
 				});
+		}
+
+		function loadReply(answer_id, index) {
+			Reply.list({answer_id: answer_id})
+				.$promise
+				.then(function(res) {
+					if (res.status>-1) {
+						console.log(res);
+						vm.answerList[index].replys = res.data;
+					}
+				});
+		}
+
+		function addReply(answer_id, index) {
+			var params = {
+				answer_id: answer_id,
+				author_id: user_id,
+				content: vm.replyContentList[index]
+			};
+			Reply.add(JSON.stringify(params))
+				.$promise
+				.then(function(res) {
+					if (res.status > -1) {
+						alert("评论成功");
+						location.reload();
+					}
+				})
+		}
+
+		function openReplyBox(answer_id, index) {
+			if ( !vm.replyList[index]) {
+				vm.replyList[index] = true;
+				loadReply(answer_id, index);
+			} else {
+				vm.replyList[index] = false;
+			}
 		}
 
     }
