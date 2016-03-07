@@ -1,1 +1,15 @@
-<div>collection</div>
+<div class="user-collection">
+    <ul class="collection-list">
+        <p>总共：<span ng-bind="vm.collectionList.length"></span>&nbsp;个收藏</p>
+        <section ng-if="vm.collectionList.length == 0">
+            <p>亲，你还没有任何收藏</p>
+            <p>快去收藏精彩的回答吧~</p>
+        </section>
+        <li ng-repeat="item in vm.collectionList">
+            <a href="/#/question/{{item.question._id}}">
+                <h4>问题：<span ng-bind="item.question.title"></span></h4>
+            </a>
+            <p ng-bind-html="item.answer.contentHtml"></p>
+        </li>
+    </ul>
+</div>

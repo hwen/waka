@@ -6,7 +6,7 @@ var AnswerModel = require('./answer.model'),
     AnswerCollect = AnswerModel.AnswerCollect,
     User = require('../user/user.model'),
     Question = require('../question/question.model').Question,
-    QtnFollow  = require('../question/question.model').QtnFollow;
+    QtnFollow  = require('../question/question.model').QtnFollow,
     Topic = require('../topic/topic.model'),
     Message = require('../message/message.controller'),
     _ = require('lodash'),
@@ -68,6 +68,8 @@ exports.collection = collection;
 * */
 exports.addCollection = addCollection;
 
+exports.checkCollectionState = checkCollectionState;
+
 /*
 *  params: _id, attitude(1,2,3 : sup, unsup, useless)
 *  method: post
@@ -107,6 +109,15 @@ function addCollection(req, res) {
     });
 }
 
+function checkCollectionState(req, res) {
+    log.out('checkCollectionState', req.body);
+    AnswerCollect.findOne({user_id: req.body.user_id, answer_id: req.body.answer_id})
+        .exec(function(err, collect) {
+            if (!collect) return res.json(invokeResult.failure("collect not found", "null"));
+            return res.json(invokeResult.success(collect, "checkCollectionState"));
+        });
+}
+
 function collection(req, res) {
     var user_id = req.params.user_id || '';
     AnswerCollect.find(user_id).exec(function(err, results) {
@@ -115,7 +126,7 @@ function collection(req, res) {
                cb(null, answer);
             });
         }, function(err, answers) {
-           async.map(answers, function(err, answer) {
+           async.map(answers, function(answer, cb) {
                Question.findById(answer.question_id).exec(function(err, question) {
                    var result = {
                        answer: answer,

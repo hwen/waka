@@ -5,6 +5,7 @@ var Message = require('./message.model'),
     invokeResult = require('../../components/invoke_result'),
     sysError = invokeResult.sysError,
     log = require('../../components/util/log'),
+    async = require('async'),
     _ = require('lodash');
 
 var qModel = require('../question/question.model');

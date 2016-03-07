@@ -17,5 +17,6 @@ router.post('/attitude', controller.attitude);
 router.post('/add', controller.add);
 router.post('/update', controller.update);
 router.post('/del', controller.del);
+router.post('/checkCollection', controller.checkCollectionState);
 
 module.exports = router;

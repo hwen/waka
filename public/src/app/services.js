@@ -153,6 +153,10 @@
                     method: 'POST',
                     url: url + 'addCollection'
                 },
+                checkCollection: {
+                    method: 'POST',
+                    url: url+'checkCollection'
+                },
                 attitude: {
                     method: 'POST',
                     url: url + 'attitude'

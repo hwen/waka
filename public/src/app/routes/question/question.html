@@ -67,6 +67,8 @@
             编辑&nbsp;&nbsp;
           </a>
           <a href="javascript:;">评论</a>
+          <a ng-if="!item.collected" ng-click="vm.addCollection(item.answer._id)" href="javascript:;">收藏</a>
+          <a ng-if="item.collected" href="javascript:;">已收藏</a>
         </div>
         <span flex></span>
         <div flex="20" class="answer-author">

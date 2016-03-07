@@ -17,6 +17,7 @@
 		vm.setAnswerAttitude = setAnswerAttitude;
 		vm.followQuestion = followQuestion;
 		vm.unfollowQuestion = unfollowQuestion;
+		vm.addCollection = addCollection;
 		vm.isFollowing = false;
 
     	getQuestion();
@@ -92,6 +93,7 @@
     			if (res.status > -1) {
     				vm.answerList = res.data;
 					getAnswerAttitude();
+					setCollectionState();
     			} else {
     				alert('getAnswers error');
     			}
@@ -176,6 +178,43 @@
 					});
 				});
 		}
+
+		function addCollection(answer_id) {
+			var params = {
+				answer_id: answer_id,
+				user_id: user_id
+			};
+			
+			Answer.addCollection(JSON.stringify(params))
+				.$promise
+				.then(function(res) {
+					if (res.status > -1) {
+						alert("添加收藏成功");
+						location.reload();
+					}
+				});
+		}
+
+		function setCollectionState() {
+			vm.answerList.forEach(function(item, index) {
+				checkCollectionState(item.answer._id, index);
+			});
+		}
+
+		function checkCollectionState(answer_id, index) {
+			var params = {
+				user_id: user_id,
+				answer_id: answer_id
+			};
+			Answer.checkCollection(JSON.stringify(params))
+				.$promise
+				.then(function(res) {
+					if (res.status>-1) {
+						vm.answerList[index].collected = true;
+					}
+				});
+		}
+
     }
 
 })(angular);
