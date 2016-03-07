@@ -18,11 +18,13 @@
         }, {
             title: "关注话题",
             url: "topic"
-        },
-        //    {
-        //    title: "我的收藏",
-        //    url: "collection"
-        //}
+        }, {
+            title: "我的消息",
+            url: "mes"
+        }, {
+            title: "我的收藏",
+            url: "collection"
+        }
         ];
 
         getUser();

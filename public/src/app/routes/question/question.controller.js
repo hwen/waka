@@ -15,8 +15,12 @@
 		vm.checkAuthor = checkAuthor;
 		vm.setQuestionAttitude = setQuestionAttitude;
 		vm.setAnswerAttitude = setAnswerAttitude;
+		vm.followQuestion = followQuestion;
+		vm.unfollowQuestion = unfollowQuestion;
+		vm.isFollowing = false;
 
     	getQuestion();
+		checkFollowState();
 
 		vm.postedTime = timeFormat.postedTime;
 
@@ -130,6 +134,47 @@
 
 		function checkAuthor(author_id) {
 			return iCookie.getCookie("uid") == author_id;
+		}
+
+		function followQuestion() {
+			var params = {
+				follower_id: user_id,
+				question_id: question_id
+			};
+			Question.follow(JSON.stringify(params))
+				.$promise
+				.then(function(res) {
+					if (res.status>-1) {
+						vm.question.following_count ++;
+					}
+				});
+		}
+
+		function unfollowQuestion() {
+			var params = {
+				question_id: question_id,
+				follower_id: user_id
+			};
+			Question.unfollow(JSON.stringify(params))
+				.$promise
+				.then(function(res) {
+					if (res.status > -1) {
+						vm.question.following_count --;
+					}
+				});
+		}
+
+		function checkFollowState() {
+			Question.getFollower({question_id: question_id})
+				.$promise
+				.then(function(res) {
+					var followerList = res.data;
+					followerList.forEach(function(item) {
+						if (item._id == user_id) {
+							vm.isFollowing = true;
+						}
+					});
+				});
 		}
     }
 

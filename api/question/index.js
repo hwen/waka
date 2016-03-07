@@ -15,6 +15,7 @@ router.post('/getHot', controller.getHot);
 router.get('/getByUser/:author_id', controller.getByUser);
 router.post('/attitude', controller.attitude);
 router.post('/follow', controller.follow);
+router.post('/unfollow', controller.unfollow);
 router.get('/getFollowers/:question_id', controller.getFollowers);
 router.get('/getFollowList/:follower_id', controller.getFollowList);
 router.get('/:question_id', controller.getQuestion);

@@ -92,16 +92,20 @@
                     method: 'POST',
                     url: url + 'follow'
                 },
+                unfollow: {
+                    method: 'POST',
+                    url: url + 'unfollow'
+                },
                 getFollower: {
                     method: 'GET',
-                    url: url + 'getFollower/:question_id',
+                    url: url + 'getFollowers/:question_id',
                     params: {
                         question_id: '@question_id'
                     }
                 },
-                getFollowerList: {
+                getFollowList: {
                     method: 'GET',
-                    url: url + 'getFollwerList/:follower_id',
+                    url: url + 'getFollowList/:follower_id',
                     params: {
                         follower_id: '@follower_id'
                     }

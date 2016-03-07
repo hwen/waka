@@ -57,6 +57,10 @@ QuestionSchema.methods = {
         this.follow_count++;
         this.score += 2;
     },
+    unfollow: function() {
+        this.follow_count--;
+        this.score -= 2;
+    },
     addAnswer: function() {
         this.answer_count++;
         this.score++;

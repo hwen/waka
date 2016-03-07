@@ -7,6 +7,10 @@ var Message = require('./message.model'),
     log = require('../../components/util/log'),
     _ = require('lodash');
 
+var qModel = require('../question/question.model');
+var Question = qModel.Question;
+var User = require('../user/user.model');
+
 //add a message: send a message to a user, in different type
 exports.add = add;
 
@@ -26,14 +30,26 @@ function add(params) {
 }
 
 function getMes(req, res) {
-    var query = {master_id: req.body.master_id||''};
-    switch (req.body.type) {
-        case "unread": query.unread = true; break;
-        case "read": query.unread = false; break;
-        case "all": break;
-    }
-    Message.find(query).exec(function(err, results) {
+    Message.find({master_id: req.body.master_id||''}).exec(function(err, results) {
         if (err) return sysError(res, err, '');
-        return res.json(invokeResult.success(results, 'getMes success'));
+        getQuestionAndSender(results, function(err, messageList) {
+            return res.json(invokeResult.success(messageList, 'getMes success'));
+        });
     })
+}
+
+function getQuestionAndSender(mes, callback) {
+    async.map(mes, function(item, cb) {
+        Question.findOne({_id: item.question_id})
+            .exec(function(err, question) {
+                User.findOne({_id: item.author_id})
+                    .exec(function(err, user) {
+                        var data = {
+                            question: question,
+                            user: user
+                        };
+                        cb(null, data);
+                    });
+            });
+    }, callback);
 }

@@ -68,6 +68,8 @@ exports.attitude = attitude;
 * */
 exports.follow = follow;
 
+
+exports.unfollow = unfollow;
 /*
 *  params: question_id
 *  method: get
@@ -98,11 +100,19 @@ function getQuestion(req, res) {
 function getFollowList(req, res) {
     log.out('question getFollower: controller', req.params);
     if (!filter.notNull(req.params.follower_id)) { log.err('getFollowList f_id null');return res.json(invokeResult.failure('follower_id', 'null'));}
-    QtnFollow.find({follower_id:req.params.follower_id}).exec(function(err, questions) {
-        getAuthor(questions, function(err, results) {
-            if (err) { return sysError(res, err,'question getFollowList');}
-            return res.json(invokeResult.success(results, 'getFollowList'));
+    QtnFollow.find({follower_id:req.params.follower_id}).exec(function(err, questionFollow) {
+
+        var questionIdList = questionFollow.map(function(item) {
+            return item.question_id;
         });
+
+        getFollowingQuestion(questionIdList, function(questions) {
+            getAuthor(questions, function(err, results) {
+                if (err) { return sysError(res, err,'question getFollowList');}
+                return res.json(invokeResult.success(results, 'getFollowList'));
+            });
+        });
+
     });
 }
 
@@ -131,11 +141,46 @@ function follow(req, res) {
         var newFollow = new QtnFollow(req.body);
         newFollow.save(function(err, follow) {
             if (err) { return sysError(res, err, 'save QtnFollow');}
-            res.json(invokeResult.success(follow, 'save follow'));
+
+            Question.findOne({_id: req.body.question_id})
+                .exec(function(err, question) {
+                    if (!err) {
+                        question.follow();
+                        question.save(function(err) {
+                            if (!err) {
+                                res.json(invokeResult.success({
+                                    follow: follow,
+                                    question: question
+                                }, 'save follow'));
+                            }
+                        });
+                    }
+                });
+
         });
     } else {
         res.json(invokeResult.failure('qid&uid', 'question_id and follower_id cannot be null'));
     }
+}
+
+function unfollow(req, res) {
+    log.out("unfollow", req.body);
+    QtnFollow.findOne({question_id: req.body.question_id, follower_id: req.body.follower_id})
+        .exec(function(err, qtn) {
+            if (!qtn) return res.json(invokeResult.failure("qtn null", "cannot unfollow"));
+            qtn.remove(function(err) {
+                if (!err) {
+                    Question.findOne({_id: req.body.question_id})
+                        .exec(function(err, question) {
+                            question.unfollow();
+                            question.save(function(err, question) {
+                                if (!err)
+                                    return res.json(invokeResult.success(question, "unfollow success"));
+                            });
+                        });
+                }
+            });
+        });
 }
 
 function attitude(req, res) {
@@ -357,6 +402,14 @@ function getAuthor(questions, callback) {
                 cb(null, data);
             });
 
+        });
+    }, callback);
+}
+
+function getFollowingQuestion(questionIdList) {
+    async.concat(questionIdList, function(question_id, cb) {
+        Question.findById(question_id, function(err, question) {
+            cb(null, question);
         });
     }, callback);
 }

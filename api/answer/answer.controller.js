@@ -6,6 +6,7 @@ var AnswerModel = require('./answer.model'),
     AnswerCollect = AnswerModel.AnswerCollect,
     User = require('../user/user.model'),
     Question = require('../question/question.model').Question,
+    QtnFollow  = require('../question/question.model').QtnFollow;
     Topic = require('../topic/topic.model'),
     Message = require('../message/message.controller'),
     _ = require('lodash'),
@@ -194,15 +195,19 @@ function add(req, res) {
         if (err) { return sysError(res, err, 'add answer'); }
         Question.findOne({_id: req.body.question_id||''}).exec(function(err, question) {
             if (err) log.err(err);
-            var mes = {
-                type: "reply1",
-                master_id: question.author_id,
-                author_id: req.body.author_id,
-                question_id: req.body.question_id,
-                answer_id: result._id
-            };
-            Message.add(mes);
+
             question.addAnswer();
+
+            var newFollow = {
+                question_id: question._id,
+                follower_id: question.author_id
+            };
+
+            addFollow(newFollow, function() {
+                addMesToFollowerList(question, result);
+            });
+
+            question.follow();
             question.save(function(err) {
                 if (err) log.err(err);
                 else {
@@ -366,4 +371,35 @@ function addUserAnswer(uid) {
                 if (err) log.out('addUserAnswer', err);
             });
         })
+}
+
+function addFollow(params, callback) {
+    var newFollow = new QtnFollow(params);
+    newFollow.save(function(err, follow) {
+        if (err) log.err("answer controller addFollow", err);
+        else
+            callback();
+    });
+}
+
+function addMesToFollowerList(question, answer) {
+    QtnFollow.find({question_id: question._id})
+        .exec(function(err, results) {
+            if (err) log.err("answer controller addMesToFollowerList", err);
+            else {
+                results.forEach(function(item) {
+
+                    var mes = {
+                        type: "reply1",
+                        master_id: item.follower_id,
+                        author_id: answer.author_id,
+                        question_id: question._id,
+                        answer_id: answer._id
+                    };
+
+                    Message.add(mes);
+
+                });
+            }
+        });
 }

@@ -75,6 +75,16 @@
                     }
                 }
             })
+            .state('user-page.mes', {
+                url:'/mes',
+                views: {
+                    "user-page" : {
+                        templateUrl: 'app/routes/user-page-mes/user-page-mes.html',
+                        controller: 'userMesController',
+                        controllerAs: 'vm'
+                    }
+                }
+            })
 
             .state('find-question', {
                 url: '/find-question',

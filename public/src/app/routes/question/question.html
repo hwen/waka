@@ -14,7 +14,8 @@
       </div>
       <div flex="30" class="action-box" layout="column">
         <div flex layout="row">
-          <md-button class="md-raised md-accent md-mini" flex>关注</md-button>
+          <md-button ng-if="!vm.isFollowing" ng-click="vm.followQuestion()" class="md-raised md-accent md-mini" flex>关注</md-button>
+          <md-button ng-if="vm.isFollowing" ng-click="vm.unfollowQuestion()" class="md-raised md-accent md-mini" flex>取消关注</md-button>
           <label class="action-detail" flex><strong ng-bind="vm.question.follow_count">3</strong>&nbsp;&nbsp;关注</label>
         </div>
         <div flex layout="row">

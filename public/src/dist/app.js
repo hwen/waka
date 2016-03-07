@@ -92,6 +92,16 @@
                     }
                 }
             })
+            .state('user-page.mes', {
+                url:'/mes',
+                views: {
+                    "user-page" : {
+                        templateUrl: 'app/routes/user-page-mes/user-page-mes.html',
+                        controller: 'userMesController',
+                        controllerAs: 'vm'
+                    }
+                }
+            })
 
             .state('find-question', {
                 url: '/find-question',
@@ -233,16 +243,20 @@
                     method: 'POST',
                     url: url + 'follow'
                 },
+                unfollow: {
+                    method: 'POST',
+                    url: url + 'unfollow'
+                },
                 getFollower: {
                     method: 'GET',
-                    url: url + 'getFollower/:question_id',
+                    url: url + 'getFollowers/:question_id',
                     params: {
                         question_id: '@question_id'
                     }
                 },
-                getFollowerList: {
+                getFollowList: {
                     method: 'GET',
-                    url: url + 'getFollwerList/:follower_id',
+                    url: url + 'getFollowList/:follower_id',
                     params: {
                         follower_id: '@follower_id'
                     }
@@ -670,7 +684,7 @@
             };
 
             function toHomePage() {
-                location.href = "/#/user-page";
+                location.href = "/#/user-page/question";
             }
 
             function toUpdateInfo() {
@@ -955,8 +969,8 @@
         vm.allTopics = '';
         vm.followingTopic = '';
         vm.answerList = '';
-        vm.answerListLeft = '';
-        vm.answerListRight ='';
+        vm.answerListLeft = [];
+        vm.answerListRight =[];
 
         getAnswers();
 
@@ -970,8 +984,12 @@
                     .then(function(res) {
                         console.log(res);
                         vm.answerList = res.data;
-                        vm.answerListRight = vm.answerList.slice(0, vm.answerList.length/2);
-                        vm.answerListLeft = vm.answerList.slice(vm.answerList.length/2);
+                        res.data.forEach(function(item, index) {
+                            if (index%2 ===0)
+                                vm.answerListRight.push(item);
+                            else
+                                vm.answerListLeft.push(item);
+                        });
                     });
             });
         }
@@ -1036,13 +1054,58 @@
     	vm.question = "";
 		vm.addAnswer = addAnswer;
 		vm.checkAuthor = checkAuthor;
+		vm.setQuestionAttitude = setQuestionAttitude;
+		vm.setAnswerAttitude = setAnswerAttitude;
+		vm.followQuestion = followQuestion;
+		vm.unfollowQuestion = unfollowQuestion;
+		vm.isFollowing = false;
 
     	getQuestion();
+		checkFollowState();
 
 		vm.postedTime = timeFormat.postedTime;
 
-		function setQuestionAttitude() {
+		function setQuestionAttitude(type) {
+			var params = {
+				user_id: user_id,
+				question_id: vm.question._id,
+				type: type
+			};
 
+			Attitude.setAttitude(JSON.stringify(params))
+				.$promise
+				.then(function(res) {
+					if (res.status > -1) {
+						if (res.data.question) {
+							vm.question = res.data.question;
+						} else {
+							type > 0 ? vm.question.support_count++: vm.question.support_count--;
+						}
+						vm.question.attitude = res.data.attitude;
+					}
+				});
+		}
+
+		function setAnswerAttitude(type, $index) {
+			var params = {
+				user_id: user_id,
+				answer_id: vm.answerList[$index].answer._id,
+				type: type
+			};
+
+			Attitude.setAttitude(JSON.stringify(params))
+				.$promise
+				.then(function(res) {
+					if (res.status > -1) {
+						if (res.data.answer) {
+							vm.answerList[$index].answer = res.data.answer;
+						} else {
+							type > 0 ? vm.answerList[$index].answer.support_count++
+								: vm.answerList[$index].answer.support_count--;
+						}
+						vm.answerList[$index].attitude = res.data.attitude;
+					}
+				});
 		}
 
     	function getQuestion() {
@@ -1084,8 +1147,8 @@
 			Attitude.getAttitude(JSON.stringify(params))
 				.$promise
 				.then(function(res) {
-					if (res.status > 0) {
-						vm.question.attitude = res.data;
+					if (res.status > -1) {
+						vm.question.attitude = res.data[0];
 					}
 				});
 		}
@@ -1099,8 +1162,8 @@
 				Attitude.getAttitude(JSON.stringify(params))
 					.$promise
 					.then(function(res) {
-						if (res.status > 0) {
-							vm.answerList[index].attitude = res.data;
+						if (res.status > -1) {
+							vm.answerList[index].attitude = res.data[0];
 						}
 					});
 			});
@@ -1112,6 +1175,47 @@
 
 		function checkAuthor(author_id) {
 			return iCookie.getCookie("uid") == author_id;
+		}
+
+		function followQuestion() {
+			var params = {
+				follower_id: user_id,
+				question_id: question_id
+			};
+			Question.follow(JSON.stringify(params))
+				.$promise
+				.then(function(res) {
+					if (res.status>-1) {
+						vm.question.following_count ++;
+					}
+				});
+		}
+
+		function unfollowQuestion() {
+			var params = {
+				question_id: question_id,
+				follower_id: user_id
+			};
+			Question.unfollow(JSON.stringify(params))
+				.$promise
+				.then(function(res) {
+					if (res.status > -1) {
+						vm.question.following_count --;
+					}
+				});
+		}
+
+		function checkFollowState() {
+			Question.getFollower({question_id: question_id})
+				.$promise
+				.then(function(res) {
+					var followerList = res.data;
+					followerList.forEach(function(item) {
+						if (item._id == user_id) {
+							vm.isFollowing = true;
+						}
+					});
+				});
 		}
     }
 
@@ -1376,202 +1480,6 @@
 
 })(angular);
 
-(function(angular) {
-    'use strict';
-
-    angular.module('waka').controller('userPageController', ['$scope', '$state', 'User',
-        'iCookie', userPageController]);
-
-    function userPageController($scope, $state, User, iCookie) {
-        var vm = this;
-
-        vm.user = '';
-
-        vm.itemList = [{
-            title: "我的提问",
-            url: "question"
-        }, {
-            title: "我的回答",
-            url: "answer"
-        }, {
-            title: "我的收藏",
-            url: "collection"
-        }, {
-            title: "关注话题",
-            url: "topic"
-        }];
-
-        getUser();
-
-        vm.userSetting = function() {
-            $state.go('user-setting');
-        };
-
-        function getUser() {
-            User.get({id: iCookie.getCookie("uid")})
-                .$promise
-                .then(function(res) {
-                    console.log(res);
-                    vm.user = res.data;
-                });
-        }
-
-    }
-})(angular);
-/**
- * Created by hwen.
- */
-(function(angular) {
-    'use strict';
-    angular.module('waka').controller('userAnswerController', ['$scope', '$state', 'User',
-        userAnswerController]);
-
-    function userAnswerController($scope, $state, User) {
-
-    }
-
-})(angular);
-/**
- * Created by hwen.
- */
-(function(angular) {
-    'use strict';
-    angular.module('waka').controller('userCollectionController', ['$scope', '$state', 'User',
-        userCollectionController]);
-
-    function userCollectionController($scope, $state, User) {
-
-    }
-
-})(angular);
-/**
- * Created by hwen.
- */
-(function(angular) {
-    'use strict';
-    angular.module('waka').controller('userQuestionController', ['$scope', '$state', 'User',
-        userQuestionController]);
-
-    function userQuestionController($scope, $state, User) {
-
-    }
-
-})(angular);
-/**
- * Created by hwen.
- */
-(function(angular) {
-    'use strict';
-    angular.module('waka').controller('userTopicController', ['$scope', '$state', 'User',
-        userTopicController]);
-
-    function userTopicController($scope, $state, User) {
-
-    }
-
-})(angular);
-(function(angular) {
-    'use strict';
-    angular.module('waka').controller('userSettingController', ['$scope', '$state', '$timeout',
-        'User', 'Upload', userSettingController]);
-
-    function userSettingController($scope, $state, $timeout, User, Upload) {
-        var vm = this;
-
-        vm.picFile = '';
-        vm.username = '';
-        vm.bio = '';
-        vm.description = '';
-        vm.oldPassword = '';
-        vm.newPassword = '';
-        vm.newPassword2 = '';
-        vm.savingAvatar = false;
-        vm.savingInfo = false;
-        vm.savingPassword = false;
-
-        initData();
-
-        vm.updateInfo = function() {
-          var data = {
-            username: vm.username,
-            bio: vm.bio,
-            description: vm.description
-          };
-          User.update(data).$promise.then(function(res) {
-              vm.savingInfo = true;
-            if (res.status > -1) {
-              $timeout(function() {
-                  vm.savingInfo = false;
-                  vm.savingInfoMes = "保存成功";
-              }, 2000);
-            }
-          });
-        };
-
-        vm.updatePassword = function() {
-          if (vm.newPassword !== vm.newPassword2) {
-              vm.savingPasswordMes = "密码不一致";
-          }
-          var data = {
-            oldPassword: vm.oldPassword,
-            newPassword: vm.newPassword
-          };
-          User.updatePassword(data).$promise.then(function(res) {
-            vm.savingPassword = true;
-            console.log(res);
-            if (res.data.error) {
-                vm.savingPassword = false;
-                vm.savingPasswordMes = "旧密码不正确";
-            } else {
-                $timeout(function() {
-                    vm.savingPassword = false;
-                    vm.savingPasswordMes = "保存成功";
-                    updatePasswordCookie(vm.newPassword);
-                }, 2000);
-            }
-          });
-        };
-
-        vm.upload = function (dataUrl) {
-            vm.savingAvatar = true;
-            Upload.upload({
-                url: '/api/user/imgUpload',
-                file: Upload.dataUrltoBlob(dataUrl)
-            }).then(function (res) {
-                if (res.status > -1) {
-                    $timeout(function() {
-                        window.location.reload();
-                    }, 2500);
-                }
-            });
-        }
-
-        function initData() {
-            User.getCurrentUser().$promise.then(function(res) {
-                var data = res.data;
-                vm.username = data.username;
-                vm.bio = data.bio;
-                vm.description = data.description;
-            });
-        }
-
-        function updatePasswordCookie(password) {
-            password = encrypt(password);
-            document.cookie = "password=" + password+
-                ";max-age=" +  60*60*24*10;
-        }
-
-        function encrypt(key) {
-            return CryptoJS.AES.encrypt(key, "iwaka");
-        }
-
-        function decrypt(encrypted) {
-            return CryptoJS.AES.decrypt(encrypted, "iwaka").toString(CryptoJS.enc.Utf8);
-        }
-    }
-
-})(angular);
-
 /**
  * Created by hwen on 16/1/27.
  */
@@ -1701,4 +1609,295 @@
             return CryptoJS.AES.decrypt(encrypted, "iwaka").toString(CryptoJS.enc.Utf8);
         }
     }
+})(angular);
+
+(function(angular) {
+    'use strict';
+
+    angular.module('waka').controller('userPageController', ['$scope', '$state', 'User',
+        'iCookie', userPageController]);
+
+    function userPageController($scope, $state, User, iCookie) {
+        var vm = this;
+
+        vm.user = '';
+
+        vm.itemList = [{
+            title: "我的提问",
+            url: "question"
+        }, {
+            title: "我的回答",
+            url: "answer"
+        }, {
+            title: "关注话题",
+            url: "topic"
+        }, {
+            title: "我的消息",
+            url: "mes"
+        }
+        //    {
+        //    title: "我的收藏",
+        //    url: "collection"
+        //}
+        ];
+
+        getUser();
+
+        vm.userSetting = function() {
+            $state.go('user-setting');
+        };
+
+        function getUser() {
+            User.get({id: iCookie.getCookie("uid")})
+                .$promise
+                .then(function(res) {
+                    console.log(res);
+                    vm.user = res.data;
+                });
+        }
+
+    }
+})(angular);
+/**
+ * Created by hwen.
+ */
+(function(angular) {
+    'use strict';
+    angular.module('waka').controller('userAnswerController', ['$scope', '$state', 'User',
+        'Answer', 'iCookie', userAnswerController]);
+
+    function userAnswerController($scope, $state, User, Answer, iCookie) {
+        var vm = this;
+        var uid = iCookie.getCookie("uid");
+
+        vm.answerList = [];
+
+        getUserAnswer();
+
+        function getUserAnswer() {
+            Answer.getByUser({author_id: uid})
+                .$promise
+                .then(function(res) {
+                    if (res.status>-1) {
+                        vm.answerList = res.data;
+                    }
+                });
+        }
+    }
+
+})(angular);
+/**
+ * Created by hwen.
+ */
+(function(angular) {
+    'use strict';
+    angular.module('waka').controller('userCollectionController', ['$scope', '$state', 'User',
+        userCollectionController]);
+
+    function userCollectionController($scope, $state, User) {
+
+    }
+
+})(angular);
+/**
+ * Created by hwen.
+ */
+(function(angular) {
+    'use strict';
+    angular.module('waka').controller('userMesController', ['$scope', '$state', 'User',
+        'Question', 'Message', 'iCookie', userMesController]);
+
+    function userMesController($scope, $state, User, Question, Message, iCookie) {
+        var vm = this;
+        var uid = iCookie.getCookie("uid");
+        vm.mesList = [];
+
+        getMes();
+
+        function getMes() {
+            var params = {
+                master_id: uid
+            };
+            Message.getMes(JSON.stringify(params))
+                .$promise
+                .then(function(res) {
+                    if (res.status > -1) {
+                        console.log("mes");
+                        vm.mesList = res.data;
+                    }
+                });
+        }
+    }
+
+})(angular);
+/**
+ * Created by hwen.
+ */
+(function(angular) {
+    'use strict';
+    angular.module('waka').controller('userQuestionController', ['$scope', '$state', 'User',
+        'Question', 'iCookie', userQuestionController]);
+
+    function userQuestionController($scope, $state, User, Question, iCookie) {
+        var vm = this;
+        var uid = iCookie.getCookie("uid");
+        vm.questionList = [];
+
+        getUserQuestion();
+
+        function getUserQuestion() {
+            Question.getByUser({author_id: uid})
+                .$promise
+                .then(function(res) {
+                    if (res.status > -1) {
+                        vm.questionList = res.data;
+                    }
+                });
+        }
+    }
+
+})(angular);
+/**
+ * Created by hwen.
+ */
+(function(angular) {
+    'use strict';
+    angular.module('waka').controller('userTopicController', ['$scope', '$state', 'User',
+        'Topic', 'iCookie', userTopicController]);
+
+    function userTopicController($scope, $state, User, Topic, iCookie) {
+        var vm = this;
+        var uid = iCookie.getCookie("uid");
+
+        vm.topicList = [];
+
+        getUserTopic();
+
+        function getUserTopic() {
+            getUserFollowingTopic( function(topicIdList) {
+                var params = {
+                    topicIdList: topicIdList
+                };
+                Topic.getTopicByIdList(JSON.stringify(params))
+                    .$promise
+                    .then(function(res) {
+                        if (res.status > -1) {
+                            vm.topicList = res.data;
+                        }
+                    });
+            } );
+        }
+
+        function getUserFollowingTopic(callback) {
+            User.getCurrentUser()
+                .$promise
+                .then(function(res) {
+                    if (res.status >-1) {
+                        callback(res.data.following_topic);
+                    }
+                });
+        }
+    }
+
+})(angular);
+(function(angular) {
+    'use strict';
+    angular.module('waka').controller('userSettingController', ['$scope', '$state', '$timeout',
+        'User', 'Upload', userSettingController]);
+
+    function userSettingController($scope, $state, $timeout, User, Upload) {
+        var vm = this;
+
+        vm.picFile = '';
+        vm.username = '';
+        vm.bio = '';
+        vm.description = '';
+        vm.oldPassword = '';
+        vm.newPassword = '';
+        vm.newPassword2 = '';
+        vm.savingAvatar = false;
+        vm.savingInfo = false;
+        vm.savingPassword = false;
+
+        initData();
+
+        vm.updateInfo = function() {
+          var data = {
+            username: vm.username,
+            bio: vm.bio,
+            description: vm.description
+          };
+          User.update(data).$promise.then(function(res) {
+              vm.savingInfo = true;
+            if (res.status > -1) {
+              $timeout(function() {
+                  vm.savingInfo = false;
+                  vm.savingInfoMes = "保存成功";
+              }, 2000);
+            }
+          });
+        };
+
+        vm.updatePassword = function() {
+          if (vm.newPassword !== vm.newPassword2) {
+              vm.savingPasswordMes = "密码不一致";
+          }
+          var data = {
+            oldPassword: vm.oldPassword,
+            newPassword: vm.newPassword
+          };
+          User.updatePassword(data).$promise.then(function(res) {
+            vm.savingPassword = true;
+            console.log(res);
+            if (res.data.error) {
+                vm.savingPassword = false;
+                vm.savingPasswordMes = "旧密码不正确";
+            } else {
+                $timeout(function() {
+                    vm.savingPassword = false;
+                    vm.savingPasswordMes = "保存成功";
+                    updatePasswordCookie(vm.newPassword);
+                }, 2000);
+            }
+          });
+        };
+
+        vm.upload = function (dataUrl) {
+            vm.savingAvatar = true;
+            Upload.upload({
+                url: '/api/user/imgUpload',
+                file: Upload.dataUrltoBlob(dataUrl)
+            }).then(function (res) {
+                if (res.status > -1) {
+                    $timeout(function() {
+                        window.location.reload();
+                    }, 2500);
+                }
+            });
+        }
+
+        function initData() {
+            User.getCurrentUser().$promise.then(function(res) {
+                var data = res.data;
+                vm.username = data.username;
+                vm.bio = data.bio;
+                vm.description = data.description;
+            });
+        }
+
+        function updatePasswordCookie(password) {
+            password = encrypt(password);
+            document.cookie = "password=" + password+
+                ";max-age=" +  60*60*24*10;
+        }
+
+        function encrypt(key) {
+            return CryptoJS.AES.encrypt(key, "iwaka");
+        }
+
+        function decrypt(encrypted) {
+            return CryptoJS.AES.decrypt(encrypted, "iwaka").toString(CryptoJS.enc.Utf8);
+        }
+    }
+
 })(angular);
