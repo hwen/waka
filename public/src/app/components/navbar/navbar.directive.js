@@ -10,6 +10,7 @@
     function customNavbar() {
         var directive = {
             restrict: 'E',
+            link: linkFn,
             templateUrl: 'app/components/navbar/navbar.html',
             scope: {
                 creationDate: '='
@@ -22,7 +23,7 @@
         return directive;
 
         /** @ngInject */
-        function NavbarController($scope, $state, $timeout, User) {
+        function NavbarController($scope, $state, $timeout, User, Question) {
             var vm = this;
             var imgPath = "../assets/images/icons/";
 
@@ -98,6 +99,27 @@
                     return null;
                 }
             }
+        }
+
+        function linkFn(scope, element, attrs) {
+            //test version
+            var input = document.getElementById('search'),
+                oldValue = '';
+
+            input.addEventListener('keydown', function(e){
+                oldValue = this.value;
+            }, false);
+
+            input.addEventListener('keyup', function(e){
+                var code = e.keyCode;
+                if( code == 13 ){
+                    if( oldValue === this.value ){
+                        console.log(this.value);
+                        location.href = '/#/search/' + this.value;
+                    }
+                }
+
+            }, false);
         }
     }
 

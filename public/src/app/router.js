@@ -128,6 +128,13 @@
                 controllerAs: 'tree'
             })
 
+            .state('search', {
+                url: '/search/:keyword',
+                templateUrl: 'app/routes/search-result/search-result.html',
+                controller: 'searchController',
+                controllerAs: 'vm'
+            })
+
         $urlRouterProvider.otherwise('/user-login');
     }
 })(angular);

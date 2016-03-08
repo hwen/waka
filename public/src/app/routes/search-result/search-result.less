@@ -1,0 +1,30 @@
+.search-result {
+  .question-stream {
+    .stream-item {
+      padding: 15px 0;
+      border-bottom: 1px solid #dcdcdc;
+    }
+    .qa-rank {
+      .votes, .answers {
+        display: inline-block;
+        padding: 5px;
+        min-width: 55px;
+        text-align: center;
+        span {
+          display: block;
+        }
+      }
+      .votes {
+        color: #D985B4;
+        font-weight: 600;
+      }
+      .answers {
+        background: @lightPrimary;
+        color: white;
+      }
+      .answers.active {
+        background: rgba(101, 27, 185, 0.88);
+      }
+    }
+  }
+}
