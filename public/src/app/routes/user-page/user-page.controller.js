@@ -16,7 +16,7 @@
             title: "我的回答",
             url: "answer"
         }, {
-            title: "关注话题",
+            title: "订阅话题",
             url: "topic"
         }, {
             title: "我的消息",

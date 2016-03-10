@@ -73,7 +73,7 @@
             var flag = true;
 
             if (updatedTopic.length === 0) {
-                flag = confirm("你确认要取消所有关注么？");
+                flag = confirm("你确认要取消所有订阅么？");
             }
 
             if (!flag) return;
@@ -82,6 +82,8 @@
                 _id: iCookie.getCookie("uid"),
                 following_topic: updatedTopic
             };
+
+            console.log(params);
 
             User.update(JSON.stringify(params))
                 .$promise

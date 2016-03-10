@@ -41,6 +41,7 @@
                         if (res.status > -1) {
                             alert("添加成功");
                             vm.initTree();
+                            $state.reload();
                         }
                     });
             };

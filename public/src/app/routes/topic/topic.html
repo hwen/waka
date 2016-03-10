@@ -5,13 +5,13 @@
     </div>
     <div class="follow-topic md-whiteframe-12dp" flex="60" layout="column">
         <div flex="1" layout="row" class="topic-action">
-            <h4 flex>我关注的话题</h4>
+            <h4 flex>我订阅的话题</h4>
             <md-button class="md-raised md-accent" ng-click="vm.updateFollowingTopic()">
                 保存
             </md-button>
         </div>
-        <p>输入话题名称添加关注~</p>
-        <md-contact-chips flex ng-model="vm.topics" md-contacts="vm.querySearch($query)" md-contact-name="name" md-require-match="true" md-highlight-flags="i" filter-selected="vm.filterSelected" placeholder="输入话题添加关注">
+        <p>输入话题名称添加订阅~</p>
+        <md-contact-chips flex ng-model="vm.topics" md-contacts="vm.querySearch($query)" md-contact-name="name" md-require-match="true" md-highlight-flags="i" filter-selected="vm.filterSelected" placeholder="输入话题添加订阅">
         </md-contact-chips>
     </div>
 </div>

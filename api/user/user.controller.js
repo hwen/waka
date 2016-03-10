@@ -71,7 +71,7 @@ exports.create = function(req, res) {
 };
 
 exports.update = function(req, res) {
-    log.out(req.body);
+    log.out('user-update', req.body);
     User.findOne({_id: req.cookies.uid||''}).exec(function(err, user) {
         if (err) return sysError(res, err, 'update err');
 
@@ -86,10 +86,11 @@ exports.update = function(req, res) {
                 updated.following_topic = null;
             //Mongoose 混合类型修改后需要调用 markModified 不然该字段保存不了
             //坑爹
+            updated.following_topic = req.body.following_topic;
             updated.markModified('following_topic');
         }
 
-        log.out(updated);
+        log.out('updated topic->', updated);
         updated.save(function(err) {
             if (err) return sysError(res, err);
             return res.json(invokeResult.success(updated, 'updated'));
@@ -208,17 +209,30 @@ function getTopic(topicList, callback) {
     } else {
 
         async.concat(topicList, function(topic_id, cb) {
-            Topic.findOne({_id: topic_id})
-                .exec(function(err, topic) {
-                    cb(null, topic);
-                });
+            getTopicAllChild(topic_id, function(results) {
+                cb(null, results);
+            });
+
         }, function(err, topics) {
-            callback(topics);
+            var data = _.uniqBy(topics, "_id");
+            callback(data);
         });
         
     }
 
 }
+
+function getTopicAllChild(topic_id, callback) {
+    if (topic_id) {
+        Topic.findOne({_id: topic_id}).exec(function(err, result) {
+            result.getChildren(true, function(err, results) {
+                if (!err)
+                    callback(results);
+            });
+        });
+    }
+}
+
 
 exports.hello = function(req, res) {
     res.send('request get success: api/user/hello');
