@@ -153,6 +153,7 @@
 				.then(function(res) {
 					if (res.status>-1) {
 						vm.question.following_count ++;
+						$state.reload();
 					}
 				});
 		}
@@ -167,6 +168,7 @@
 				.then(function(res) {
 					if (res.status > -1) {
 						vm.question.following_count --;
+						$state.reload();
 					}
 				});
 		}
