@@ -202,6 +202,13 @@
                     params: {
                         _id: '@_id'
                     }
+                },
+                getFollowingTopicAll: {
+                    method: 'GET',
+                    url: url + 'followingTopicAll/:_id',
+                    params: {
+                        _id: '@_id'
+                    }
                 }
             });
         }])
@@ -559,6 +566,7 @@
                         if (res.status > -1) {
                             alert("添加成功");
                             vm.initTree();
+                            $state.reload();
                         }
                     });
             };
@@ -817,6 +825,7 @@
 					console.log(res);
 					if (res.status > -1) {
 						alert("更新回答成功");
+						location.href = '/#/question/' + question_id;
 					} else {
 						alert("更新回答失败");
 					}
@@ -947,7 +956,7 @@
                 return;
             }
 
-            User.getFollowingTopic({_id: iCookie.getCookie("uid")})
+            User.getFollowingTopicAll({_id: iCookie.getCookie("uid")})
                 .$promise
                 .then(function(res) {
                     var user = res.data.user;
@@ -1033,7 +1042,7 @@
                 return;
             }
 
-            User.getFollowingTopic({_id: iCookie.getCookie("uid")})
+            User.getFollowingTopicAll({_id: iCookie.getCookie("uid")})
                 .$promise
                 .then(function(res) {
                     var user = res.data.user;
@@ -1104,9 +1113,9 @@
 
 		vm.postedTime = timeFormat.postedTime;
 
-		function setQuestionAttitude(type) {
+		function setQuestionAttitude(type, author_id) {
 			var params = {
-				user_id: user_id,
+				user_id: author_id,
 				question_id: vm.question._id,
 				type: type
 			};
@@ -1127,7 +1136,7 @@
 
 		function setAnswerAttitude(type, $index) {
 			var params = {
-				user_id: user_id,
+				user_id: vm.answerList[$index].answer.author_id,
 				answer_id: vm.answerList[$index].answer._id,
 				type: type
 			};
@@ -1227,6 +1236,7 @@
 				.then(function(res) {
 					if (res.status>-1) {
 						vm.question.following_count ++;
+						$state.reload();
 					}
 				});
 		}
@@ -1241,6 +1251,7 @@
 				.then(function(res) {
 					if (res.status > -1) {
 						vm.question.following_count --;
+						$state.reload();
 					}
 				});
 		}
@@ -1443,9 +1454,12 @@
                 .then(function(res) {
                     if (res.status>-1) {
                         vm.questionList = res.data;
+                    } else {
+
                     }
                 });
         }
+
     }
 
 })(angular);
@@ -1524,7 +1538,7 @@
             var flag = true;
 
             if (updatedTopic.length === 0) {
-                flag = confirm("你确认要取消所有关注么？");
+                flag = confirm("你确认要取消所有订阅么？");
             }
 
             if (!flag) return;
@@ -1533,6 +1547,8 @@
                 _id: iCookie.getCookie("uid"),
                 following_topic: updatedTopic
             };
+
+            console.log(params);
 
             User.update(JSON.stringify(params))
                 .$promise
@@ -1688,8 +1704,8 @@
                     }
                 }
                 if (res.status > -1) {
-                    console.log('signup success');
-                    $state.go('user-login');
+                    alert('注册成功');
+                    location.reload();
                 }
             }, function(err) {
                 console.log('signup fail');
@@ -1779,7 +1795,7 @@
             title: "我的回答",
             url: "answer"
         }, {
-            title: "关注话题",
+            title: "订阅话题",
             url: "topic"
         }, {
             title: "我的消息",

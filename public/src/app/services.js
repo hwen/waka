@@ -44,6 +44,13 @@
                     params: {
                         _id: '@_id'
                     }
+                },
+                getFollowingTopicAll: {
+                    method: 'GET',
+                    url: url + 'followingTopicAll/:_id',
+                    params: {
+                        _id: '@_id'
+                    }
                 }
             });
         }])

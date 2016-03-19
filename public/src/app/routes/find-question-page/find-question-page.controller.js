@@ -82,7 +82,7 @@
                 return;
             }
 
-            User.getFollowingTopic({_id: iCookie.getCookie("uid")})
+            User.getFollowingTopicAll({_id: iCookie.getCookie("uid")})
                 .$promise
                 .then(function(res) {
                     var user = res.data.user;

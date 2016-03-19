@@ -55,11 +55,11 @@ QuestionSchema.methods = {
     },
     follow: function() {
         this.follow_count++;
-        this.score += 2;
+        this.score += 1;
     },
     unfollow: function() {
         this.follow_count--;
-        this.score -= 2;
+        this.score -= 1;
     },
     addAnswer: function() {
         this.answer_count++;

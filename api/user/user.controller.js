@@ -192,6 +192,30 @@ exports.getFollowingTopic =  function(req, res) {
     });
 }
 
+exports.getFollowingTopicAll =  function(req, res) {
+    async.waterfall([
+        function(cb) {
+            if (req.params._id);
+            User.findOne({_id: req.params._id}).exec(function(err, user) {
+                cb(null, user);
+            });
+        },
+        function(user, cb) {
+            getTopicAll(user.following_topic, function(topics) {
+                var data = {
+                    user: user,
+                    topics: topics
+                };
+                cb(null, data);
+            });
+        }
+    ], function(err, result) {
+        if (err) return sysError(res, err, 'getFollowingTopic');
+
+        return res.json(invokeResult.success(result, 'getFollowingTopic success'));
+    });
+}
+
 function setAvatar(uid) {
     User.findOne({_id:uid||''}).exec(function(err, user) {
         user.avatar = uid + '.png';
@@ -209,8 +233,38 @@ function getTopic(topicList, callback) {
     } else {
 
         async.concat(topicList, function(topic_id, cb) {
+            Topic.findOne({_id: topic_id})
+                .exec(function(err, topic) {
+                    if (!err) {
+                        cb(null,topic);
+                    }
+                });
+
+        }, function(err, topics) {
+            var data = _.uniqBy(topics, "_id");
+            callback(data);
+        });
+
+    }
+
+}
+
+
+function getTopicAll(topicList, callback) {
+
+    if ( !topicList || topicList.length === 0 ) {
+        var result = [];
+        callback(result);
+    } else {
+
+        async.concat(topicList, function(topic_id, cb) {
             getTopicAllChild(topic_id, function(results) {
-                cb(null, results);
+                var data = [];
+                data = data.concat(results);
+                Topic.findOne({_id: topic_id}).exec(function(err, topic) {
+                    data.push(topic);
+                    cb(null, data);
+                });
             });
 
         }, function(err, topics) {

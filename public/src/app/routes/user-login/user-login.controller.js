@@ -56,8 +56,8 @@
                     }
                 }
                 if (res.status > -1) {
-                    console.log('signup success');
-                    $state.go('user-login');
+                    alert('注册成功');
+                    location.reload();
                 }
             }, function(err) {
                 console.log('signup fail');

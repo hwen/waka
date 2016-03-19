@@ -40,6 +40,9 @@ function getMes(req, res) {
 }
 
 function getQuestionAndSender(mes, callback) {
+    log.out('mes', mes, mes.length);
+    mes = _.uniqBy(mes, '_id');
+    mes = _.uniq(mes);
     async.map(mes, function(item, cb) {
         Question.findOne({_id: item.question_id})
             .exec(function(err, question) {

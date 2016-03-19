@@ -56,6 +56,7 @@
 					console.log(res);
 					if (res.status > -1) {
 						alert("更新回答成功");
+						location.href = '/#/question/' + question_id;
 					} else {
 						alert("更新回答失败");
 					}

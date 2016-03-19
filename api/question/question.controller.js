@@ -252,6 +252,7 @@ function getHot(req, res) {
         var results = _.uniqBy(data, "_id");
         results = _.sortBy(results, 'score');
         results = _.reverse(results);
+        results = _.uniqBy(results, 'title');
 
         log.out('get Hot question', results);
         getAuthor(results, function(err, data) {
@@ -270,6 +271,7 @@ function getNew(req, res) {
         var results = _.uniqBy(data, "_id");
         results = _.sortBy(results, 'created_time');
         results = _.reverse(results);
+        results = _.uniqBy(results, 'title');
 
         log.out('get new question', results);
         getAuthor(results, function(err, data) {
@@ -288,11 +290,11 @@ function getNoAnswer(req, res) {
         if (err) { return sysError(res, err, 'getNoAnswer error');}
 
         var results = _.uniqBy(data, "_id");
-
+        results = _.uniqBy(results, 'title');
         log.out('no answer question', results);
-        getAuthor(results, function(err, data) {
+        getAuthor(results, function(err, datas) {
             if (err) { return sysError(res, err,'getNoAnswer error'); }
-            return res.json(invokeResult.success(data, 'get no answer questions success'));
+            return res.json(invokeResult.success(datas, 'get no answer questions success'));
         });
     });
 
@@ -322,12 +324,26 @@ function add(req, res) {
     if (filter.notNull(req.body.title)&&filter.notNull(req.body.author_id)&&filter.notNull(req.body.topics)) {
         var newQuestion = new Question(req.body);
 
+        newQuestion.follow();
         newQuestion.save(function (err, question) {
             if (err) {
                 return sysError(res, err, 'add err');
             } else {
+                var params = {
+                    question_id: question._id,
+                    follower_id: question.author_id
+                };
+
+                var newFollow = new QtnFollow(params);
+
+                newFollow.save(function(err, follow) {
+                    if (err) { return sysError(res, err, 'save QtnFollow');}
+                });
+
                 log.out('add question', question);
+
                 addUserQuestion(req.body.author_id);
+
                 res.json(invokeResult.success(question, 'add question success'));
             }
         });
@@ -383,7 +399,8 @@ function getNoAnswerByTopicList(topicsList ,callback) {
             .exec(function(err, questions) {
                 if (err) { log.err(err, 'getQuestionByTopicList'); }
                 else {
-                    cb(null, questions);
+                    var results = _.uniqBy(questions, "_id");
+                    cb(null, results);
                 }
             });
     }, callback);

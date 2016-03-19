@@ -62,6 +62,8 @@
 				.$promise
 				.then(function(res) {
 					if (res.status > -1) {
+						console.log('answer attitude');
+						console.log(res);
 						if (res.data.answer) {
 							vm.answerList[$index].answer = res.data.answer;
 						} else {

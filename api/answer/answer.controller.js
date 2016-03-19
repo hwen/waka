@@ -190,7 +190,7 @@ function update(req, res) {
         var updated = _.merge(answer, req.body);
         updated.save(function(err) {
             if (err) { return sysError(res, err, 'updated'); }
-            return res.json(answer, 'answer: edit');
+            return res.json(invokeResult.success(answer,'answer: edit '  ));
         })
     });
 }
@@ -209,16 +209,8 @@ function add(req, res) {
 
             question.addAnswer();
 
-            var newFollow = {
-                question_id: question._id,
-                follower_id: question.author_id
-            };
+            addMesToFollowerList(question, result);
 
-            addFollow(newFollow, function() {
-                addMesToFollowerList(question, result);
-            });
-
-            question.follow();
             question.save(function(err) {
                 if (err) log.err(err);
                 else {

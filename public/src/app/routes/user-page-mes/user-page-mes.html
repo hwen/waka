@@ -2,7 +2,7 @@
     <ul class="user-list">
         <p>总共：<span ng-bind="vm.mesList.length"></span>&nbsp;条消息</p>
         <section ng-if="vm.mesList.length == 0">
-            <p>你还任何未读没有消息~</p>
+            <p>你还没有任何消息~</p>
         </section>
         <li ng-repeat="item in vm.mesList">
             <strong><span ng-bind="item.user.username"></span>回答了你关注的问题：</strong>
