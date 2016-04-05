@@ -19,8 +19,8 @@
                     } else if (result > 60*24 && result <= 60*24*20 ) {
                         return Math.floor(result/(60*24)) + "天前";
                     } else {
-                        return postedTime.getYear() + '-' + postedTime.getMonth() + '-' +
-                                postedTime.getDate();
+                        return postedTime.getUTCFullYear() + '-' + (postedTime.getMonth()+1)+ '-' +
+                                postedTime.getUTCDate();
                     }
                 }
             };

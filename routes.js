@@ -22,14 +22,14 @@ module.exports = function(app) {
     app.use('/api/attitude', require('./api/attitude'));
 
     // all und
-    //app.route('/:url(api|components|app)/*').get(erros[404]);
+    app.route('/:url(api|components|app)/*').get(erros[404]);
 
     // all other routes should redirect to the index.jade
     //app.route('/*')
     //    .get(function(req, res) {
     //        res.sendfile(app.get('views') + '/src/index.jade');
     //    });
-    app.route('/')
+    app.route('/*')
         .get(function(req, res) {
             res.sendfile(app.get('appPath')+'/index.html');
         })
