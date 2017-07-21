@@ -81,7 +81,7 @@ exports.update = function(req, res) {
 
         var updated = _.merge(user, req.body);
 
-        if ( req.body.following_topic ) {
+        if (req.body && req.body.following_topic ) {
             if (req.body.following_topic.length === 0)
                 updated.following_topic = null;
             //Mongoose 混合类型修改后需要调用 markModified 不然该字段保存不了
@@ -201,6 +201,10 @@ exports.getFollowingTopicAll =  function(req, res) {
             });
         },
         function(user, cb) {
+            if (!user) {
+                cb('nodata')
+                return;
+            }
             getTopicAll(user.following_topic, function(topics) {
                 var data = {
                     user: user,

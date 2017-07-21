@@ -516,8 +516,8 @@
                     } else if (result > 60*24 && result <= 60*24*20 ) {
                         return Math.floor(result/(60*24)) + "天前";
                     } else {
-                        return postedTime.getYear() + '-' + postedTime.getMonth() + '-' +
-                                postedTime.getDate();
+                        return postedTime.getUTCFullYear() + '-' + (postedTime.getMonth()+1)+ '-' +
+                                postedTime.getUTCDate();
                     }
                 }
             };
@@ -1113,9 +1113,9 @@
 
 		vm.postedTime = timeFormat.postedTime;
 
-		function setQuestionAttitude(type, author_id) {
+		function setQuestionAttitude(type) {
 			var params = {
-				user_id: author_id,
+				user_id: user_id,
 				question_id: vm.question._id,
 				type: type
 			};
@@ -1136,7 +1136,7 @@
 
 		function setAnswerAttitude(type, $index) {
 			var params = {
-				user_id: vm.answerList[$index].answer.author_id,
+				user_id: user_id,
 				answer_id: vm.answerList[$index].answer._id,
 				type: type
 			};
@@ -1145,6 +1145,8 @@
 				.$promise
 				.then(function(res) {
 					if (res.status > -1) {
+						console.log('answer attitude');
+						console.log(res);
 						if (res.data.answer) {
 							vm.answerList[$index].answer = res.data.answer;
 						} else {
